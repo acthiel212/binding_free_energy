@@ -1,3 +1,4 @@
+import openmm
 from openmm.app import *
 from openmm import *
 from openmm.unit import *
@@ -6,13 +7,33 @@ from sys import stdout
 pdb = PDBFile('g1.pdb_2')
 forcefield = ForceField('g1.xml')
 vdwLambda = 1.0
-electrostaticLambda = 0.25  # example lambda for scaling multipoles
-nSteps = 15000000
+electrostaticLambda = 0.95  # example lambda for scaling multipoles
+#nSteps = 15000000
+nSteps = 1000
 alchemicalAtoms = range(0, 21)
+restraintAtomGroup1 = [2]
+restraintAtomGroup2 = [5]
+convert = openmm.KJPerKcal / (openmm.NmPerAngstrom * openmm.NmPerAngstrom)
+restraintConstant = 15 * convert
+restraintLowerDistance = 0 * openmm.NmPerAngstrom
+restraintUpperDistance = 3 * openmm.NmPerAngstrom
 ###
 
 # create the system using the AMOEBA force field, specifying no cutoff for nonbonded interactions
 system = forcefield.createSystem(pdb.topology, nonbondedMethod=NoCutoff, nonbondedCutoff=10*nanometer, constraints=None)
+
+# create the restraint force
+convert = openmm.KJPerKcal / (openmm.NmPerAngstrom * openmm.NmPerAngstrom)
+restraintEnergy = "step(distance(g1,g2)-u)*k*(distance(g1,g2)-u)^2+step(l-distance(g1,g2))*k*(distance(g1,g2)-l)^2"
+restraint = openmm.CustomCentroidBondForce(2, restraintEnergy)
+restraint.setForceGroup(0)
+restraint.addPerBondParameter("k")
+restraint.addPerBondParameter("l")
+restraint.addPerBondParameter("u")
+restraint.addGroup(restraintAtomGroup1)
+restraint.addGroup(restraintAtomGroup2)
+restraint.addBond([0, 1], [restraintConstant, restraintLowerDistance, restraintUpperDistance])
+system.addForce(restraint)
 
 # create a dictionary to map force names to their indices
 numForces = system.getNumForces()
