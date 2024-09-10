@@ -77,7 +77,8 @@ if(use_restraint):
 # Setup simulation context
 numForces = system.getNumForces()
 forceDict = {}
-for i in range(numForces):
+for i, f in enumerate(system.getForces()):
+    f.setForceGroup(i)
     forceDict[system.getForce(i).getName()] = i
 print(forceDict)
 vdwForce = system.getForce(forceDict.get('AmoebaVdwForce'))
@@ -125,8 +126,6 @@ multipoleForce.updateParametersInContext(context)
 context.reinitialize(preserveState=True)
 state = context.getState(getEnergy=True, getPositions=True)
 print(context.getParameter("AmoebaVdwLambda"))
-print(state.getPotentialEnergy().in_units_of(kilocalories_per_mole))
-
-simulation.reporters.append(DCDReporter('output.dcd', 1000))
-simulation.reporters.append(StateDataReporter(stdout, 1, step=True, kineticEnergy=True, potentialEnergy=True, totalEnergy=True, temperature=True, separator=', '))
-simulation.step(nSteps)
+for i, f in enumerate(system.getForces()):
+    state = simulation.context.getState(getEnergy=True, groups={i})
+    print(f.getName(), state.getPotentialEnergy().in_units_of(kilocalories_per_mole))
