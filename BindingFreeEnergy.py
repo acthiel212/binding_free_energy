@@ -2,8 +2,8 @@ import argparse
 from openmm.app import *
 from openmm import *
 from openmm.unit import *
-from sys import stdout
 from intspan import intspan
+from sys import stdout
 
 # Argument parser for user-defined flags
 parser = argparse.ArgumentParser(description='OpenMM Alchemical Simulation with Custom Flags')
@@ -44,7 +44,6 @@ nonbonded_cutoff = args.nonbonded_cutoff * nanometer
 vdw_lambda = args.vdw_lambda
 elec_lambda = args.elec_lambda
 
-
 # Convert nonbonded_method string to OpenMM constant
 nonbonded_method_map = {
     'NoCutoff': NoCutoff,
@@ -59,7 +58,7 @@ pdb = PDBFile(pdb_file)
 forcefield = ForceField(forcefield_file)
 system = forcefield.createSystem(pdb.topology, nonbondedMethod=nonbonded_method, nonbondedCutoff=nonbonded_cutoff, constraints=None)
 
-# create the restraint force
+# Create the restraint force
 if(use_restraint):
     convert = openmm.KJPerKcal / (openmm.NmPerAngstrom * openmm.NmPerAngstrom)
     restraintEnergy = "step(distance(g1,g2)-u)*k*(distance(g1,g2)-u)^2+step(l-distance(g1,g2))*k*(distance(g1,g2)-l)^2"
@@ -72,7 +71,6 @@ if(use_restraint):
     restraint.addGroup(restraint_atoms_2)
     restraint.addBond([0, 1], [restraint_constant, restraint_lower_distance, restraint_upper_distance])
     system.addForce(restraint)
-
 
 # Setup simulation context
 numForces = system.getNumForces()
@@ -87,7 +85,12 @@ integrator = LangevinMiddleIntegrator(300*kelvin, 1/picosecond, step_size*femtos
 
 properties = {'CUDA_Precision': 'double'}
 platform = Platform.getPlatformByName('CUDA')
-simulation = Simulation(pdb.topology, system, integrator, platform)
+
+# This avoids reusing the same integrator that is already bound to the previous context.
+new_integrator = LangevinMiddleIntegrator(300*kelvin, 1/picosecond, step_size*femtosecond)
+
+# Create a new simulation context
+simulation = Simulation(pdb.topology, system, new_integrator, platform)
 context = simulation.context
 context.setPositions(pdb.getPositions())
 context.setVelocitiesToTemperature(300*kelvin)
@@ -100,33 +103,52 @@ vdwForce.setAlchemicalMethod(2)  # 2 == Annihilate, 1 == Decouple
 for i in alchemical_atoms:
     [parent, sigma, eps, redFactor, isAlchemical, type] = vdwForce.getParticleParameters(i)
     vdwForce.setParticleParameters(i, parent, sigma, eps, redFactor, True, type)
-#update force parameters
+# Update force parameters
 vdwForce.updateParametersInContext(context)
 
-# apply alchemical scaling to the multipole force
+# Apply alchemical scaling to the multipole force
 for i in alchemical_atoms:
-    # adjust the unpacking based on the number of returned parameters
+    # Adjust the unpacking based on the number of returned parameters
     params = multipoleForce.getMultipoleParameters(i)
     charge = params[0]
     dipole = params[1]
     quadrupole = params[2]
     polarizability = params[-1]
-    # scale dipole and quadrupole components by electrostaticLambda
+    # Scale dipole and quadrupole components by electrostaticLambda
     charge = charge * elec_lambda
     dipole = [d * elec_lambda for d in dipole]
     quadrupole = [q * elec_lambda for q in quadrupole]
     polarizability = polarizability * elec_lambda
-    # update multipole parameters (keeping other parameters unchanged)
+    # Update multipole parameters (keeping other parameters unchanged)
     multipoleForce.setMultipoleParameters(i, charge, dipole, quadrupole, *params[3:-1], polarizability)
-#update force parameters
+# Update force parameters
 multipoleForce.updateParametersInContext(context)
 
 # Reinitialize the context to ensure changes are applied
 context.reinitialize(preserveState=True)
 state = context.getState(getEnergy=True, getPositions=True)
 print(context.getParameter("AmoebaVdwLambda"))
-print(state.getPotentialEnergy().in_units_of(kilocalories_per_mole))
+# Open the file in append mode
+with open('binding_energies.txt', 'w') as f:
+    # Add reporters
+    simulation.reporters.append(DCDReporter('output.dcd', 1000))
+    simulation.reporters.append(StateDataReporter(stdout, 1000, step=True, kineticEnergy=True, potentialEnergy=True, totalEnergy=True, temperature=True, separator=', '))
 
-simulation.reporters.append(DCDReporter('output.dcd', 1000))
-simulation.reporters.append(StateDataReporter(stdout, 1, step=True, kineticEnergy=True, potentialEnergy=True, totalEnergy=True, temperature=True, separator=', '))
-simulation.step(nSteps)
+    # Run the simulation step by step
+    for step in range(1, nSteps+1):
+        simulation.step(1)
+
+        # Only log the energy to the file every 1000 steps (to match console output)
+        if (step % 1000 == 0):
+            # Get the state of the system after this step
+            state = simulation.context.getState(getEnergy=True)
+            potential_energy = state.getPotentialEnergy().value_in_unit(kilojoules_per_mole)
+            f.write(f"{potential_energy}\n")
+
+            
+
+
+
+# Simulation complete
+print("Simulation complete and energies saved to binding_energies.txt.")
+

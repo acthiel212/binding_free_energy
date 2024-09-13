@@ -1,93 +1,124 @@
+import argparse
 import mdtraj as md
 from openmm.app import *
 from openmm import *
 from openmm.unit import *
-import numpy as np
 from intspan import intspan
+from sys import stdout
+import numpy as np
 
-# Define the DCD file, topology, and parameters
+# Argument parser for user-defined flags
+parser = argparse.ArgumentParser(description='OpenMM Alchemical Simulation with Custom Flags')
+parser.add_argument('--pdb_file', required=True, type=str, help='PDB file for the simulation')
+parser.add_argument('--forcefield_file', required=True, type=str, help='Force field XML file')
+parser.add_argument('--nonbonded_method', required=True, type=str, help='Nonbonded method: NoCutoff, CutoffNonPeriodic, PME, etc.')
+parser.add_argument('--num_steps', required=False, type=int, help='Number of MD steps to take.', default=1000)
+parser.add_argument('--step_size', required=False, type=int, help='Step size given to integrator in fs.', default=1)
+parser.add_argument('--nonbonded_cutoff', required=False, type=float, help='Nonbonded cutoff in nm (default: 1.0 nm)', default=1.0)
+parser.add_argument('--vdw_lambda', required=False, type=float, help='Value for van der Waals lambda (default: 1.0)', default=1.0)
+parser.add_argument('--elec_lambda', required=False, type=float, help='Value for electrostatic lambda (default: 0.0)', default=0.0)
+parser.add_argument('--alchemical_atoms', required=True, type=str, help='Range of alchemical atoms (e.g., "0,2")')
+parser.add_argument('--binding_energy_file', required=True, type=str, help='File containing binding free energy values for comparison')
+args = parser.parse_args()
+
+# Parse alchemical_atoms input
+alchemical_atoms = list(intspan(args.alchemical_atoms))
+
+# Convert nonbonded_method string to OpenMM constant
+nonbonded_method_map = {
+    'NoCutoff': NoCutoff,
+    'CutoffNonPeriodic': CutoffNonPeriodic,
+    'PME': PME,
+    'Ewald': Ewald
+}
+nonbonded_method = nonbonded_method_map.get(args.nonbonded_method, NoCutoff)
+
+# Define flags based on user input
+pdb_file = args.pdb_file
+forcefield_file = args.forcefield_file
+nSteps = args.num_steps
+step_size = args.step_size * femtoseconds
+nonbonded_cutoff = args.nonbonded_cutoff * nanometer
+vdw_lambda = args.vdw_lambda
+elec_lambda = args.elec_lambda
+
+# Load the DCD file and PDB file
 dcd_file = 'output.dcd'
-
-pdb_file = 'g2.pdb'
-forcefield_file = 'g1.xml'
-nSnapshots = 30  # number of snapshots to compare
-vdwLambda = 1
-elecLambda = 1
-alchemicalAtoms = list(intspan("0,2"))
-
-# Load the DCD file
 traj = md.load_dcd(dcd_file, top=pdb_file)
-print(f"Loaded {len(traj)} frames from {dcd_file}.")
 
-# Load the system from PDB and force field
+# Create an OpenMM system based on the topology
 pdb = PDBFile(pdb_file)
 forcefield = ForceField(forcefield_file)
-system = forcefield.createSystem(pdb.topology, nonbondedMethod=NoCutoff, constraints=None)
+system = forcefield.createSystem(pdb.topology, nonbondedMethod=nonbonded_method, nonbondedCutoff=nonbonded_cutoff, constraints=None)
 
-# Check force types and identify van der Waals and multipole forces
-for i, force in enumerate(system.getForces()):
-    print(f"Force {i}: {type(force)}")
+# Set up an integrator and platform
+integrator = LangevinMiddleIntegrator(300*kelvin, 1/picosecond, step_size)
+platform = Platform.getPlatformByName('CUDA')
 
-# Assuming we know that AmoebaVdwForce and AmoebaMultipoleForce are at specific indices
+# Initialize the context for the simulation
+simulation = Simulation(pdb.topology, system, integrator, platform)
+context = simulation.context
+
+# Add a reporter to output the third comparison
+reporter_data = []
+simulation.reporters.append(StateDataReporter(stdout, 1000, step=True, potentialEnergy=True, temperature=True, separator=', '))
+
+# Check for van der Waals and multipole forces
 vdwForce = None
 multipoleForce = None
-
-# Find the AmoebaVdwForce and AmoebaMultipoleForce
 for force in system.getForces():
     if isinstance(force, AmoebaVdwForce):
         vdwForce = force
     elif isinstance(force, AmoebaMultipoleForce):
         multipoleForce = force
 
-# Ensure we have the correct forces
+# Ensure van der Waals force is found
 if vdwForce is None:
     raise Exception("AmoebaVdwForce not found in system.")
 if multipoleForce is None:
     raise Exception("AmoebaMultipoleForce not found in system.")
 
-# Apply alchemical method to the van der Waals force
-vdwForce.setAlchemicalMethod(2)  # Choose correct alchemical method
-
-# Modify parameters for alchemical atoms
-for i in alchemicalAtoms:
+# Apply alchemical scaling for van der Waals and electrostatic interactions
+vdwForce.setAlchemicalMethod(2)  # Alchemical annihilation
+for i in alchemical_atoms:
     [parent, sigma, eps, redFactor, isAlchemical, type] = vdwForce.getParticleParameters(i)
     vdwForce.setParticleParameters(i, parent, sigma, eps, redFactor, True, type)
-
-# Set up the context for simulation
-integrator = LangevinMiddleIntegrator(300*kelvin, 1/picosecond, 0.001*picoseconds)
-platform = Platform.getPlatformByName('CUDA')
-simulation = Simulation(pdb.topology, system, integrator, platform)
-
-# You must first create the Context before updating parameters
-context = simulation.context
-
-# Update the van der Waals force parameters in the context
 vdwForce.updateParametersInContext(context)
 
-# Initialize the simulation context and compute energies for each frame
-dcd_energies = []
+for i in alchemical_atoms:
+    params = multipoleForce.getMultipoleParameters(i)
+    charge = params[0] * elec_lambda
+    dipole = [d * elec_lambda for d in params[1]]
+    quadrupole = [q * elec_lambda for q in params[2]]
+    polarizability = params[-1] * elec_lambda
+    multipoleForce.setMultipoleParameters(i, charge, dipole, quadrupole, *params[3:-1], polarizability)
+multipoleForce.updateParametersInContext(context)
 
-for frame in range(min(nSnapshots, len(traj))):
+# Calculate and store potential energies for each frame in the DCD file
+dcd_energies = []
+reporter_energies = []
+for frame in range(len(traj)):
     # Set positions from the DCD frame
     simulation.context.setPositions(traj.openmm_positions(frame))
     
-    # Get energy
+    # Get potential energy from DCD
     state = simulation.context.getState(getEnergy=True)
-    potential_energy = state.getPotentialEnergy()
-    dcd_energies.append(potential_energy)
+    potential_energy_dcd = state.getPotentialEnergy().value_in_unit(kilojoules_per_mole)
+    dcd_energies.append(potential_energy_dcd)
+    
+    # Add reporter potential energy (simulated from StateDataReporter)
+    reporter_state = simulation.context.getState(getEnergy=True)
+    reporter_energy = reporter_state.getPotentialEnergy().value_in_unit(kilojoules_per_mole)
+    reporter_energies.append(reporter_energy)
 
-# Load energies from BindingFreeEnergy.py output
-binding_energy_file = 'binding_energies.txt'  # Assuming you've saved the energies from BindingFreeEnergy.py to a file
-binding_energies = np.loadtxt(binding_energy_file)
+# Load energies from the provided binding energy file
+binding_energies = np.loadtxt(args.binding_energy_file)
 
-# Compare energies (up to first decimal place)
-for i in range(len(dcd_energies)):
-    dcd_energy = dcd_energies[i]  # Extract the numerical value
-    binding_energy = binding_energies[i]  # Assuming binding_energies are already in kcal/mol and are just numbers
-    if dcd_energy != binding_energy:
-        print(f"Mismatch at frame {i}: DCD energy = {dcd_energy}, Binding energy = {binding_energy}")
-    else:
-        print(f"Match at frame {i}: {dcd_energy} kcal/mol")
+# Output energies from the DCD file, binding energy file, and reporter
+for i in range(min(len(dcd_energies), len(binding_energies), len(reporter_energies))):
+    dcd_energy = dcd_energies[i]
+    binding_energy = binding_energies[i]
+    reporter_energy = reporter_energies[i]
+    print(f"Frame {i}: DCD energy = {dcd_energy}, Binding energy = {binding_energy}, Reporter energy = {reporter_energy}")
 
-
-print("Energy comparison complete.")
+print("Energy output complete.")
