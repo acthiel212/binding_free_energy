@@ -1,3 +1,5 @@
+#BAR.py
+
 import openmm
 from openmm.app import *
 from openmm import *
@@ -9,7 +11,6 @@ forcefield = ForceField('g1.xml')
 vdwLambda = 1.0
 electrostaticLambda = 0.95  # example lambda for scaling multipoles
 #nSteps = 15000000
-nSteps = 1000
 alchemicalAtoms = range(0, 21)
 restraintAtomGroup1 = [2]
 restraintAtomGroup2 = [5]
