@@ -27,10 +27,16 @@ args = parser.parse_args()
 
 # Parse alchemical_atoms input
 alchemical_atoms = list(intspan(args.alchemical_atoms))
+# OpenMM atom index starts at zero while FFX starts at 1. This allows the flags between FFX and OpenMM to match
+alchemical_atoms = [i - 1 for i in alchemical_atoms]
+print(alchemical_atoms)
 use_restraint = args.use_restraints
 if(use_restraint):
     restraint_atoms_1 = list(intspan(args.restraint_atoms_1))
     restraint_atoms_2 = list(intspan(args.restraint_atoms_2))
+    # OpenMM atom index starts at zero while FFX starts at 1.
+    restraint_atoms_1 = [i - 1 for i in restraint_atoms_1]
+    restraint_atoms_2 = [i - 1 for i in restraint_atoms_2]
     restraint_constant = args.restraint_constant
     restraint_lower_distance = args.restraint_lower_distance
     restraint_upper_distance = args.restraint_upper_distance
@@ -81,9 +87,10 @@ for i in range(numForces):
     forceDict[system.getForce(i).getName()] = i
 print(forceDict)
 vdwForce = system.getForce(forceDict.get('AmoebaVdwForce'))
+vdwForce.setForceGroup(1)
 multipoleForce = system.getForce(forceDict.get('AmoebaMultipoleForce'))
-
-integrator = LangevinMiddleIntegrator(300*kelvin, 1/picosecond, step_size*femtosecond)
+multipoleForce.setForceGroup(1)
+integrator = MTSLangevinIntegrator(300*kelvin, 1/picosecond, step_size*femtosecond, [(0,8),(1,1)])
 
 properties = {'CUDA_Precision': 'double'}
 platform = Platform.getPlatformByName('CUDA')
@@ -128,5 +135,5 @@ print(context.getParameter("AmoebaVdwLambda"))
 print(state.getPotentialEnergy().in_units_of(kilocalories_per_mole))
 
 simulation.reporters.append(DCDReporter('output.dcd', 1000))
-simulation.reporters.append(StateDataReporter(stdout, 1, step=True, kineticEnergy=True, potentialEnergy=True, totalEnergy=True, temperature=True, separator=', '))
+simulation.reporters.append(StateDataReporter(stdout, 1000, step=True, kineticEnergy=True, potentialEnergy=True, totalEnergy=True, temperature=True, speed=True, separator=', '))
 simulation.step(nSteps)
