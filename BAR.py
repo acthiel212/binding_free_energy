@@ -19,7 +19,18 @@ parser.add_argument('--vdw_lambda_ip1', required=True, type=float, help='Lambda 
 parser.add_argument('--elec_lambda_ip1', required=True, type=float, help='Lambda for electrostatics at state i+1')
 parser.add_argument('--alchemical_atoms', required=True, type=str, help='Range of alchemical atoms (e.g., "0,2")')
 parser.add_argument('--nonbonded_method', required=True, type=str, help='Nonbonded method: NoCutoff, CutoffNonPeriodic, PME, etc.')
+
+# Restraint parameters, provided if restraints are enabled
+parser.add_argument('--use_restraints', required=False, type=bool, help='Whether to use restraint', default=False)
+parser.add_argument('--restraint_atoms_1', required=False, type=str, help='Range of atoms in restraint group 1 (e.g., "0,2")', default="")
+parser.add_argument('--restraint_atoms_2', required=False, type=str, help='Range of atoms in restraint group 2 (e.g., "0,2")', default="")
+parser.add_argument('--restraint_constant', type=float, help='Restraint force constant (default: 0)', default=0)
+parser.add_argument('--restraint_lower_distance', type=float, help='Restraint lower distance (default: 0.0)', default=0.0)
+parser.add_argument('--restraint_upper_distance', type=float, help='Restraint upper distance (default: 0)', default=0)
+
+# Parse the arguments
 args = parser.parse_args()
+
 
 # Helper function to set lambda values and update forces in the context
 def set_lambda_values(context, vdw_lambda, elec_lambda, vdwForce, multipoleForce, alchemical_atoms):
@@ -36,9 +47,18 @@ def set_lambda_values(context, vdw_lambda, elec_lambda, vdwForce, multipoleForce
         quadrupole = [q * elec_lambda for q in quadrupole]
         polarizability = polarizability * elec_lambda
         multipoleForce.setMultipoleParameters(i, charge, dipole, quadrupole, *params[3:-1], polarizability)
-
     vdwForce.updateParametersInContext(context)
     multipoleForce.updateParametersInContext(context)
+    context.reinitialize(preserveState=True)
+
+# Function to add restraints to the simulation context
+def add_restraints(system, restraint_atoms_1, restraint_atoms_2, restraint_constant, restraint_lower_distance, restraint_upper_distance):
+    custom_bond_force = CustomBondForce(f"step(r-{restraint_lower_distance})*step({restraint_upper_distance}-r)*0.5*{restraint_constant}*(r-{restraint_lower_distance})^2")
+    custom_bond_force.addPerBondParameter('r0')
+    for atom1, atom2 in zip(restraint_atoms_1, restraint_atoms_2):
+        custom_bond_force.addBond(atom1, atom2, [])
+    system.addForce(custom_bond_force)
+    return custom_bond_force
 
 def setup_simulation(pdb_file, forcefield_file, nonbonded_method, nonbonded_cutoff, alchemical_atoms):
     pdb = PDBFile(pdb_file)
@@ -63,25 +83,29 @@ def setup_simulation(pdb_file, forcefield_file, nonbonded_method, nonbonded_cuto
 
     return context, vdwForce, multipoleForce, system, pdb
 
-def compute_work(traj_file, context, pdb, vdw_lambda_1, vdw_lambda_2, elec_lambda_1, elec_lambda_2, vdwForce, multipoleForce, alchemical_atoms):
-    traj = load_dcd(traj_file, pdb_file)
+
+def compute_work(traj_file1, traj_file2, context, pdb, vdw_lambda_1, vdw_lambda_2, elec_lambda_1, elec_lambda_2, vdwForce, multipoleForce, alchemical_atoms):
+    traji = load_dcd(traj_file1, pdb_file)
+    trajip1 = load_dcd(traj_file2, pdb_file)
     energy11, energy12, energy22, energy21 = [], [], [], []
 
     # Forward work: lambda i -> lambda i+1
     set_lambda_values(context, vdw_lambda_1, elec_lambda_1, vdwForce, multipoleForce, alchemical_atoms)
     energy11 = []
-    for frame in range(len(traj)):
-        context.setPositions(traj.openmm_positions(frame))
+    for frame in range(len(traji)):
+        context.setPositions(traji.openmm_positions(frame))
         state = context.getState(getEnergy=True)
         potential_energy = state.getPotentialEnergy().value_in_unit(kilojoules_per_mole)
+        print("energy11["+str(frame)+"]: " + str(potential_energy))
         energy11.append(potential_energy)
     
     set_lambda_values(context, vdw_lambda_2, elec_lambda_2, vdwForce, multipoleForce, alchemical_atoms)
     energy12 = []
-    for frame in range(len(traj)):
-        context.setPositions(traj.openmm_positions(frame))
+    for frame in range(len(traji)):
+        context.setPositions(traji.openmm_positions(frame))
         state = context.getState(getEnergy=True)
         potential_energy = state.getPotentialEnergy().value_in_unit(kilojoules_per_mole)
+        print("energy12["+str(frame)+"]: " + str(potential_energy))
         energy12.append(potential_energy)
     
     forward_work = np.array(energy12) - np.array(energy11)
@@ -89,18 +113,20 @@ def compute_work(traj_file, context, pdb, vdw_lambda_1, vdw_lambda_2, elec_lambd
     # Reverse work: lambda i+1 -> lambda i
     set_lambda_values(context, vdw_lambda_2, elec_lambda_2, vdwForce, multipoleForce, alchemical_atoms)
     energy22 = []
-    for frame in range(len(traj)):
-        context.setPositions(traj.openmm_positions(frame))
+    for frame in range(len(trajip1)):
+        context.setPositions(trajip1.openmm_positions(frame))
         state = context.getState(getEnergy=True)
         potential_energy = state.getPotentialEnergy().value_in_unit(kilojoules_per_mole)
+        print("energy22["+str(frame)+"]: " + str(potential_energy))
         energy22.append(potential_energy)
     
     set_lambda_values(context, vdw_lambda_1, elec_lambda_1, vdwForce, multipoleForce, alchemical_atoms)
     energy21 = []
-    for frame in range(len(traj)):
-        context.setPositions(traj.openmm_positions(frame))
+    for frame in range(len(trajip1)):
+        context.setPositions(trajip1.openmm_positions(frame))
         state = context.getState(getEnergy=True)
         potential_energy = state.getPotentialEnergy().value_in_unit(kilojoules_per_mole)
+        print("energy21["+str(frame)+"]: " + str(potential_energy))
         energy21.append(potential_energy)
 
     reverse_work = np.array(energy21) - np.array(energy22)
@@ -111,13 +137,24 @@ def compute_work(traj_file, context, pdb, vdw_lambda_1, vdw_lambda_2, elec_lambd
 pdb_file = args.pdb_file
 forcefield_file = args.forcefield_file
 alchemical_atoms = list(intspan(args.alchemical_atoms))
+alchemical_atoms = [i - 1 for i in alchemical_atoms]
+print(alchemical_atoms)
 nonbonded_method = {'NoCutoff': NoCutoff, 'CutoffNonPeriodic': CutoffNonPeriodic, 'PME': PME, 'Ewald': Ewald}[args.nonbonded_method]
 nonbonded_cutoff = 1.0 * nanometer
+
+# Create restraints if necessary
+if args.use_restraints:
+        restraint_atoms_1 = list(intspan(args.restraint_atoms_1))
+        restraint_atoms_2 = list(intspan(args.restraint_atoms_2))
+        restraint_atoms_1 = [i - 1 for i in restraint_atoms_1]
+        restraint_atoms_2 = [i - 1 for i in restraint_atoms_2]
+        create_restraint(system, args, restraint_atoms_1, restraint_atoms_2)
+    
 
 context, vdwForce, multipoleForce, system, pdb = setup_simulation(pdb_file, forcefield_file, nonbonded_method, nonbonded_cutoff, alchemical_atoms)
 
 # Forward and reverse work calculation
-forward_work, reverse_work = compute_work(args.traj_i, context, pdb, args.vdw_lambda_i, args.vdw_lambda_ip1, args.elec_lambda_i, args.elec_lambda_ip1, vdwForce, multipoleForce, alchemical_atoms)
+forward_work, reverse_work = compute_work(args.traj_i, args.traj_ip1, context, pdb, args.vdw_lambda_i, args.vdw_lambda_ip1, args.elec_lambda_i, args.elec_lambda_ip1, vdwForce, multipoleForce, alchemical_atoms)
 
 # Perform BAR analysis
 bar_results = other_estimators.bar(forward_work, reverse_work)
@@ -133,3 +170,23 @@ bar_results = other_estimators.bar(forward_work, reverse_work)
 
 
 print(f"Free energy difference: {bar_results['Delta_f']} ± {bar_results['dDelta_f']} kJ/mol")
+
+if(args.use_restraints is False):
+    context, vdwForce, multipoleForce, system, pdb = setup_simulation(
+        pdb_file, forcefield_file, nonbonded_method, nonbonded_cutoff, alchemical_atoms
+    )
+else:
+    context, vdwForce, multipoleForce, system, pdb = setup_simulation(
+        pdb_file, forcefield_file, nonbonded_method, nonbonded_cutoff, alchemical_atoms, 
+        use_restraint=True, restraint_atoms_1=args.restraint_atoms_1, restraint_atoms_2=args.restraint_atoms_2, 
+        restraint_constant=args.restraint_constant, restraint_lower_distance=args.restraint_lower_distance, restraint_upper_distance=args.restraint_upper_distance
+    )
+
+
+forward_work, reverse_work = compute_work(
+    args.traj_i, args.traj_ip1, context, pdb, args.vdw_lambda_i, args.vdw_lambda_ip1,
+    args.elec_lambda_i, args.elec_lambda_ip1, vdwForce, multipoleForce, alchemical_atoms
+)
+
+print('Forward Work:', forward_work)
+print('Reverse Work:', reverse_work)
