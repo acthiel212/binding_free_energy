@@ -1,3 +1,4 @@
+#BindingFreeEnergy.py
 import argparse
 from openmm.app import *
 from openmm import *
@@ -131,8 +132,8 @@ print(context.getParameter("AmoebaVdwLambda"))
 # Open the file in append mode
 with open('binding_energies.txt', 'w') as f:
     # Add reporters
-    simulation.reporters.append(DCDReporter('output.dcd', 1000))
-    simulation.reporters.append(StateDataReporter(stdout, 1000, step=True, kineticEnergy=True, potentialEnergy=True, totalEnergy=True, temperature=True, separator=', '))
+    simulation.reporters.append(DCDReporter('output2.dcd', 1000))
+    simulation.reporters.append(StateDataReporter(stdout, 1000, step=True, kineticEnergy=True, potentialEnergy=True, totalEnergy=True, temperature=True, separator=', ', elapsedTime=True))
 
     # Run the simulation step by step
     for step in range(1, nSteps+1):

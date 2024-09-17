@@ -1,95 +1,135 @@
-#BAR.py
-
-import openmm
+from pymbar import other_estimators
+import argparse
+import numpy as np
 from openmm.app import *
 from openmm import *
 from openmm.unit import *
-from sys import stdout
-# Make these flags to the python script
-pdb = PDBFile('g1.pdb_2')
-forcefield = ForceField('g1.xml')
-vdwLambda = 1.0
-electrostaticLambda = 0.95  # example lambda for scaling multipoles
-#nSteps = 15000000
-alchemicalAtoms = range(0, 21)
-restraintAtomGroup1 = [2]
-restraintAtomGroup2 = [5]
-convert = openmm.KJPerKcal / (openmm.NmPerAngstrom * openmm.NmPerAngstrom)
-restraintConstant = 15 * convert
-restraintLowerDistance = 0 * openmm.NmPerAngstrom
-restraintUpperDistance = 3 * openmm.NmPerAngstrom
-###
+from mdtraj import load_dcd
+from intspan import intspan
 
-# create the system using the AMOEBA force field, specifying no cutoff for nonbonded interactions
-system = forcefield.createSystem(pdb.topology, nonbondedMethod=NoCutoff, nonbondedCutoff=10*nanometer, constraints=None)
+# Argument parser for user-defined flags
+parser = argparse.ArgumentParser(description='BAR analysis for OpenMM Alchemical Simulations')
+parser.add_argument('--traj_i', required=True, type=str, help='DCD file for lambda i')
+parser.add_argument('--traj_ip1', required=True, type=str, help='DCD file for lambda i+1')
+parser.add_argument('--pdb_file', required=True, type=str, help='PDB file for the simulation')
+parser.add_argument('--forcefield_file', required=True, type=str, help='Force field XML file')
+parser.add_argument('--vdw_lambda_i', required=True, type=float, help='Lambda for van der Waals at state i')
+parser.add_argument('--elec_lambda_i', required=True, type=float, help='Lambda for electrostatics at state i')
+parser.add_argument('--vdw_lambda_ip1', required=True, type=float, help='Lambda for van der Waals at state i+1')
+parser.add_argument('--elec_lambda_ip1', required=True, type=float, help='Lambda for electrostatics at state i+1')
+parser.add_argument('--alchemical_atoms', required=True, type=str, help='Range of alchemical atoms (e.g., "0,2")')
+parser.add_argument('--nonbonded_method', required=True, type=str, help='Nonbonded method: NoCutoff, CutoffNonPeriodic, PME, etc.')
+args = parser.parse_args()
 
-# create the restraint force
-convert = openmm.KJPerKcal / (openmm.NmPerAngstrom * openmm.NmPerAngstrom)
-restraintEnergy = "step(distance(g1,g2)-u)*k*(distance(g1,g2)-u)^2+step(l-distance(g1,g2))*k*(distance(g1,g2)-l)^2"
-restraint = openmm.CustomCentroidBondForce(2, restraintEnergy)
-restraint.setForceGroup(0)
-restraint.addPerBondParameter("k")
-restraint.addPerBondParameter("l")
-restraint.addPerBondParameter("u")
-restraint.addGroup(restraintAtomGroup1)
-restraint.addGroup(restraintAtomGroup2)
-restraint.addBond([0, 1], [restraintConstant, restraintLowerDistance, restraintUpperDistance])
-system.addForce(restraint)
+# Helper function to set lambda values and update forces in the context
+def set_lambda_values(context, vdw_lambda, elec_lambda, vdwForce, multipoleForce, alchemical_atoms):
+    context.setParameter("AmoebaVdwLambda", vdw_lambda)
+    for i in alchemical_atoms:
+        [parent, sigma, eps, redFactor, isAlchemical, type] = vdwForce.getParticleParameters(i)
+        vdwForce.setParticleParameters(i, parent, sigma, eps, redFactor, True, type)
+    
+    for i in alchemical_atoms:
+        params = multipoleForce.getMultipoleParameters(i)
+        charge, dipole, quadrupole, polarizability = params[0], params[1], params[2], params[-1]
+        charge = charge * elec_lambda
+        dipole = [d * elec_lambda for d in dipole]
+        quadrupole = [q * elec_lambda for q in quadrupole]
+        polarizability = polarizability * elec_lambda
+        multipoleForce.setMultipoleParameters(i, charge, dipole, quadrupole, *params[3:-1], polarizability)
 
-# create a dictionary to map force names to their indices
-numForces = system.getNumForces()
-forceDict = {}
-for i in range(numForces):
-    forceDict[system.getForce(i).getName()] = i
-print(forceDict)
-# access the van der Waals and multipole forces from the system
-vdwForce = system.getForce(forceDict.get('AmoebaVdwForce'))
-multipoleForce = system.getForce(forceDict.get('AmoebaMultipoleForce'))
+    vdwForce.updateParametersInContext(context)
+    multipoleForce.updateParametersInContext(context)
 
-# set up integrator and platform
-integrator = LangevinMiddleIntegrator(300*kelvin, 1/picosecond, 1*femtosecond)
-platform = Platform.getPlatformByName('CUDA')
-simulation = Simulation(pdb.topology, system, integrator, platform)
-context = simulation.context
-context.setPositions(pdb.getPositions())
-context.setVelocitiesToTemperature(300*kelvin)
+def setup_simulation(pdb_file, forcefield_file, nonbonded_method, nonbonded_cutoff, alchemical_atoms):
+    pdb = PDBFile(pdb_file)
+    forcefield = ForceField(forcefield_file)
+    system = forcefield.createSystem(pdb.topology, nonbondedMethod=nonbonded_method, nonbondedCutoff=nonbonded_cutoff, constraints=None)
 
-# set AmoebaVdwLambda parameter for van der Waals scaling
-context.setParameter("AmoebaVdwLambda", vdwLambda)
-state = context.getState(getEnergy=True, getPositions=True)
-print(state.getPotentialEnergy().in_units_of(kilocalories_per_mole))
-# apply alchemical scaling to the van der Waals force
-vdwForce.setAlchemicalMethod(2)
-for i in alchemicalAtoms:
-    [parent, sigma, eps, redFactor, isAlchemical, type] = vdwForce.getParticleParameters(i)
-    vdwForce.setParticleParameters(i, parent, sigma, eps, redFactor, True, type)
-#update force parameters
-vdwForce.updateParametersInContext(context)
+    integrator = LangevinMiddleIntegrator(300*kelvin, 1/picosecond, 0.002*femtosecond)
+    platform = Platform.getPlatformByName('CUDA')
+    context = Context(system, integrator, platform)
 
-# apply alchemical scaling to the multipole force
-for i in alchemicalAtoms:
-    # adjust the unpacking based on the number of returned parameters
-    params = multipoleForce.getMultipoleParameters(i)
-    charge = params[0]
-    dipole = params[1]
-    quadrupole = params[2]
-    polarizability = params[-1]
-    # scale dipole and quadrupole components by electrostaticLambda
-    charge = charge * electrostaticLambda
-    dipole = [d * electrostaticLambda for d in dipole]
-    quadrupole = [q * electrostaticLambda for q in quadrupole]
-    polarizability = polarizability * electrostaticLambda
-    # update multipole parameters (keeping other parameters unchanged)
-    multipoleForce.setMultipoleParameters(i, charge, dipole, quadrupole, *params[3:-1], polarizability)
-#update force parameters
-multipoleForce.updateParametersInContext(context)
+    numForces = system.getNumForces()
+    vdwForce, multipoleForce = None, None
+    for i in range(numForces):
+        force = system.getForce(i)
+        if isinstance(force, AmoebaVdwForce):
+            vdwForce = force
+        elif isinstance(force, AmoebaMultipoleForce):
+            multipoleForce = force
 
-# Reinitialize the context to ensure changes are applied
-context.reinitialize(preserveState=True)
-state = context.getState(getEnergy=True, getPositions=True)
-print(context.getParameter("AmoebaVdwLambda"))
-print(state.getPotentialEnergy().in_units_of(kilocalories_per_mole))
+    if vdwForce is None or multipoleForce is None:
+        raise ValueError("AmoebaVdwForce or AmoebaMultipoleForce not found in the system.")
 
-simulation.reporters.append(DCDReporter('output.dcd', 1000))
-simulation.reporters.append(StateDataReporter(stdout, 1000, step=True, kineticEnergy=True, potentialEnergy=True, totalEnergy=True, temperature=True, separator=', '))
-simulation.step(nSteps)
+    return context, vdwForce, multipoleForce, system, pdb
+
+def compute_work(traj_file, context, pdb, vdw_lambda_1, vdw_lambda_2, elec_lambda_1, elec_lambda_2, vdwForce, multipoleForce, alchemical_atoms):
+    traj = load_dcd(traj_file, pdb_file)
+    energy11, energy12, energy22, energy21 = [], [], [], []
+
+    # Forward work: lambda i -> lambda i+1
+    set_lambda_values(context, vdw_lambda_1, elec_lambda_1, vdwForce, multipoleForce, alchemical_atoms)
+    energy11 = []
+    for frame in range(len(traj)):
+        context.setPositions(traj.openmm_positions(frame))
+        state = context.getState(getEnergy=True)
+        potential_energy = state.getPotentialEnergy().value_in_unit(kilojoules_per_mole)
+        energy11.append(potential_energy)
+    
+    set_lambda_values(context, vdw_lambda_2, elec_lambda_2, vdwForce, multipoleForce, alchemical_atoms)
+    energy12 = []
+    for frame in range(len(traj)):
+        context.setPositions(traj.openmm_positions(frame))
+        state = context.getState(getEnergy=True)
+        potential_energy = state.getPotentialEnergy().value_in_unit(kilojoules_per_mole)
+        energy12.append(potential_energy)
+    
+    forward_work = np.array(energy12) - np.array(energy11)
+
+    # Reverse work: lambda i+1 -> lambda i
+    set_lambda_values(context, vdw_lambda_2, elec_lambda_2, vdwForce, multipoleForce, alchemical_atoms)
+    energy22 = []
+    for frame in range(len(traj)):
+        context.setPositions(traj.openmm_positions(frame))
+        state = context.getState(getEnergy=True)
+        potential_energy = state.getPotentialEnergy().value_in_unit(kilojoules_per_mole)
+        energy22.append(potential_energy)
+    
+    set_lambda_values(context, vdw_lambda_1, elec_lambda_1, vdwForce, multipoleForce, alchemical_atoms)
+    energy21 = []
+    for frame in range(len(traj)):
+        context.setPositions(traj.openmm_positions(frame))
+        state = context.getState(getEnergy=True)
+        potential_energy = state.getPotentialEnergy().value_in_unit(kilojoules_per_mole)
+        energy21.append(potential_energy)
+
+    reverse_work = np.array(energy21) - np.array(energy22)
+
+    return forward_work, reverse_work
+
+# Main execution
+pdb_file = args.pdb_file
+forcefield_file = args.forcefield_file
+alchemical_atoms = list(intspan(args.alchemical_atoms))
+nonbonded_method = {'NoCutoff': NoCutoff, 'CutoffNonPeriodic': CutoffNonPeriodic, 'PME': PME, 'Ewald': Ewald}[args.nonbonded_method]
+nonbonded_cutoff = 1.0 * nanometer
+
+context, vdwForce, multipoleForce, system, pdb = setup_simulation(pdb_file, forcefield_file, nonbonded_method, nonbonded_cutoff, alchemical_atoms)
+
+# Forward and reverse work calculation
+forward_work, reverse_work = compute_work(args.traj_i, context, pdb, args.vdw_lambda_i, args.vdw_lambda_ip1, args.elec_lambda_i, args.elec_lambda_ip1, vdwForce, multipoleForce, alchemical_atoms)
+
+# Perform BAR analysis
+bar_results = other_estimators.bar(forward_work, reverse_work)
+
+# The `Delta_f` is the free energy difference between two states (lambda_i and lambda_i+1).
+# In this case, it's the change in free energy due to modifying the van der Waals and/or electrostatic parameters 
+# between two adjacent lambda values. The free energy difference (ΔF) helps quantify how much the system's energy changes 
+# when transitioning between these states in the alchemical transformation.
+#
+# The `dDelta_f` represents the uncertainty (or standard error) in the estimated free energy difference.
+# It provides an estimate of how much error or variation is present in the `Delta_f` calculation due to sampling noise.
+# Smaller values of `dDelta_f` indicate a more accurate and reliable estimate of the free energy difference.
+
+
+print(f"Free energy difference: {bar_results['Delta_f']} ± {bar_results['dDelta_f']} kJ/mol")
