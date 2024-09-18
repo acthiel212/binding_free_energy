@@ -80,7 +80,7 @@ def setup_simulation(pdb_file, forcefield_file, nonbonded_method, nonbonded_cuto
 
     if vdwForce is None or multipoleForce is None:
         raise ValueError("AmoebaVdwForce or AmoebaMultipoleForce not found in the system.")
-
+    vdwForce.setAlchemicalMethod(2)
     return context, vdwForce, multipoleForce, system, pdb
 
 
