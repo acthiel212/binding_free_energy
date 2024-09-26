@@ -2,8 +2,8 @@ import argparse
 from openmm.app import *
 from openmm import *
 from openmm.unit import *
-from intspan import intspan
 from sys import stdout
+from intspan import intspan
 
 # Argument parser for user-defined flags
 parser = argparse.ArgumentParser(description='OpenMM Alchemical Simulation with Custom Flags')
@@ -23,14 +23,29 @@ parser.add_argument('--restraint_constant', required=False, type=float, help='Re
 parser.add_argument('--restraint_lower_distance', required=False, type=float, help='Restraint lower distance (default: 0.0)', default=0.0)
 parser.add_argument('--restraint_upper_distance', required=False, type=float, help='Restraint upper distance (default: 1.0)', default=1.0)
 
+parser.add_argument('--name_dcd', type=str, default='output.dcd', help='Specify the output DCD filename (default: output.dcd)')
+
+# New flags for traversing the DCD file
+parser.add_argument('--num_steps', type=int, required=False, help='Number of steps to traverse in the DCD file', default=None)
+parser.add_argument('--step_size', type=int, required=False, help='Step size to traverse the DCD file', default=1)
+parser.add_argument('--start', type=int, required=False, help='Start frame for DCD traversal', default=0)
+parser.add_argument('--stop', type=int, required=False, help='Stop frame for DCD traversal', default=None)
+
+
 args = parser.parse_args()
 
 # Parse alchemical_atoms input
 alchemical_atoms = list(intspan(args.alchemical_atoms))
+# OpenMM atom index starts at zero while FFX starts at 1. This allows the flags between FFX and OpenMM to match
+alchemical_atoms = [i - 1 for i in alchemical_atoms]
+print(alchemical_atoms)
 use_restraint = args.use_restraints
 if(use_restraint):
     restraint_atoms_1 = list(intspan(args.restraint_atoms_1))
     restraint_atoms_2 = list(intspan(args.restraint_atoms_2))
+    # OpenMM atom index starts at zero while FFX starts at 1.
+    restraint_atoms_1 = [i - 1 for i in restraint_atoms_1]
+    restraint_atoms_2 = [i - 1 for i in restraint_atoms_2]
     restraint_constant = args.restraint_constant
     restraint_lower_distance = args.restraint_lower_distance
     restraint_upper_distance = args.restraint_upper_distance
@@ -43,6 +58,7 @@ step_size = args.step_size
 nonbonded_cutoff = args.nonbonded_cutoff * nanometer
 vdw_lambda = args.vdw_lambda
 elec_lambda = args.elec_lambda
+
 
 # Convert nonbonded_method string to OpenMM constant
 nonbonded_method_map = {
@@ -58,7 +74,7 @@ pdb = PDBFile(pdb_file)
 forcefield = ForceField(forcefield_file)
 system = forcefield.createSystem(pdb.topology, nonbondedMethod=nonbonded_method, nonbondedCutoff=nonbonded_cutoff, constraints=None)
 
-# Create the restraint force
+# create the restraint force
 if(use_restraint):
     convert = openmm.KJPerKcal / (openmm.NmPerAngstrom * openmm.NmPerAngstrom)
     restraintEnergy = "step(distance(g1,g2)-u)*k*(distance(g1,g2)-u)^2+step(l-distance(g1,g2))*k*(distance(g1,g2)-l)^2"
@@ -72,6 +88,7 @@ if(use_restraint):
     restraint.addBond([0, 1], [restraint_constant, restraint_lower_distance, restraint_upper_distance])
     system.addForce(restraint)
 
+
 # Setup simulation context
 numForces = system.getNumForces()
 forceDict = {}
@@ -79,18 +96,14 @@ for i in range(numForces):
     forceDict[system.getForce(i).getName()] = i
 print(forceDict)
 vdwForce = system.getForce(forceDict.get('AmoebaVdwForce'))
+vdwForce.setForceGroup(1)
 multipoleForce = system.getForce(forceDict.get('AmoebaMultipoleForce'))
-
-integrator = LangevinMiddleIntegrator(300*kelvin, 1/picosecond, step_size*femtosecond)
+multipoleForce.setForceGroup(1)
+integrator = MTSLangevinIntegrator(300*kelvin, 1/picosecond, step_size*femtosecond, [(0,8),(1,1)])
 
 properties = {'CUDA_Precision': 'double'}
 platform = Platform.getPlatformByName('CUDA')
-
-# This avoids reusing the same integrator that is already bound to the previous context.
-new_integrator = LangevinMiddleIntegrator(300*kelvin, 1/picosecond, step_size*femtosecond)
-
-# Create a new simulation context
-simulation = Simulation(pdb.topology, system, new_integrator, platform)
+simulation = Simulation(pdb.topology, system, integrator, platform)
 context = simulation.context
 context.setPositions(pdb.getPositions())
 context.setVelocitiesToTemperature(300*kelvin)
@@ -103,52 +116,36 @@ vdwForce.setAlchemicalMethod(2)  # 2 == Annihilate, 1 == Decouple
 for i in alchemical_atoms:
     [parent, sigma, eps, redFactor, isAlchemical, type] = vdwForce.getParticleParameters(i)
     vdwForce.setParticleParameters(i, parent, sigma, eps, redFactor, True, type)
-# Update force parameters
+#update force parameters
 vdwForce.updateParametersInContext(context)
 
-# Apply alchemical scaling to the multipole force
+# apply alchemical scaling to the multipole force
 for i in alchemical_atoms:
-    # Adjust the unpacking based on the number of returned parameters
+    # adjust the unpacking based on the number of returned parameters
     params = multipoleForce.getMultipoleParameters(i)
     charge = params[0]
     dipole = params[1]
     quadrupole = params[2]
     polarizability = params[-1]
-    # Scale dipole and quadrupole components by electrostaticLambda
+    # scale dipole and quadrupole components by electrostaticLambda
     charge = charge * elec_lambda
     dipole = [d * elec_lambda for d in dipole]
     quadrupole = [q * elec_lambda for q in quadrupole]
     polarizability = polarizability * elec_lambda
-    # Update multipole parameters (keeping other parameters unchanged)
+    # update multipole parameters (keeping other parameters unchanged)
     multipoleForce.setMultipoleParameters(i, charge, dipole, quadrupole, *params[3:-1], polarizability)
-# Update force parameters
+#update force parameters
 multipoleForce.updateParametersInContext(context)
 
 # Reinitialize the context to ensure changes are applied
 context.reinitialize(preserveState=True)
 state = context.getState(getEnergy=True, getPositions=True)
 print(context.getParameter("AmoebaVdwLambda"))
-# Open the file in append mode
-with open('binding_energies.txt', 'w') as f:
-    # Add reporters
-    simulation.reporters.append(DCDReporter('output.dcd', 1000))
-    simulation.reporters.append(StateDataReporter(stdout, 1000, step=True, kineticEnergy=True, potentialEnergy=True, totalEnergy=True, temperature=True, separator=', '))
+print(state.getPotentialEnergy().in_units_of(kilocalories_per_mole))
+name_dcd = args.name_dcd
+simulation.reporters.append(DCDReporter(name_dcd, 1000))
+simulation.reporters.append(StateDataReporter(stdout, 1000, step=True, kineticEnergy=True, potentialEnergy=True, totalEnergy=True, temperature=True, speed=True, separator=', '))
+simulation.step(nSteps)
 
-    # Run the simulation step by step
-    for step in range(1, nSteps+1):
-        simulation.step(1)
-
-        # Only log the energy to the file every 1000 steps (to match console output)
-        if (step % 1000 == 0):
-            # Get the state of the system after this step
-            state = simulation.context.getState(getEnergy=True)
-            potential_energy = state.getPotentialEnergy().value_in_unit(kilojoules_per_mole)
-            f.write(f"{potential_energy}\n")
-
-            
-
-
-
-# Simulation complete
-print("Simulation complete and energies saved to binding_energies.txt.")
-
+# to test:
+# python BindingFreeEnergy.py --pdb_file "temoa_g3-15-0000-0000.pdb"  --forcefield_file "hostsG3.xml" --nonbonded_method "PME" --num_steps 15000 --step_size 2 --nonbonded_cutoff 1.0 --vdw_lambda 0 --elec_lambda 0.0 --alchemical_atoms "197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216" --restraint_atoms_1 "15,16,17,18,19,20,60,61,62,63,64,65,105,106,107,108,109,110,150,151,152,153,154,155" --restraint_atoms_2 "198,199,200,201,202" --restraint_constant 15 --restraint_lower_distance 0.0 --restraint_upper_distance 3.0 --name_dcd output0.dcd
