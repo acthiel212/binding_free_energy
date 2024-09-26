@@ -23,6 +23,15 @@ parser.add_argument('--restraint_constant', required=False, type=float, help='Re
 parser.add_argument('--restraint_lower_distance', required=False, type=float, help='Restraint lower distance (default: 0.0)', default=0.0)
 parser.add_argument('--restraint_upper_distance', required=False, type=float, help='Restraint upper distance (default: 1.0)', default=1.0)
 
+parser.add_argument('--name_dcd', type=str, default='output.dcd', help='Specify the output DCD filename (default: output.dcd)')
+
+# New flags for traversing the DCD file
+parser.add_argument('--num_steps', type=int, required=False, help='Number of steps to traverse in the DCD file', default=None)
+parser.add_argument('--step_size', type=int, required=False, help='Step size to traverse the DCD file', default=1)
+parser.add_argument('--start', type=int, required=False, help='Start frame for DCD traversal', default=0)
+parser.add_argument('--stop', type=int, required=False, help='Stop frame for DCD traversal', default=None)
+
+
 args = parser.parse_args()
 
 # Parse alchemical_atoms input
@@ -133,7 +142,10 @@ context.reinitialize(preserveState=True)
 state = context.getState(getEnergy=True, getPositions=True)
 print(context.getParameter("AmoebaVdwLambda"))
 print(state.getPotentialEnergy().in_units_of(kilocalories_per_mole))
-
-simulation.reporters.append(DCDReporter('output.dcd', 1000))
+name_dcd = args.name_dcd
+simulation.reporters.append(DCDReporter(name_dcd, 1000))
 simulation.reporters.append(StateDataReporter(stdout, 1000, step=True, kineticEnergy=True, potentialEnergy=True, totalEnergy=True, temperature=True, speed=True, separator=', '))
 simulation.step(nSteps)
+
+# to test:
+# python BindingFreeEnergy.py --pdb_file "temoa_g3-15-0000-0000.pdb"  --forcefield_file "hostsG3.xml" --nonbonded_method "PME" --num_steps 15000 --step_size 2 --nonbonded_cutoff 1.0 --vdw_lambda 0 --elec_lambda 0.0 --alchemical_atoms "197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216" --restraint_atoms_1 "15,16,17,18,19,20,60,61,62,63,64,65,105,106,107,108,109,110,150,151,152,153,154,155" --restraint_atoms_2 "198,199,200,201,202" --restraint_constant 15 --restraint_lower_distance 0.0 --restraint_upper_distance 3.0 --name_dcd output0.dcd
