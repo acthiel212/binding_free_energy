@@ -25,12 +25,6 @@ parser.add_argument('--restraint_upper_distance', required=False, type=float, he
 
 parser.add_argument('--name_dcd', type=str, default='output.dcd', help='Specify the output DCD filename (default: output.dcd)')
 
-# New flags for traversing the DCD file
-parser.add_argument('--num_steps', type=int, required=False, help='Number of steps to traverse in the DCD file', default=None)
-parser.add_argument('--step_size', type=int, required=False, help='Step size to traverse the DCD file', default=1)
-parser.add_argument('--start', type=int, required=False, help='Start frame for DCD traversal', default=0)
-parser.add_argument('--stop', type=int, required=False, help='Stop frame for DCD traversal', default=None)
-
 
 args = parser.parse_args()
 
