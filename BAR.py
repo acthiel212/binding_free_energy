@@ -96,7 +96,8 @@ def setup_simulation(pdb_file, forcefield_file, alchemical_atoms, nonbonded_meth
         restraint.addPerBondParameter("u")
         restraint.addGroup(restraint_atoms_1)
         restraint.addGroup(restraint_atoms_2)
-        restraint.addBond([0, 1], [restraint_constant, restraint_lower_distance, restraint_upper_distance])
+        restraint.addBond([0, 1], [restraint_constant * convert, restraint_lower_distance *openmm.NmPerAngstrom,
+                                   restraint_upper_distance * openmm.NmPerAngstrom])
         system.addForce(restraint)
 
 
