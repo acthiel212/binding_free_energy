@@ -99,6 +99,9 @@ def setup_simulation(pdb_file, forcefield_file, alchemical_atoms, nonbonded_meth
         restraint.addBond([0, 1], [restraint_constant * convert, restraint_lower_distance *openmm.NmPerAngstrom,
                                    restraint_upper_distance * openmm.NmPerAngstrom])
         system.addForce(restraint)
+        print("Adding Restraint with parameters: ", restraint.getBondParameters(0))
+        restraint.setUsesPeriodicBoundaryConditions(True)
+        print("Using PBC Conditions on Restraint? ", restraint.usesPeriodicBoundaryConditions())
 
 
     # Setup simulation context
