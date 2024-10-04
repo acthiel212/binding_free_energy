@@ -1,4 +1,5 @@
 import argparse
+import os  # Import os to check for file existence
 from openmm.app import *
 from openmm import *
 from openmm.unit import *
@@ -69,7 +70,7 @@ system = forcefield.createSystem(pdb.topology, nonbondedMethod=nonbonded_method,
 # Create restraint force if applicable
 if use_restraint:
     convert = openmm.KJPerKcal / (openmm.NmPerAngstrom * openmm.NmPerAngstrom)
-    restraintEnergy = "step(distance(g1,g2)-u)*k*(distance(g1,g2)-u)^2+step(l-distance(g1,g2))*k*(distance(g1,g2)-l)^2"
+    restraintEnergy = "step(distance(g1,g2)-u)*k*(distance(g1,g2)-u)^2 + step(l-distance(g1,g2))*k*(distance(g1,g2)-l)^2"
     restraint = openmm.CustomCentroidBondForce(2, restraintEnergy)
     restraint.setForceGroup(0)
     restraint.addPerBondParameter("k")
@@ -85,10 +86,16 @@ forceDict = {}
 for i in range(numForces):
     forceDict[system.getForce(i).getName()] = i
 print(forceDict)
+
+# Ensure the force names exist in forceDict
+if 'AmoebaVdwForce' not in forceDict or 'AmoebaMultipoleForce' not in forceDict:
+    raise ValueError("Required forces ('AmoebaVdwForce' and 'AmoebaMultipoleForce') not found in the system.")
+
 vdwForce = system.getForce(forceDict.get('AmoebaVdwForce'))
 vdwForce.setForceGroup(1)
 multipoleForce = system.getForce(forceDict.get('AmoebaMultipoleForce'))
 multipoleForce.setForceGroup(1)
+
 # Setup simulation context
 integrator = MTSLangevinIntegrator(300*kelvin, 1/picosecond, step_size*femtosecond, [(0, 8), (1, 1)])
 platform = Platform.getPlatformByName('CUDA')
@@ -96,21 +103,28 @@ platform = Platform.getPlatformByName('CUDA')
 properties = {'Precision': 'double'}
 simulation = Simulation(pdb.topology, system, integrator, platform, properties)
 
-context = simulation.context
-context.setPositions(pdb.getPositions())
-context.setVelocitiesToTemperature(300*kelvin)
-context.setParameter("AmoebaVdwLambda", vdw_lambda)
+checkpoint_file = args.checkpoint_file
+
+# Check if checkpoint file exists
+if os.path.exists(checkpoint_file):
+    print(f"Loading checkpoint from {checkpoint_file}...")
+    simulation.loadCheckpoint(checkpoint_file)
+else:
+    print("Initializing simulation from PDB file...")
+    simulation.context.setPositions(pdb.getPositions())
+    simulation.context.setVelocitiesToTemperature(300*kelvin)
+    simulation.context.setParameter("AmoebaVdwLambda", vdw_lambda)
 
 # Alchemical method setup for van der Waals force
-vdwForce = system.getForce(3)  # Index for AmoebaVdwForce based on the printed output
+vdwForce = system.getForce(forceDict.get('AmoebaVdwForce'))  # Use forceDict to get the correct index
 vdwForce.setAlchemicalMethod(2)  # 2 == Annihilate, 1 == Decouple
 for i in alchemical_atoms:
     [parent, sigma, eps, redFactor, isAlchemical, type] = vdwForce.getParticleParameters(i)
     vdwForce.setParticleParameters(i, parent, sigma, eps, redFactor, True, type)
-vdwForce.updateParametersInContext(context)
+vdwForce.updateParametersInContext(simulation.context)
 
 # Apply electrostatic scaling to multipole force
-multipoleForce = system.getForce(4)
+multipoleForce = system.getForce(forceDict.get('AmoebaMultipoleForce'))
 for i in alchemical_atoms:
     params = multipoleForce.getMultipoleParameters(i)
     charge, dipole, quadrupole, polarizability = params[0], params[1], params[2], params[-1]
@@ -118,35 +132,23 @@ for i in alchemical_atoms:
     dipole = [d * elec_lambda for d in dipole]
     quadrupole = [q * elec_lambda for q in quadrupole]
     polarizability *= elec_lambda
-    multipoleForce.setMultipoleParameters(i, charge, dipole, quadrupole, *params[3:-1], polarizability)
-multipoleForce.updateParametersInContext(context)
+    # Assuming multipoleForce.setMultipoleParameters takes (index, charge, dipole, quadrupole, polarizability)
+    # Adjust according to actual parameter order
+    multipoleForce.setMultipoleParameters(i, charge, dipole, quadrupole, polarizability)
+multipoleForce.updateParametersInContext(simulation.context)
 
-# Reinitialize context to apply changes
-context.reinitialize(preserveState=True)
 # Add reporters (DCD output and state data)
 name_dcd = args.name_dcd
 simulation.reporters.append(DCDReporter(name_dcd, 1000))
 simulation.reporters.append(StateDataReporter(stdout, 1000, step=True, kineticEnergy=True, potentialEnergy=True, totalEnergy=True, temperature=True, speed=True, separator=', '))
 
-# Add checkpoint saving functionality
+# Add CheckpointReporter
 checkpoint_frequency = args.checkpoint_frequency
-checkpoint_file = args.checkpoint_file
+simulation.reporters.append(CheckpointReporter(checkpoint_file, checkpoint_frequency))
+
+print(f"Starting simulation for {nSteps} steps...")
 
 # Perform the simulation
-steps_remaining = nSteps
-current_step = 0
-
-while steps_remaining > 0:
-    steps_to_run = min(checkpoint_frequency, steps_remaining)
-    simulation.step(steps_to_run)
-    simulation.saveCheckpoint(checkpoint_file)
-    
-    # Update the current step
-    current_step += steps_to_run
-    steps_remaining -= steps_to_run
-    
-    # Print the current progress
-    print(f"Step {current_step}/{nSteps} completed, checkpoint saved as {checkpoint_file}")
+simulation.step(nSteps)
 
 print(f"Simulation completed. Final checkpoint saved as {checkpoint_file}.")
-
