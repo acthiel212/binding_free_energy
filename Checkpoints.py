@@ -1,3 +1,5 @@
+#BindingFreeEnergy with checkpoints
+
 import argparse
 import os  # Import os to check for file existence
 from openmm.app import *
@@ -126,18 +128,16 @@ for i in alchemical_atoms:
     vdwForce.setParticleParameters(i, parent, sigma, eps, redFactor, True, type)
 vdwForce.updateParametersInContext(simulation.context)
 
-# Apply electrostatic scaling to multipole force
-multipoleForce = system.getForce(forceDict.get('AmoebaMultipoleForce'))
+# Apply alchemical scaling to the multipole force
 for i in alchemical_atoms:
     params = multipoleForce.getMultipoleParameters(i)
-    charge, dipole, quadrupole, polarizability = params[0], params[1], params[2], params[-1]
-    charge *= elec_lambda
-    dipole = [d * elec_lambda for d in dipole]
-    quadrupole = [q * elec_lambda for q in quadrupole]
-    polarizability *= elec_lambda
-    # Assuming multipoleForce.setMultipoleParameters takes (index, charge, dipole, quadrupole, polarizability)
-    # Adjust according to actual parameter order
-    multipoleForce.setMultipoleParameters(i, charge, dipole, quadrupole, polarizability)
+    charge = params[0] * elec_lambda
+    dipole = [d * elec_lambda for d in params[1]]
+    quadrupole = [q * elec_lambda for q in params[2]]
+    polarizability = params[-1] * elec_lambda
+    # Update multipole parameters (keeping other parameters unchanged)
+    multipoleForce.setMultipoleParameters(i, charge, dipole, quadrupole, *params[3:-1], polarizability)
+# Update force parameters
 multipoleForce.updateParametersInContext(simulation.context)
 
 # Add reporters (DCD output and state data)
