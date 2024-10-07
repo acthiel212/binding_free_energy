@@ -68,10 +68,11 @@ def save_default_elec_params(multipoleForce, alchemical_atoms):
     return params
 
 
-def setup_simulation(pdb_file, forcefield_file, alchemical_atoms, nonbonded_method, nonbonded_cutoff=args.nonbonded_cutoff, use_restraints=args.use_restraints, 
-                      restraint_atoms_1=args.restraint_atoms_1, 
-                     restraint_atoms_2=args.restraint_atoms_2, restraint_constant=args.restraint_constant, 
-                     restraint_lower_distance=args.restraint_lower_distance, restraint_upper_distance=args.restraint_upper_distance):
+def setup_simulation(pdb_file, forcefield_file, alchemical_atoms, nonbonded_method, nonbonded_cutoff=args.nonbonded_cutoff,
+                     use_restraints=args.use_restraints,
+                     restraint_atoms_1=args.restraint_atoms_1, restraint_atoms_2=args.restraint_atoms_2,
+                     restraint_constant=args.restraint_constant, restraint_lower_distance=args.restraint_lower_distance,
+                     restraint_upper_distance=args.restraint_upper_distance):
     pdb = PDBFile(pdb_file)
     forcefield = ForceField(forcefield_file)
     # Convert nonbonded_method string to OpenMM constant
@@ -204,9 +205,9 @@ print(alchemical_atoms)
     
 
 context, vdwForce, multipoleForce, system, pdb, default_elec_params = setup_simulation(pdb_file, forcefield_file, alchemical_atoms, nonbonded_cutoff=args.nonbonded_cutoff, use_restraints=args.use_restraints,
-            nonbonded_method=args.nonbonded_method, restraint_atoms_1=args.restraint_atoms_1, 
-            restraint_atoms_2=args.restraint_atoms_2, restraint_constant=args.restraint_constant, 
-            restraint_lower_distance=args.restraint_lower_distance, restraint_upper_distance=args.restraint_upper_distance)
+            nonbonded_method=args.nonbonded_method, restraint_atoms_1=restraint_atoms_1,
+            restraint_atoms_2=restraint_atoms_2, restraint_constant=restraint_constant,
+            restraint_lower_distance=restraint_lower_distance, restraint_upper_distance=restraint_upper_distance)
 
 # Forward and reverse work calculation
 forward_work, reverse_work = compute_work(args.traj_i, args.traj_ip1, context, pdb, args.vdw_lambda_i, args.vdw_lambda_ip1, args.elec_lambda_i, args.elec_lambda_ip1, vdwForce, multipoleForce, alchemical_atoms, default_elec_params)
