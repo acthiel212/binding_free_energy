@@ -6,15 +6,14 @@ from sys import stdout
 from intspan import intspan
 import os
 
-def saveState(simulation, filename):
+def loadCheckpoint(simulation, filename):
 
-    simulation.saveState(filename)
-    print(f"States saved to {filename}")
-
-def loadState(simulation, filename):
-
-    simulation.loadState(filename)
+    simulation.loadCheckpoint(filename)
     print(f"States loaded from {filename}")
+
+# Function to generate checkpoint filename
+def get_checkpoint_filename(prefix):
+    return f"{prefix}.chk"
 
 # Argument parser for user-defined flags
 parser = argparse.ArgumentParser(description='OpenMM Alchemical Simulation with Custom Flags')
@@ -66,6 +65,12 @@ step_size = args.step_size
 nonbonded_cutoff = args.nonbonded_cutoff * nanometer
 vdw_lambda = args.vdw_lambda
 elec_lambda = args.elec_lambda
+
+# Initialize checkpoint parameters
+checkpoint_freq = args.checkpoint_freq
+checkpoint_prefix = args.checkpoint_prefix
+checkpoint_filename = get_checkpoint_filename(checkpoint_prefix)
+name_dcd = args.name_dcd
 
 # Convert nonbonded_method string to OpenMM constant
 nonbonded_method_map = {
@@ -122,6 +127,17 @@ integrator = MTSLangevinIntegrator(300*kelvin, 1/picosecond, step_size*femtoseco
 properties = {'CUDA_Precision': 'double'}
 platform = Platform.getPlatformByName('CUDA')
 simulation = Simulation(pdb.topology, system, integrator, platform)
+if os.path.exists(checkpoint_filename):
+    loadCheckpoint(simulation, checkpoint_filename)
+    simulation.reporters.append(DCDReporter(name_dcd, 1000, append=True))
+    simulation.reporters.append(
+        StateDataReporter(stdout, 1000, step=True, kineticEnergy=True, potentialEnergy=True, totalEnergy=True,
+                          temperature=True, speed=True, separator=', '))
+    simulation.reporters.append(CheckpointReporter(checkpoint_filename, checkpoint_freq))
+    simulation.step(nSteps-simulation.currentStep)
+    print("Simulation completed successfully.")
+    exit()
+    
 context = simulation.context
 context.setPositions(pdb.getPositions())
 context.setVelocitiesToTemperature(300*kelvin)
@@ -156,26 +172,10 @@ print(f"AmoebaVdwLambda: {context.getParameter('AmoebaVdwLambda')}")
 print(f"Potential Energy after reinitialization: {state.getPotentialEnergy().in_units_of(kilocalories_per_mole)}")
 
 # Add reporters
-name_dcd = args.name_dcd
 simulation.reporters.append(DCDReporter(name_dcd, 1000))
 simulation.reporters.append(StateDataReporter(stdout, 1000, step=True, kineticEnergy=True, potentialEnergy=True, totalEnergy=True, temperature=True, speed=True, separator=', '))
-
-# Initialize checkpoint parameters
-checkpoint_freq = args.checkpoint_freq
-checkpoint_prefix = args.checkpoint_prefix
+simulation.reporters.append(CheckpointReporter(checkpoint_filename, checkpoint_freq))
+simulation.step(nSteps)
 os.makedirs(os.path.dirname(checkpoint_prefix), exist_ok=True) if os.path.dirname(checkpoint_prefix) else None
-
-# Function to generate checkpoint filename
-def get_checkpoint_filename(prefix, step):
-    return f"{prefix}_step{step}.chk"
-
-# Run the simulation with checkpointing
-current_step = 0
-while current_step < nSteps:
-    steps_to_run = min(checkpoint_freq, nSteps - current_step)
-    simulation.step(steps_to_run)
-    current_step += steps_to_run
-    checkpoint_filename = get_checkpoint_filename(checkpoint_prefix, current_step)
-    saveState(simulation, checkpoint_filename)
 
 print("Simulation completed successfully.")
