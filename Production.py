@@ -1,9 +1,21 @@
 import argparse
+
+import openmm
 from openmm.app import *
 from openmm import *
 from openmm.unit import *
 from sys import stdout
 from intspan import intspan
+import os
+
+def loadCheckpoint(simulation, filename):
+
+    simulation.loadCheckpoint(filename)
+    print(f"States loaded from {filename}")
+
+# Function to generate checkpoint filename
+def get_checkpoint_filename(prefix):
+    return f"{prefix}.chk"
 
 # Argument parser for user-defined flags
 parser = argparse.ArgumentParser(description='OpenMM Alchemical Simulation with Custom Flags')
@@ -25,6 +37,9 @@ parser.add_argument('--restraint_upper_distance', required=False, type=float, he
 
 parser.add_argument('--name_dcd', type=str, default='output.dcd', help='Specify the output DCD filename (default: output.dcd)')
 
+parser.add_argument('--checkpoint_freq', type=int, default=1000, help='Frequency (in steps) to save checkpoints (default: 1000)')
+parser.add_argument('--checkpoint_prefix', type=str, default='checkpoint', help='Prefix for checkpoint filenames (default: checkpoint)')
+
 
 args = parser.parse_args()
 
@@ -32,9 +47,10 @@ args = parser.parse_args()
 alchemical_atoms = list(intspan(args.alchemical_atoms))
 # OpenMM atom index starts at zero while FFX starts at 1. This allows the flags between FFX and OpenMM to match
 alchemical_atoms = [i - 1 for i in alchemical_atoms]
-print(alchemical_atoms)
+print(f"Alchemical atoms: {alchemical_atoms}")
+
 use_restraint = args.use_restraints
-if(use_restraint):
+if use_restraint:
     restraint_atoms_1 = list(intspan(args.restraint_atoms_1))
     restraint_atoms_2 = list(intspan(args.restraint_atoms_2))
     # OpenMM atom index starts at zero while FFX starts at 1.
@@ -53,6 +69,11 @@ nonbonded_cutoff = args.nonbonded_cutoff * nanometer
 vdw_lambda = args.vdw_lambda
 elec_lambda = args.elec_lambda
 
+# Initialize checkpoint parameters
+checkpoint_freq = args.checkpoint_freq
+checkpoint_prefix = args.checkpoint_prefix
+checkpoint_filename = get_checkpoint_filename(checkpoint_prefix)
+name_dcd = args.name_dcd
 
 # Convert nonbonded_method string to OpenMM constant
 nonbonded_method_map = {
@@ -68,8 +89,8 @@ pdb = PDBFile(pdb_file)
 forcefield = ForceField(forcefield_file)
 system = forcefield.createSystem(pdb.topology, nonbondedMethod=nonbonded_method, nonbondedCutoff=nonbonded_cutoff, constraints=None)
 
-# create the restraint force
-if(use_restraint):
+# Create the restraint force
+if use_restraint:
     convert = openmm.KJPerKcal / (openmm.NmPerAngstrom * openmm.NmPerAngstrom)
     restraintEnergy = "step(distance(g1,g2)-u)*k*(distance(g1,g2)-u)^2+step(l-distance(g1,g2))*k*(distance(g1,g2)-l)^2"
     restraint = openmm.CustomCentroidBondForce(2, restraintEnergy)
@@ -81,69 +102,86 @@ if(use_restraint):
     restraint.addGroup(restraint_atoms_2)
     restraint.addBond([0, 1], [restraint_constant * convert, restraint_lower_distance * openmm.NmPerAngstrom,
                                restraint_upper_distance * openmm.NmPerAngstrom])
+
     system.addForce(restraint)
     print("Adding Restraint with parameters: ", restraint.getBondParameters(0))
     restraint.setUsesPeriodicBoundaryConditions(True)
     print("Using PBC Conditions on Restraint? ", restraint.usesPeriodicBoundaryConditions())
-
-
 # Setup simulation context
 numForces = system.getNumForces()
 forceDict = {}
 for i in range(numForces):
-    forceDict[system.getForce(i).getName()] = i
-print(forceDict)
+    force_name = system.getForce(i).getName()
+    forceDict[force_name] = i
+print(f"Force dictionary: {forceDict}")
+
+# Ensure that the specified forces exist
+required_forces = ['AmoebaVdwForce', 'AmoebaMultipoleForce']
+for force in required_forces:
+    if force not in forceDict:
+        raise ValueError(f"Required force '{force}' not found in the system.")
+
 vdwForce = system.getForce(forceDict.get('AmoebaVdwForce'))
 vdwForce.setForceGroup(1)
 multipoleForce = system.getForce(forceDict.get('AmoebaMultipoleForce'))
 multipoleForce.setForceGroup(1)
+
+# Initialize the integrator
 integrator = MTSLangevinIntegrator(300*kelvin, 1/picosecond, step_size*femtosecond, [(0,8),(1,1)])
 
+# Select platform
 properties = {'CUDA_Precision': 'double'}
 platform = Platform.getPlatformByName('CUDA')
 simulation = Simulation(pdb.topology, system, integrator, platform)
+if os.path.exists(checkpoint_filename):
+    loadCheckpoint(simulation, checkpoint_filename)
+    simulation.reporters.append(DCDReporter(name_dcd, 1000, append=True))
+    simulation.reporters.append(
+        StateDataReporter(stdout, 1000, step=True, kineticEnergy=True, potentialEnergy=True, totalEnergy=True,
+                          temperature=True, speed=True, separator=', '))
+    simulation.reporters.append(CheckpointReporter(checkpoint_filename, checkpoint_freq))
+    simulation.step(nSteps-simulation.currentStep)
+    print("Simulation completed successfully.")
+    exit()
+    
 context = simulation.context
 context.setPositions(pdb.getPositions())
 context.setVelocitiesToTemperature(300*kelvin)
 context.setParameter("AmoebaVdwLambda", vdw_lambda)
 state = context.getState(getEnergy=True, getPositions=True)
-print(state.getPotentialEnergy().in_units_of(kilocalories_per_mole))
+print(f"Initial Potential Energy: {state.getPotentialEnergy().in_units_of(kilocalories_per_mole)}")
 
 # Set alchemical method and parameters for van der Waals force
 vdwForce.setAlchemicalMethod(2)  # 2 == Annihilate, 1 == Decouple
 for i in alchemical_atoms:
-    [parent, sigma, eps, redFactor, isAlchemical, type] = vdwForce.getParticleParameters(i)
-    vdwForce.setParticleParameters(i, parent, sigma, eps, redFactor, True, type)
-#update force parameters
+    params = vdwForce.getParticleParameters(i)
+    vdwForce.setParticleParameters(i, params[0], params[1], params[2], params[3], True, params[5])
+# Update force parameters
 vdwForce.updateParametersInContext(context)
 
-# apply alchemical scaling to the multipole force
+# Apply alchemical scaling to the multipole force
 for i in alchemical_atoms:
-    # adjust the unpacking based on the number of returned parameters
     params = multipoleForce.getMultipoleParameters(i)
-    charge = params[0]
-    dipole = params[1]
-    quadrupole = params[2]
-    polarizability = params[-1]
-    # scale dipole and quadrupole components by electrostaticLambda
-    charge = charge * elec_lambda
-    dipole = [d * elec_lambda for d in dipole]
-    quadrupole = [q * elec_lambda for q in quadrupole]
-    polarizability = polarizability * elec_lambda
-    # update multipole parameters (keeping other parameters unchanged)
+    charge = params[0] * elec_lambda
+    dipole = [d * elec_lambda for d in params[1]]
+    quadrupole = [q * elec_lambda for q in params[2]]
+    polarizability = params[-1] * elec_lambda
+    # Update multipole parameters (keeping other parameters unchanged)
     multipoleForce.setMultipoleParameters(i, charge, dipole, quadrupole, *params[3:-1], polarizability)
-#update force parameters
+# Update force parameters
 multipoleForce.updateParametersInContext(context)
 
 # Reinitialize the context to ensure changes are applied
 context.reinitialize(preserveState=True)
 state = context.getState(getEnergy=True, getPositions=True)
-print(context.getParameter("AmoebaVdwLambda"))
-print(state.getPotentialEnergy().in_units_of(kilocalories_per_mole))
-name_dcd = args.name_dcd
+print(f"AmoebaVdwLambda: {context.getParameter('AmoebaVdwLambda')}")
+print(f"Potential Energy after reinitialization: {state.getPotentialEnergy().in_units_of(kilocalories_per_mole)}")
+
+# Add reporters
 simulation.reporters.append(DCDReporter(name_dcd, 1000))
 simulation.reporters.append(StateDataReporter(stdout, 1000, step=True, kineticEnergy=True, potentialEnergy=True, totalEnergy=True, temperature=True, speed=True, separator=', '))
+simulation.reporters.append(CheckpointReporter(checkpoint_filename, checkpoint_freq))
 simulation.step(nSteps)
+os.makedirs(os.path.dirname(checkpoint_prefix), exist_ok=True) if os.path.dirname(checkpoint_prefix) else None
 
-# to test:
-# python BindingFreeEnergy.py --pdb_file "temoa_g3-15-0000-0000.pdb"  --forcefield_file "hostsG3.xml" --nonbonded_method "PME" --num_steps 15000 --step_size 2 --nonbonded_cutoff 1.0 --vdw_lambda 0 --elec_lambda 0.0 --alchemical_atoms "197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216" --restraint_atoms_1 "15,16,17,18,19,20,60,61,62,63,64,65,105,106,107,108,109,110,150,151,152,153,154,155" --restraint_atoms_2 "198,199,200,201,202" --restraint_constant 15 --restraint_lower_distance 0.0 --restraint_upper_distance 3.0 --name_dcd output0.dcd
+print("Simulation completed successfully.")
