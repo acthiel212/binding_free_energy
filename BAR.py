@@ -7,132 +7,12 @@ from openmm.unit import *
 from mdtraj import load_dcd
 from intspan import intspan
 
-# Argument parser for user-defined flags
-parser = argparse.ArgumentParser(description='BAR analysis for OpenMM Alchemical Simulations')
-parser.add_argument('--traj_i', required=True, type=str, help='DCD file for lambda i')
-parser.add_argument('--traj_ip1', required=True, type=str, help='DCD file for lambda i+1')
-parser.add_argument('--pdb_file', required=True, type=str, help='PDB file for the simulation')
-parser.add_argument('--forcefield_file', required=True, type=str, help='Force field XML file')
-parser.add_argument('--nonbonded_method', required=True, type=str, help='Nonbonded method: NoCutoff, CutoffNonPeriodic, PME, etc.')
-parser.add_argument('--nonbonded_cutoff', required=False, type=float, help='Nonbonded cutoff in nm (default: 1.0 nm)', default=1.0)
-parser.add_argument('--vdw_lambda_i', required=True, type=float, help='Lambda for van der Waals at state i')
-parser.add_argument('--elec_lambda_i', required=True, type=float, help='Lambda for electrostatics at state i')
-parser.add_argument('--vdw_lambda_ip1', required=True, type=float, help='Lambda for van der Waals at state i+1')
-parser.add_argument('--elec_lambda_ip1', required=True, type=float, help='Lambda for electrostatics at state i+1')
-parser.add_argument('--alchemical_atoms', required=True, type=str, help='Range of alchemical atoms (e.g., "0,2")')
-
-# Restraint parameters, provided if restraints are enabled
-parser.add_argument('--use_restraints', required=False, type=bool, help='Whether to use restraint', default=False)
-parser.add_argument('--restraint_atoms_1', required=False, type=str, help='Range of atoms in restraint group 1 (e.g., "0,2")', default="")
-parser.add_argument('--restraint_atoms_2', required=False, type=str, help='Range of atoms in restraint group 2 (e.g., "0,2")', default="")
-parser.add_argument('--restraint_constant', type=float, help='Restraint force constant (default: 0)', default=0)
-parser.add_argument('--restraint_lower_distance', type=float, help='Restraint lower distance (default: 0.0)', default=0.0)
-parser.add_argument('--restraint_upper_distance', type=float, help='Restraint upper distance (default: 0)', default=0)
-
-# New flags for traversing the DCD file
-parser.add_argument('--step_size', type=int, required=False, help='Step size to traverse the DCD file', default=1)
-parser.add_argument('--start', type=int, required=False, help='Start frame for DCD traversal', default=0)
-parser.add_argument('--stop', type=int, required=False, help='Stop frame for DCD traversal', default=None)
-
-
-# Parse the arguments
-args = parser.parse_args()
-
-
-# Helper function to set lambda values and update forces in the context
-def set_lambda_values(context, vdw_lambda, elec_lambda, vdwForce, multipoleForce, alchemical_atoms, default_elec_params):
-    context.setParameter("AmoebaVdwLambda", vdw_lambda)
-    for i in alchemical_atoms:
-        [parent, sigma, eps, redFactor, isAlchemical, type] = vdwForce.getParticleParameters(i)
-        vdwForce.setParticleParameters(i, parent, sigma, eps, redFactor, True, type)
-
-    j = 0
-    for i in alchemical_atoms:
-        param = default_elec_params[j]
-        charge, dipole, quadrupole, polarizability = param[0], param[1], param[2], param[-1]
-        charge = charge * elec_lambda
-        dipole = [d * elec_lambda for d in dipole]
-        quadrupole = [q * elec_lambda for q in quadrupole]
-        polarizability = polarizability * elec_lambda
-        multipoleForce.setMultipoleParameters(i, charge, dipole, quadrupole, *default_elec_params[j][3:-1], polarizability)
-        j += 1
-    vdwForce.updateParametersInContext(context)
-    multipoleForce.updateParametersInContext(context)
-    context.reinitialize(preserveState=True)
-
-def save_default_elec_params(multipoleForce, alchemical_atoms):
-    params = []
-    for i in alchemical_atoms:
-        param = multipoleForce.getMultipoleParameters(i)
-        params.append(param)
-    return params
-
-
-def setup_simulation(pdb_file, forcefield_file, alchemical_atoms, nonbonded_method, nonbonded_cutoff=args.nonbonded_cutoff,
-                     use_restraints=args.use_restraints,
-                     restraint_atoms_1=args.restraint_atoms_1, restraint_atoms_2=args.restraint_atoms_2,
-                     restraint_constant=args.restraint_constant, restraint_lower_distance=args.restraint_lower_distance,
-                     restraint_upper_distance=args.restraint_upper_distance):
-    pdb = PDBFile(pdb_file)
-    forcefield = ForceField(forcefield_file)
-    # Convert nonbonded_method string to OpenMM constant
-    nonbonded_method_map = {
-        'NoCutoff': NoCutoff,
-        'CutoffNonPeriodic': CutoffNonPeriodic,
-        'PME': PME,
-        'Ewald': Ewald
-    }
-    nonbonded_method = nonbonded_method_map.get(args.nonbonded_method, NoCutoff)
-    nonbonded_cutoff = args.nonbonded_cutoff * nanometer
-    step_size = args.step_size
-    system = forcefield.createSystem(pdb.topology, nonbondedMethod=nonbonded_method, nonbondedCutoff=nonbonded_cutoff, constraints=None)
-    # create the restraint force
-    if(use_restraints):
-        convert = openmm.KJPerKcal / (openmm.NmPerAngstrom * openmm.NmPerAngstrom)
-        restraintEnergy = "step(distance(g1,g2)-u)*k*(distance(g1,g2)-u)^2+step(l-distance(g1,g2))*k*(distance(g1,g2)-l)^2"
-        restraint = openmm.CustomCentroidBondForce(2, restraintEnergy)
-        restraint.setForceGroup(0)
-        restraint.addPerBondParameter("k")
-        restraint.addPerBondParameter("l")
-        restraint.addPerBondParameter("u")
-        restraint.addGroup(restraint_atoms_1)
-        restraint.addGroup(restraint_atoms_2)
-        restraint.addBond([0, 1], [restraint_constant * convert, restraint_lower_distance *openmm.NmPerAngstrom,
-                                   restraint_upper_distance * openmm.NmPerAngstrom])
-        system.addForce(restraint)
-        print("Adding Restraint with parameters: ", restraint.getBondParameters(0))
-        restraint.setUsesPeriodicBoundaryConditions(True)
-        print("Using PBC Conditions on Restraint? ", restraint.usesPeriodicBoundaryConditions())
-
-
-
-    # Setup simulation context
-    numForces = system.getNumForces()
-    integrator = MTSLangevinIntegrator(300*kelvin, 1/picosecond, step_size*femtosecond, [(0,8),(1,1)])
-
-    properties = {'CUDA_Precision': 'double'}
-    platform = Platform.getPlatformByName('CUDA')
-    simulation = Simulation(pdb.topology, system, integrator, platform)
-    context = simulation.context
-
-    vdwForce, multipoleForce = None, None
-    for i in range(numForces):
-        force = system.getForce(i)
-        if isinstance(force, AmoebaVdwForce):
-            vdwForce = force
-        elif isinstance(force, AmoebaMultipoleForce):
-            multipoleForce = force
-
-    if vdwForce is None or multipoleForce is None:
-        raise ValueError("AmoebaVdwForce or AmoebaMultipoleForce not found in the system.")
-    vdwForce.setAlchemicalMethod(2)
-    default_elec_params = save_default_elec_params(multipoleForce, alchemical_atoms)
-    return context, vdwForce, multipoleForce, system, pdb, default_elec_params
-
+from alchemistry import Harmonic_Restraint, Alchemical
+from utils import File_Parser
 
 def compute_work(traj_file1, traj_file2, context, pdb, vdw_lambda_1, vdw_lambda_2, elec_lambda_1, elec_lambda_2, vdwForce, multipoleForce, alchemical_atoms, default_elec_params):
-    traji = load_dcd(traj_file1, pdb_file)
-    trajip1 = load_dcd(traj_file2, pdb_file)
+    traji = load_dcd(traj_file1, pdb)
+    trajip1 = load_dcd(traj_file2, pdb)
 
     # Adjust frames based on start, stop, and step_size
     start = args.start
@@ -145,34 +25,34 @@ def compute_work(traj_file1, traj_file2, context, pdb, vdw_lambda_1, vdw_lambda_
     energy11, energy12, energy22, energy21 = [], [], [], []
 
     # Forward work: lambda i -> lambda i+1
-    set_lambda_values(context, vdw_lambda_1, elec_lambda_1, vdwForce, multipoleForce, alchemical_atoms, default_elec_params)
+    Alchemical.update_lambda_values(context, vdw_lambda_1, elec_lambda_1, vdwForce, multipoleForce, alchemical_atoms, default_elec_params)
     energy11 = []
     for frame in frames_to_process_i:
         context.setPositions(traji.openmm_positions(frame))
         state = context.getState(getEnergy=True)
         potential_energy = state.getPotentialEnergy().value_in_unit(kilojoules_per_mole)
         energy11.append(potential_energy)
-    
-    set_lambda_values(context, vdw_lambda_2, elec_lambda_2, vdwForce, multipoleForce, alchemical_atoms, default_elec_params)
+
+    Alchemical.update_lambda_values(context, vdw_lambda_2, elec_lambda_2, vdwForce, multipoleForce, alchemical_atoms, default_elec_params)
     energy12 = []
     for frame in frames_to_process_i:
         context.setPositions(traji.openmm_positions(frame))
         state = context.getState(getEnergy=True)
         potential_energy = state.getPotentialEnergy().value_in_unit(kilojoules_per_mole)
         energy12.append(potential_energy)
-    
+
     forward_work = np.array(energy12) - np.array(energy11)
 
     # Reverse work: lambda i+1 -> lambda i
-    set_lambda_values(context, vdw_lambda_2, elec_lambda_2, vdwForce, multipoleForce, alchemical_atoms, default_elec_params)
+    Alchemical.update_lambda_values(context, vdw_lambda_2, elec_lambda_2, vdwForce, multipoleForce, alchemical_atoms, default_elec_params)
     energy22 = []
     for frame in frames_to_process_ip1:
         context.setPositions(trajip1.openmm_positions(frame))
         state = context.getState(getEnergy=True)
         potential_energy = state.getPotentialEnergy().value_in_unit(kilojoules_per_mole)
         energy22.append(potential_energy)
-    
-    set_lambda_values(context, vdw_lambda_1, elec_lambda_1, vdwForce, multipoleForce, alchemical_atoms, default_elec_params)
+
+    Alchemical.update_lambda_values(context, vdw_lambda_1, elec_lambda_1, vdwForce, multipoleForce, alchemical_atoms, default_elec_params)
     energy21 = []
     for frame in frames_to_process_ip1:
         context.setPositions(trajip1.openmm_positions(frame))
@@ -185,33 +65,51 @@ def compute_work(traj_file1, traj_file2, context, pdb, vdw_lambda_1, vdw_lambda_
     return forward_work, reverse_work
 
 # Main execution
-pdb_file = args.pdb_file
-forcefield_file = args.forcefield_file
-alchemical_atoms = list(intspan(args.alchemical_atoms))
-alchemical_atoms = [i - 1 for i in alchemical_atoms]
-use_restraints = args.use_restraints
-if(use_restraints):
-    restraint_atoms_1 = list(intspan(args.restraint_atoms_1))
-    restraint_atoms_2 = list(intspan(args.restraint_atoms_2))
-    # OpenMM atom index starts at zero while FFX starts at 1.
-    restraint_atoms_1 = [i - 1 for i in restraint_atoms_1]
-    restraint_atoms_2 = [i - 1 for i in restraint_atoms_2]
-    restraint_constant = args.restraint_constant
-    restraint_lower_distance = args.restraint_lower_distance
-    restraint_upper_distance = args.restraint_upper_distance
-print(alchemical_atoms)
+# Argument parser for user-defined flags
+parser = File_Parser.create_default_parser()
+parser = File_Parser.add_restraint_parser(parser)
+parser = File_Parser.add_BAR_parser(parser)
+args = parser.parse_args()
 
+# Load PDB and Force Field
+pdb = PDBFile(args.pdb_file)
+forcefield = ForceField(args.forcefield_file)
+# Convert nonbonded_method string to OpenMM constant
+nonbonded_method_map = {
+    'NoCutoff': NoCutoff,
+    'CutoffNonPeriodic': CutoffNonPeriodic,
+    'PME': PME,
+    'Ewald': Ewald
+}
+nonbonded_method = nonbonded_method_map.get(args.nonbonded_method, NoCutoff)
+nonbonded_cutoff = args.nonbonded_cutoff * nanometer
+step_size = args.step_size
+system = forcefield.createSystem(pdb.topology, nonbondedMethod=nonbonded_method, nonbondedCutoff=nonbonded_cutoff,
+                                 constraints=None)
 
-    
-    
+# Create the restraint force
+if args.use_restraints:
+    restraint = Harmonic_Restraint.create_restraint(args.restraint_atoms_1, args.restraint_atoms_2,
+                                                    args.restraint_constant,
+                                                    args.restraint_lower_distance, args.restraint_upper_distance)
+    system.addForce(restraint)
+    print("Adding Restraint with parameters: ", restraint.getBondParameters(0))
+    restraint.setUsesPeriodicBoundaryConditions(True)
+    print("Using PBC Conditions on Restraint? ", restraint.usesPeriodicBoundaryConditions())
 
-context, vdwForce, multipoleForce, system, pdb, default_elec_params = setup_simulation(pdb_file, forcefield_file, alchemical_atoms, nonbonded_cutoff=args.nonbonded_cutoff, use_restraints=args.use_restraints,
-            nonbonded_method=args.nonbonded_method, restraint_atoms_1=restraint_atoms_1,
-            restraint_atoms_2=restraint_atoms_2, restraint_constant=restraint_constant,
-            restraint_lower_distance=restraint_lower_distance, restraint_upper_distance=restraint_upper_distance)
+# Setup simulation context
+numForces = system.getNumForces()
+integrator = MTSLangevinIntegrator(300*kelvin, 1/picosecond, step_size*femtosecond, [(0,8),(1,1)])
+properties = {'CUDA_Precision': 'double'}
+platform = Platform.getPlatformByName('CUDA')
+simulation = Simulation(pdb.topology, system, integrator, platform)
+context = simulation.context
+
+vdwForce, multipoleForce = Alchemical.setup_alchemical_forces(system)
+default_elec_params = Alchemical.save_default_elec_params(multipoleForce, args.alchemical_atoms)
 
 # Forward and reverse work calculation
-forward_work, reverse_work = compute_work(args.traj_i, args.traj_ip1, context, pdb, args.vdw_lambda_i, args.vdw_lambda_ip1, args.elec_lambda_i, args.elec_lambda_ip1, vdwForce, multipoleForce, alchemical_atoms, default_elec_params)
+forward_work, reverse_work = compute_work(args.traj_i, args.traj_ip1, context, pdb, args.vdw_lambda_i, args.vdw_lambda_ip1, args.elec_lambda_i, args.elec_lambda_ip1, vdwForce, multipoleForce, args.alchemical_atoms, default_elec_params)
 
 # Perform BAR analysis
 bar_results = other_estimators.bar(forward_work, reverse_work)

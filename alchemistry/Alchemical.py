@@ -30,6 +30,13 @@ def apply_lambdas(context, alchemical_atoms, vdwForce, vdw_lambda, multipoleForc
     # Reinitialize the context to ensure changes are applied
     context.reinitialize(preserveState=True)
 
+def save_default_elec_params(multipoleForce, alchemical_atoms):
+    params = []
+    for i in alchemical_atoms:
+        param = multipoleForce.getMultipoleParameters(i)
+        params.append(param)
+    return params
+
 def setup_alchemical_forces(system):
     # Setup simulation context
     numForces = system.getNumForces()
@@ -50,3 +57,29 @@ def setup_alchemical_forces(system):
     multipoleForce = system.getForce(forceDict.get('AmoebaMultipoleForce'))
     multipoleForce.setForceGroup(1)
     return vdwForce, multipoleForce
+
+# Helper function to set lambda values and update forces in the context
+def update_lambda_values(context, vdw_lambda, elec_lambda, vdwForce, multipoleForce, alchemical_atoms, default_elec_params):
+    # Parse alchemical_atoms input
+    alchemical_atoms = list(intspan(alchemical_atoms))
+    # OpenMM atom index starts at zero while FFX starts at 1. This allows the flags between FFX and OpenMM to match
+    alchemical_atoms = [i - 1 for i in alchemical_atoms]
+    context.setParameter("AmoebaVdwLambda", vdw_lambda)
+    for i in alchemical_atoms:
+        [parent, sigma, eps, redFactor, isAlchemical, type] = vdwForce.getParticleParameters(i)
+        vdwForce.setParticleParameters(i, parent, sigma, eps, redFactor, True, type)
+
+    j = 0
+    for i in alchemical_atoms:
+        param = default_elec_params[j]
+        charge, dipole, quadrupole, polarizability = param[0], param[1], param[2], param[-1]
+        charge = charge * elec_lambda
+        dipole = [d * elec_lambda for d in dipole]
+        quadrupole = [q * elec_lambda for q in quadrupole]
+        polarizability = polarizability * elec_lambda
+        multipoleForce.setMultipoleParameters(i, charge, dipole, quadrupole, *default_elec_params[j][3:-1], polarizability)
+        j += 1
+    vdwForce.updateParametersInContext(context)
+    multipoleForce.updateParametersInContext(context)
+    context.reinitialize(preserveState=True)
+

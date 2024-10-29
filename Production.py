@@ -5,10 +5,12 @@ from openmm.app import *
 from openmm import *
 from openmm.unit import *
 from sys import stdout
-from intspan import intspan
 import os
 
-parser = File_Parser.create_parser()
+parser = File_Parser.create_default_parser()
+parser = File_Parser.add_dynamics_parser(parser)
+parser = File_Parser.add_alchemical_parser(parser)
+parser = File_Parser.add_restraint_parser(parser)
 args = parser.parse_args()
 
 # Convert nonbonded_method string to OpenMM constant
@@ -51,6 +53,7 @@ if os.path.exists(checkpoint_filename):
     Restart_Parser.loadCheckpoint(simulation, checkpoint_filename)
     Alchemical.apply_lambdas(simulation.context, args.alchemical_atoms, vdwForce, args.vdw_lambda,
                                        multipoleForce, args.elec_lambda)
+    simulation.reporters.append(DCDReporter(args.name_dcd, 1000, append=True))
 # If not reinitialize the system with appropriate alchemical lambdas
 else:
     context = simulation.context
@@ -60,17 +63,17 @@ else:
     print(f"Initial Potential Energy: {state.getPotentialEnergy()}")
     Alchemical.apply_lambdas(context, args.alchemical_atoms, vdwForce, args.vdw_lambda,
                                        multipoleForce, args.elec_lambda)
+    simulation.reporters.append(DCDReporter(args.name_dcd, 1000))
 
 
 state = simulation.context.getState(getEnergy=True, getPositions=True)
 print(f"AmoebaVdwLambda: {simulation.context.getParameter('AmoebaVdwLambda')}")
-print(f"AmoebaElecLambda: {args.elec_lambda}")
+print(f"AmoebaElecCharge: {multipoleForce.getMultipoleParameters(0)[0]}")
 print(f"Potential Energy after reinitialization: {state.getPotentialEnergy()}") #{state.getPotentialEnergy().in_units_of(kilocalories_per_mole)}
 
 # Add reporters
-simulation.reporters.append(DCDReporter(args.name_dcd, 1000))
 simulation.reporters.append(StateDataReporter(stdout, 1000, step=True, kineticEnergy=True, potentialEnergy=True, totalEnergy=True, temperature=True, speed=True, separator=', '))
-simulation.reporters.append(CheckpointReporter(checkpoint_filename, args.checkpoint_freq))
+simulation.reporters.append(CheckpointReporter(checkpoint_filename, args.checkpoint_freq, writeState=True))
 simulation.step(args.num_steps-simulation.currentStep)
 os.makedirs(os.path.dirname(args.checkpoint_prefix), exist_ok=True) if os.path.dirname(args.checkpoint_prefix) else None
 print("Simulation completed successfully.")
