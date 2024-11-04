@@ -1,5 +1,6 @@
 from intspan import intspan
 
+
 # Apply lambda to alchemical forces that were setup in below method.
 def apply_lambdas(context, alchemical_atoms, vdwForce, vdw_lambda, multipoleForce, elec_lambda):
     # Parse alchemical_atoms input
@@ -31,13 +32,19 @@ def apply_lambdas(context, alchemical_atoms, vdwForce, vdw_lambda, multipoleForc
     # Reinitialize the context to ensure changes are applied
     context.reinitialize(preserveState=True)
 
+
 # Save Default Electrostatic params when applying lambda more than once.
 def save_default_elec_params(multipoleForce, alchemical_atoms):
+    # Parse alchemical_atoms input
+    alchemical_atoms = list(intspan(alchemical_atoms))
+    # OpenMM atom index starts at zero while FFX starts at 1. This allows the flags between FFX and OpenMM to match
+    alchemical_atoms = [i - 1 for i in alchemical_atoms]
     params = []
     for i in alchemical_atoms:
         param = multipoleForce.getMultipoleParameters(i)
         params.append(param)
     return params
+
 
 def setup_alchemical_forces(system):
     # Setup simulation context
@@ -60,8 +67,10 @@ def setup_alchemical_forces(system):
     multipoleForce.setForceGroup(1)
     return vdwForce, multipoleForce
 
+
 # Helper function to set lambda values and update forces in the context
-def update_lambda_values(context, vdw_lambda, elec_lambda, vdwForce, multipoleForce, alchemical_atoms, default_elec_params):
+def update_lambda_values(context, vdw_lambda, elec_lambda, vdwForce, multipoleForce, alchemical_atoms,
+                         default_elec_params):
     # Parse alchemical_atoms input
     alchemical_atoms = list(intspan(alchemical_atoms))
     # OpenMM atom index starts at zero while FFX starts at 1. This allows the flags between FFX and OpenMM to match
@@ -79,9 +88,9 @@ def update_lambda_values(context, vdw_lambda, elec_lambda, vdwForce, multipoleFo
         dipole = [d * elec_lambda for d in dipole]
         quadrupole = [q * elec_lambda for q in quadrupole]
         polarizability = polarizability * elec_lambda
-        multipoleForce.setMultipoleParameters(i, charge, dipole, quadrupole, *default_elec_params[j][3:-1], polarizability)
+        multipoleForce.setMultipoleParameters(i, charge, dipole, quadrupole, *default_elec_params[j][3:-1],
+                                              polarizability)
         j += 1
     vdwForce.updateParametersInContext(context)
     multipoleForce.updateParametersInContext(context)
     context.reinitialize(preserveState=True)
-
