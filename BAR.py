@@ -9,10 +9,10 @@ from alchemistry import Harmonic_Restraint, Alchemical
 from utils import File_Parser
 
 
-def compute_work(traj_file1, traj_file2, context, pdb, vdw_lambda_1, vdw_lambda_2, elec_lambda_1, elec_lambda_2,
+def compute_work(traj_file1, traj_file2, context, pdb_file, vdw_lambda_1, vdw_lambda_2, elec_lambda_1, elec_lambda_2,
                  vdwForce, multipoleForce, alchemical_atoms, default_elec_params):
-    traji = load_dcd(traj_file1, pdb)
-    trajip1 = load_dcd(traj_file2, pdb)
+    traji = load_dcd(traj_file1, pdb_file)
+    trajip1 = load_dcd(traj_file2, pdb_file)
 
     # Adjust frames based on start, stop, and step_size
     start = args.start
