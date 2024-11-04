@@ -58,3 +58,4 @@ def add_BAR_parser(parser):
     parser.add_argument('--step_size', type=int, required=False, help='Step size to traverse the DCD file', default=1)
     parser.add_argument('--start', type=int, required=False, help='Start frame for DCD traversal', default=0)
     parser.add_argument('--stop', type=int, required=False, help='Stop frame for DCD traversal', default=None)
+    return parser
