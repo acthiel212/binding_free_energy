@@ -1,5 +1,6 @@
 from intspan import intspan
 
+# Apply lambda to alchemical forces that were setup in below method.
 def apply_lambdas(context, alchemical_atoms, vdwForce, vdw_lambda, multipoleForce, elec_lambda):
     # Parse alchemical_atoms input
     alchemical_atoms = list(intspan(alchemical_atoms))
@@ -30,6 +31,7 @@ def apply_lambdas(context, alchemical_atoms, vdwForce, vdw_lambda, multipoleForc
     # Reinitialize the context to ensure changes are applied
     context.reinitialize(preserveState=True)
 
+# Save Default Electrostatic params when applying lambda more than once.
 def save_default_elec_params(multipoleForce, alchemical_atoms):
     params = []
     for i in alchemical_atoms:
