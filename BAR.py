@@ -114,7 +114,7 @@ vdwForce, multipoleForce = Alchemical.setup_alchemical_forces(system)
 default_elec_params = Alchemical.save_default_elec_params(multipoleForce, args.alchemical_atoms)
 
 # Forward and reverse work calculation
-forward_work, reverse_work = compute_work(args.traj_i, args.traj_ip1, context, pdb, args.vdw_lambda_i,
+forward_work, reverse_work = compute_work(args.traj_i, args.traj_ip1, context, args.pdb_file, args.vdw_lambda_i,
                                           args.vdw_lambda_ip1, args.elec_lambda_i, args.elec_lambda_ip1, vdwForce,
                                           multipoleForce, args.alchemical_atoms, default_elec_params)
 
