@@ -11,7 +11,10 @@ args = parser.parse_args()
 
 # Load PDB and Force Field
 pdb = PDBFile(args.pdb_file)
-forcefield = ForceField(args.forcefield_file)
+forcefield = ForceField(args.forcefield_file[0])
+if (len(args.forcefield_file) > 1):
+    for file in args.forcefield_file[1:]:
+        forcefield.loadFile(file)
 
 # Add solvent
 # Manual for PDBFixer (https://htmlpreview.github.io/?https://github.com/openmm/pdbfixer/blob/master/Manual.html)

@@ -3,7 +3,7 @@ import argparse
 def create_default_parser():
     parser = argparse.ArgumentParser(description='OpenMM General Setup with Custom Flags')
     parser.add_argument('--pdb_file', required=True, type=str, help='PDB file for the simulation')
-    parser.add_argument('--forcefield_file', required=True, type=str, help='Force field XML file')
+    parser.add_argument('--forcefield_file', nargs='+', required=True, type=str, help='Force field XML file')
     parser.add_argument('--nonbonded_method', required=True, type=str,
                         help='Nonbonded method: NoCutoff, CutoffNonPeriodic, PME, etc.')
     parser.add_argument('--nonbonded_cutoff', required=False, type=float,
