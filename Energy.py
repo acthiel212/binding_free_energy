@@ -21,7 +21,12 @@ nonbonded_method_map = {
 nonbonded_method = nonbonded_method_map.get(args.nonbonded_method, NoCutoff)
 # Load PDB and Force Field
 pdb = PDBFile(args.pdb_file)
-forcefield = ForceField(args.forcefield_file)
+forcefield = ForceField(args.forcefield_file[0])
+if (len(args.forcefield_file) > 1):
+    for file in args.forcefield_file[1:]:
+        forcefield.loadFile(file)
+
+
 system = forcefield.createSystem(pdb.topology, nonbondedMethod=nonbonded_method,
                                  nonbondedCutoff=args.nonbonded_cutoff*nanometer, constraints=None)
 # Create the restraint force

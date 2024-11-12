@@ -78,7 +78,12 @@ args = parser.parse_args()
 
 # Load PDB and Force Field
 pdb = PDBFile(args.pdb_file)
-forcefield = ForceField(args.forcefield_file)
+forcefield = ForceField(args.forcefield_file[0])
+if (len(args.forcefield_file) > 1):
+    for file in args.forcefield_file[1:]:
+        forcefield.loadFile(file)
+
+
 # Convert nonbonded_method string to OpenMM constant
 nonbonded_method_map = {
     'NoCutoff': NoCutoff,
