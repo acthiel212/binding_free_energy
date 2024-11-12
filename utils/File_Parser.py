@@ -21,6 +21,8 @@ def add_dynamics_parser(parser):
                         help='Frequency (in steps) to save checkpoints (default: 1000)')
     parser.add_argument('--checkpoint_prefix', type=str, default='checkpoint',
                         help='Prefix for checkpoint filenames (default: checkpoint)')
+    parser.add_argument('--output_pdb', type=str, help='PDB file to write to at completion', default='output.pdb')
+    parser.add_argument('--output_xml', type=str, help='XML file of system state to write to at completion', default='output.xml')
     return parser
 
 def add_restraint_parser(parser):

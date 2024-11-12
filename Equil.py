@@ -45,6 +45,19 @@ for i in range(numForces):
     forceDict[force_name] = i
 print(f"Force dictionary: {forceDict}")
 
+# Ensure that the specified forces exist
+required_forces = ['AmoebaVdwForce', 'AmoebaMultipoleForce', 'MonteCarloBarostat']
+for force in required_forces:
+    if force not in forceDict:
+        raise ValueError(f"Required force '{force}' not found in the system.")
+
+vdwForce = system.getForce(forceDict.get('AmoebaVdwForce'))
+vdwForce.setForceGroup(1)
+multipoleForce = system.getForce(forceDict.get('AmoebaMultipoleForce'))
+multipoleForce.setForceGroup(1)
+barostat = system.getForce(forceDict.get('MonteCarloBarostat'))
+barostat.setForceGroup(1)
+
 # Initialize the integrator
 integrator = MTSLangevinIntegrator(300*kelvin, 1/picosecond, args.step_size*femtosecond, [(0,8),(1,1)])
 
@@ -84,7 +97,7 @@ os.makedirs(os.path.dirname(args.checkpoint_prefix), exist_ok=True) if os.path.d
 print("Equilibration completed.")
 
 # Save the final state to PDB
-output_pdb = args.output_pdb
+output_pdb = "output.pdb"
 with open(output_pdb, 'w') as pdb_out:
     PDBFile.writeFile(simulation.topology, simulation.context.getState(getPositions=True).getPositions(), pdb_out)
 print(f"Final PDB saved to {output_pdb}")
