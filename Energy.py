@@ -42,13 +42,14 @@ if args.use_restraints:
 # Setup simulation context
 numForces = system.getNumForces()
 forceDict = {}
+
+# Setup alchemical forces
+vdwForce, multipoleForce = Alchemical.setup_alchemical_forces(system)
+
 for i, f in enumerate(system.getForces()):
     f.setForceGroup(i)
     forceDict[system.getForce(i).getName()] = i
 print(forceDict)
-
-# Setup alchemical forces
-vdwForce, multipoleForce = Alchemical.setup_alchemical_forces(system)
 
 # Initialize the integrator
 integrator = MTSLangevinIntegrator(300*kelvin, 1/picosecond, 1.0*femtosecond, [(0,8),(1,1)])
