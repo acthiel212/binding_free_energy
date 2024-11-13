@@ -104,7 +104,10 @@ print("Equilibration completed.")
 # Save the final state to PDB
 output_pdb = "output.pdb"
 with open(output_pdb, 'w') as pdb_out:
-    PDBFile.writeFile(simulation.topology, simulation.context.getState(getPositions=True).getPositions(), pdb_out)
+    positions = simulation.context.getState(getPositions=True).getPositions()
+    box_vectors = simulation.context.getState(getPositions=True).getPeriodicBoxVectors()
+    simulation.topology.setPeriodicBoxVectors(box_vectors)
+    PDBFile.writeFile(simulation.topology, positions, pdb_out)
 print(f"Final PDB saved to {output_pdb}")
 
 # Save the final system state to XML
