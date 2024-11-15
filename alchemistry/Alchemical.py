@@ -75,7 +75,9 @@ def update_lambda_values(context, vdw_lambda, elec_lambda, vdwForce, multipoleFo
     alchemical_atoms = list(intspan(alchemical_atoms))
     # OpenMM atom index starts at zero while FFX starts at 1. This allows the flags between FFX and OpenMM to match
     alchemical_atoms = [i - 1 for i in alchemical_atoms]
+    print(f"Alchemical atoms: {alchemical_atoms}")
     context.setParameter("AmoebaVdwLambda", vdw_lambda)
+    vdwForce.setAlchemicalMethod(2)  # 2 == Annihilate, 1 == Decouple
     for i in alchemical_atoms:
         [parent, sigma, eps, redFactor, isAlchemical, type] = vdwForce.getParticleParameters(i)
         vdwForce.setParticleParameters(i, parent, sigma, eps, redFactor, True, type)
