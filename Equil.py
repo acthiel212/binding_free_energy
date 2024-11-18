@@ -1,4 +1,4 @@
-from utils import File_Parser, Restart_Parser
+from utils import Parser_Utils, Restart_Utils
 from alchemistry import Harmonic_Restraint
 from openmm.app import *
 from openmm import *
@@ -6,9 +6,9 @@ from openmm.unit import *
 from sys import stdout
 import os
 
-parser = File_Parser.create_default_parser()
-parser = File_Parser.add_dynamics_parser(parser)
-parser = File_Parser.add_restraint_parser(parser)
+parser = Parser_Utils.create_default_parser()
+parser = Parser_Utils.add_dynamics_parser(parser)
+parser = Parser_Utils.add_restraint_parser(parser)
 args = parser.parse_args()
 
 # Convert nonbonded_method string to OpenMM constant
@@ -67,14 +67,14 @@ barostat.setForceGroup(1)
 integrator = MTSLangevinIntegrator(300*kelvin, 1/picosecond, args.step_size*femtosecond, [(0,8),(1,1)])
 
 # Select platform
-properties = {'CUDA_Precision': 'double'}
-platform = Platform.getPlatformByName('CUDA')
+properties = {'CUDA_Precision': 'mixed'}
+platform = Platform.getPlatformByName('OpenCL')
 simulation = Simulation(pdb.topology, system, integrator, platform)
 
 # If checkpoint exists, load and restart
-checkpoint_filename = Restart_Parser.get_checkpoint_filename(args.checkpoint_prefix)
+checkpoint_filename = Restart_Utils.get_checkpoint_filename(args.checkpoint_prefix)
 if os.path.exists(checkpoint_filename):
-    Restart_Parser.loadCheckpoint(simulation, checkpoint_filename)
+    Restart_Utils.loadCheckpoint(simulation, checkpoint_filename)
     simulation.reporters.append(DCDReporter(args.name_dcd, 1000, append=True))
 # If not minimize the system before equilibration
 else:

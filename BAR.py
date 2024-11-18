@@ -6,7 +6,7 @@ from openmm.unit import *
 from mdtraj import load_dcd
 
 from alchemistry import Harmonic_Restraint, Alchemical
-from utils import File_Parser
+from utils import Parser_Utils
 
 
 def compute_work(traj_file1, traj_file2, context, pdb_file, vdw_lambda_1, vdw_lambda_2, elec_lambda_1, elec_lambda_2,
@@ -44,10 +44,6 @@ def compute_work(traj_file1, traj_file2, context, pdb_file, vdw_lambda_1, vdw_la
         energy12.append(potential_energy)
 
     forward_work = np.array(energy12) - np.array(energy11)
-    avgenergy11 = sum(energy11)/frames_to_process_i
-    avgenergy12 = sum(energy12)/frames_to_process_i
-    print(f"Average Energy of ensemble 1 at its lambda: {avgenergy11}")
-    print(f"Average Energy of ensemble 1 at neighbor lambda: {avgenergy12}")
 
     # Reverse work: lambda i+1 -> lambda i
     Alchemical.update_lambda_values(context, vdw_lambda_2, elec_lambda_2, vdwForce, multipoleForce, alchemical_atoms,
@@ -58,7 +54,7 @@ def compute_work(traj_file1, traj_file2, context, pdb_file, vdw_lambda_1, vdw_la
         state = context.getState(getEnergy=True)
         potential_energy = state.getPotentialEnergy().value_in_unit(kilojoules_per_mole)
         energy22.append(potential_energy)
-
+        
     Alchemical.update_lambda_values(context, vdw_lambda_1, elec_lambda_1, vdwForce, multipoleForce, alchemical_atoms,
                                     default_elec_params)
     energy21 = []
@@ -69,18 +65,14 @@ def compute_work(traj_file1, traj_file2, context, pdb_file, vdw_lambda_1, vdw_la
         energy21.append(potential_energy)
 
     reverse_work = np.array(energy21) - np.array(energy22)
-    avgenergy22 = sum(energy22)/frames_to_process_ip1
-    avgenergy21 = sum(energy21)/frames_to_process_ip1
-    print(f"Average Energy of ensemble 2 at its lambda: {avgenergy22}")
-    print(f"Average Energy of ensemble 2 at neighbor lambda: {avgenergy21}")
     return forward_work, reverse_work
 
 
 # Main execution
 # Argument parser for user-defined flags
-parser = File_Parser.create_default_parser()
-parser = File_Parser.add_restraint_parser(parser)
-parser = File_Parser.add_BAR_parser(parser)
+parser = Parser_Utils.create_default_parser()
+parser = Parser_Utils.add_restraint_parser(parser)
+parser = Parser_Utils.add_BAR_parser(parser)
 args = parser.parse_args()
 
 # Load PDB and Force Field

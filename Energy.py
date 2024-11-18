@@ -1,4 +1,4 @@
-from utils import File_Parser
+from utils import Parser_Utils
 from alchemistry import Harmonic_Restraint
 from alchemistry import Alchemical
 from openmm.app import *
@@ -6,9 +6,9 @@ from openmm import *
 from openmm.unit import *
 
 # Argument parser for user-defined flags
-parser = File_Parser.create_default_parser()
-parser = File_Parser.add_alchemical_parser(parser)
-parser = File_Parser.add_restraint_parser(parser)
+parser = Parser_Utils.create_default_parser()
+parser = Parser_Utils.add_alchemical_parser(parser)
+parser = Parser_Utils.add_restraint_parser(parser)
 args = parser.parse_args()
 
 # Convert nonbonded_method string to OpenMM constant

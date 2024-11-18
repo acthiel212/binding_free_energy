@@ -1,4 +1,4 @@
-from utils import File_Parser, Restart_Parser
+from utils import Parser_Utils, Restart_Utils
 from alchemistry import Harmonic_Restraint
 from alchemistry import Alchemical
 from openmm.app import *
@@ -7,10 +7,10 @@ from openmm.unit import *
 from sys import stdout
 import os
 
-parser = File_Parser.create_default_parser()
-parser = File_Parser.add_dynamics_parser(parser)
-parser = File_Parser.add_alchemical_parser(parser)
-parser = File_Parser.add_restraint_parser(parser)
+parser = Parser_Utils.create_default_parser()
+parser = Parser_Utils.add_dynamics_parser(parser)
+parser = Parser_Utils.add_alchemical_parser(parser)
+parser = Parser_Utils.add_restraint_parser(parser)
 args = parser.parse_args()
 
 # Convert nonbonded_method string to OpenMM constant
@@ -53,9 +53,9 @@ platform = Platform.getPlatformByName('CUDA')
 simulation = Simulation(pdb.topology, system, integrator, platform)
 
 # If checkpoint exists, load and restart
-checkpoint_filename = Restart_Parser.get_checkpoint_filename(args.checkpoint_prefix)
+checkpoint_filename = Restart_Utils.get_checkpoint_filename(args.checkpoint_prefix)
 if os.path.exists(checkpoint_filename):
-    Restart_Parser.loadCheckpoint(simulation, checkpoint_filename)
+    Restart_Utils.loadCheckpoint(simulation, checkpoint_filename)
     Alchemical.apply_lambdas(simulation.context, args.alchemical_atoms, vdwForce, args.vdw_lambda,
                                        multipoleForce, args.elec_lambda)
     simulation.reporters.append(DCDReporter(args.name_dcd, 1000, append=True))

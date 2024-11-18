@@ -1,0 +1,234 @@
+#!/bin/sh
+
+################################################################################
+# Title: Force Field X.
+# 
+# Description: Force Field X - Software for Molecular Biophysics.
+# 
+# Copyright: Copyright (c) Michael J. Schnieders 2001-2024.
+# 
+# This file is part of Force Field X.
+# 
+# Force Field X is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License version 3 as published by
+# the Free Software Foundation.
+# 
+# Force Field X is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+# 
+# You should have received a copy of the GNU General Public License along with
+# Force Field X; if not, write to the Free Software Foundation, Inc., 59 Temple
+# Place, Suite 330, Boston, MA 02111-1307 USA
+# 
+# Linking this library statically or dynamically with other modules is making a
+# combined work based on this library. Thus, the terms and conditions of the
+# GNU General Public License cover the whole combination.
+# 
+# As a special exception, the copyright holders of this library give you
+# permission to link this library with independent modules to produce an
+# executable, regardless of the license terms of these independent modules, and
+# to copy and distribute the resulting executable under terms of your choice,
+# provided that you also meet, for each linked independent module, the terms
+# and conditions of the license of that module. An independent module is a
+# module which is not derived from or based on this library. If you modify this
+# library, you may extend this exception to your version of the library, but
+# you are not obligated to do so. If you do not wish to do so, delete this
+# exception statement from your version.
+################################################################################
+
+# Set this to zero to avoid logging on OpenMM memory leaks
+# MALLOC_CHECK_="0"
+
+BASEDIR=$(dirname "$0")/..
+BASEDIR=$( (cd "$BASEDIR" || exit; pwd) )
+
+# OS specific support.  $var _must_ be set to either true or false.
+cygwin=false;
+darwin=false;
+case "$(uname)" in
+  CYGWIN*) cygwin=true ;;
+  Darwin*) darwin=true
+           if [ -z "$JAVA_VERSION" ] ; then
+             JAVA_VERSION="CurrentJDK"
+           else
+             echo "Using Java version: $JAVA_VERSION"
+           fi
+           if [ -z "$JAVA_HOME" ] ; then
+             JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Versions/${JAVA_VERSION}/Home
+           fi
+           ;;
+esac
+
+if [ -z "$JAVA_HOME" ] ; then
+  if [ -r /etc/gentoo-release ] ; then
+    JAVA_HOME=$(java-config --jre-home)
+  fi
+fi
+
+# For Cygwin, ensure paths are in UNIX format before anything is touched
+if $cygwin ; then
+  [ -n "$JAVA_HOME" ] && JAVA_HOME=$(cygpath --unix "$JAVA_HOME")
+  [ -n "$CLASSPATH" ] && CLASSPATH=$(cygpath --path --unix "$CLASSPATH")
+fi
+
+# If a specific java binary isn't specified search for the standard 'java' binary
+if [ -z "$JAVACMD" ] ; then
+  if [ -n "$JAVA_HOME"  ] ; then
+    if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
+      # IBM's JDK on AIX uses strange locations for the executables
+      JAVACMD="$JAVA_HOME/jre/sh/java"
+    else
+      JAVACMD="$JAVA_HOME/bin/java"
+    fi
+  else
+    JAVACMD=$(which java)
+  fi
+fi
+
+if [ ! -x "$JAVACMD" ] ; then
+  echo "Error: JAVA_HOME is not defined correctly."
+  echo "  We cannot execute $JAVACMD"
+  exit 1
+fi
+
+if [ -z "$REPO" ]
+then
+  REPO="$BASEDIR"
+fi
+
+if [ "$CLASSPATH_PREFIX" != "" ]; then
+    CLASSPATH=$CLASSPATH_PREFIX:"$BASEDIR/lib/*"
+else
+    CLASSPATH="$BASEDIR/lib/*"
+fi
+JLP=modules/numerics/src/main/java/ffx/numerics/fft
+
+JVM_MEM="4G"
+if [ -n "$FFX_MEMORY" ]; then
+  JVM_MEM="$FFX_MEMORY"
+fi
+
+JVM_SS="2M"
+if [ -n "$FFX_STACKSIZE" ]; then
+  JVM_SS="$FFX_STACKSIZE"
+fi
+
+EXTRA_JVM_ARGUMENTS="-Xms${JVM_MEM} -Xmx${JVM_MEM} -Xss${JVM_SS} --add-modules jdk.incubator.vector"
+
+if [ -z "$TMPDIR" ]; then
+    if [ -z "$TMP" ]; then
+        :
+    else
+        EXTRA_JVM_ARGUMENTS="-Djava.io.tmpdir=${TMP} ${EXTRA_JVM_ARGUMENTS}"
+    fi
+else
+    EXTRA_JVM_ARGUMENTS="-Djava.io.tmpdir=${TMPDIR} ${EXTRA_JVM_ARGUMENTS}"
+fi
+
+awkCmd=$(which awk)
+sedCmd=$(which sed)
+hasAwkSed=''
+
+if [ -x "$awkCmd" ]; then
+    if [ -x "$sedCmd" ]; then
+        hasAwkSed='1'
+    fi
+fi
+
+# Detect JDK version; disallow JDKs other than 21 up to 23.
+if [ $hasAwkSed ]; then
+    JVERS="$(java -version 2>&1 | awk '/version/ {print $3;}' | sed 's/\"//g')"
+    JVFIRST="$(echo "$JVERS" | awk 'BEGIN { FS = "[.-]"; } { print $1 }')"
+
+    if [ "$JVFIRST" -lt 21 ] || [ "$JVFIRST" -gt 23 ]; then
+        echo " Illegal Java version detected (${JVERS}). Please use JDK 21 through 23." 1>&2
+    fi
+
+    EXTRA_JVM_ARGUMENTS="${EXTRA_JVM_ARGUMENTS} --add-opens=java.desktop/java.awt=ALL-UNNAMED --add-exports=java.base/java.lang=ALL-UNNAMED --add-exports=java.desktop/sun.awt=ALL-UNNAMED --add-exports=java.desktop/sun.java2d=ALL-UNNAMED"
+
+    nvccComm='which nvcc'
+    hasNVCC=''
+    if [ -x "$nvccComm" ]; then
+      hasNVCC='1'
+    fi
+    if [ $hasNVCC ]; then
+      CVERS="$(nvcc --version)"
+      if [ -n "$CVERS" ]; then
+        CVERS="$(echo "$CVERS" | awk '/release/ {print $5;}' | sed -e 's/,//')"
+        NVFIRST="$(echo "$CVERS" | awk 'BEGIN { FS = ".";} { print $1; }')"
+        if [ "$NVFIRST" -lt 10 ]; then
+          echo " Illegal CUDA toolkit version detected (${CVERS}). Please use CUDA toolkit 11.1 or later if you wish to use CUDA-accelerated OpenMM calculations"
+        fi
+      fi
+    fi
+else
+    echo " The JRE and CUDA toolkit versions could not be autodetected. Please use JDK 21 through 23 and (optionally) CUDA toolkit 11.1 or later."
+fi
+
+# For Cygwin, switch paths to Windows format before running java
+if $cygwin; then
+  [ -n "$CLASSPATH" ] && CLASSPATH=$(cygpath --path --windows "$CLASSPATH")
+  [ -n "$JAVA_HOME" ] && JAVA_HOME=$(cygpath --path --windows "$JAVA_HOME")
+  [ -n "$HOME" ] && HOME=$(cygpath --path --windows "$HOME")
+  [ -n "$BASEDIR" ] && BASEDIR=$(cygpath --path --windows "$BASEDIR")
+  [ -n "$REPO" ] && REPO=$(cygpath --path --windows "$REPO")
+  echo " Java exec: $JAVACMD"
+  echo " Classpath: $CLASSPATH"
+  CLASSPATH=$(echo $CLASSPATH | sed 's/ /:/g')
+elif [ "$MSYSTEM" = "MINGW64" ]
+then
+  [ -n "$CLASSPATH" ] && CLASSPATH=$(cygpath --path --unix "$CLASSPATH")
+  [ -n "$JAVA_HOME" ] && JAVA_HOME=$(cygpath --path --unix "$JAVA_HOME")
+  [ -n "$HOME" ] && HOME=$(cygpath --path --unix "$HOME")
+  [ -n "$BASEDIR" ] && BASEDIR=$(cygpath --path --unix "$BASEDIR")
+  [ -n "$REPO" ] && REPO=$(cygpath --path --unix "$REPO")
+  CLASSPATH=$(echo $CLASSPATH | sed 's/ /:/g')
+fi
+
+EXTRA_JVM_ARGUMENTS="${EXTRA_JVM_ARGUMENTS}"
+
+# This is for trying to use the GraalVM native image generation
+# EXTRA_JVM_ARGUMENTS="${EXTRA_JVM_ARGUMENTS} -agentlib:native-image-agent=config-merge-dir=${BASEDIR}/bin/META-INF/native-image"
+
+# TornadoVM Flags
+JAVA_FLAGS=""
+if [ -n "$TORNADO_SDK" ] ; then
+  echo "TORNADO detected at: $TORNADO_SDK"
+
+  PROVIDERS=" \
+    -Dtornado.load.api.implementation=uk.ac.manchester.tornado.runtime.tasks.TornadoTaskGraph \
+    -Dtornado.load.runtime.implementation=uk.ac.manchester.tornado.runtime.TornadoCoreRuntime \
+    -Dtornado.load.tornado.implementation=uk.ac.manchester.tornado.runtime.common.Tornado \
+    -Dtornado.load.annotation.implementation=uk.ac.manchester.tornado.annotation.ASMClassVisitor \
+    -Dtornado.load.annotation.parallel=uk.ac.manchester.tornado.api.annotations.Parallel"
+
+   TORNADO_FLAGS="
+      --module-path ${TORNADO_SDK}/share/java/tornado-ffx \
+      --upgrade-module-path ${TORNADO_SDK}/share/java/graalJars \
+      --add-modules ALL-SYSTEM,tornado.runtime,tornado.annotation,tornado.drivers.common,tornado.drivers.opencl \
+      @${TORNADO_SDK}/etc/exportLists/common-exports \
+      @${TORNADO_SDK}/etc/exportLists/opencl-exports "
+#      --add-modules tornado.drivers.ptx \
+#      @${TORNADO_SDK}/etc/exportLists/ptx-exports \
+#      --add-modules tornado.drivers.spirv \
+#      @${TORNADO_SDK}/etc/exportLists/spirv-exports" 
+      
+   JLP="${TORNADO_SDK}/lib:$JLP"
+   JAVA_FLAGS="-server -XX:+UseParallelGC -XX:-UseCompressedOops -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -XX:-UseCompressedClassPointers --enable-preview ${TORNADO_FLAGS} ${PROVIDERS} "
+fi
+
+exec "$JAVACMD" $JAVA_FLAGS $EXTRA_JVM_ARGUMENTS \
+  -classpath "$CLASSPATH" \
+  -Djava.library.path="$JLP" \
+  -Djava.awt.headless="true" \
+  -Dj3d.rend="noop" \
+  -Dpolyglot.engine.WarnInterpreterOnly="false" \
+  -Dapp.name="Force Field X" \
+  -Dapp.pid="$$" \
+  -Dapp.repo="$REPO" \
+  -Dbasedir="$BASEDIR" \
+  ffx.Main \
+  "$@"
+
