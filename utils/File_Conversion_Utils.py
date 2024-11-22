@@ -82,8 +82,8 @@ def merge_host_guest_files(guest_file_path, host_file_path):
 
     # Remove temporary files
     os.remove('guest_file_temp.txt')
-    #os.remove('SaveAsPDB.log')
-    #os.remove('SaveAsXYZ.log')
+    os.remove('SaveAsPDB.log')
+    os.remove('SaveAsXYZ.log')
 
 
 

@@ -4,6 +4,7 @@ from openmm.app import *
 from openmm import *
 from openmm.unit import *
 from mdtraj import load_dcd
+from pymbar.timeseries import subsample_correlated_data
 
 from alchemistry import Harmonic_Restraint, Alchemical
 from utils import Parser_Utils
@@ -122,7 +123,11 @@ forward_work, reverse_work = compute_work(args.traj_i, args.traj_ip1, context, a
                                           args.vdw_lambda_ip1, args.elec_lambda_i, args.elec_lambda_ip1, vdwForce,
                                           multipoleForce, args.alchemical_atoms, default_elec_params)
 
+uncorrelated_forward_work_indices = subsample_correlated_data(forward_work)
+uncorrelated_reverse_work_indices = subsample_correlated_data(reverse_work)
 # Perform BAR analysis
+forward_fep = other_estimators.exp(forward_work)
+reverse_fep = other_estimators.exp(reverse_work)
 bar_results = other_estimators.bar(forward_work, reverse_work)
 
 # The `Delta_f` is the free energy difference between two states (lambda_i and lambda_i+1).
@@ -134,8 +139,9 @@ bar_results = other_estimators.bar(forward_work, reverse_work)
 # It provides an estimate of how much error or variation is present in the `Delta_f` calculation due to sampling noise.
 # Smaller values of `dDelta_f` indicate a more accurate and reliable estimate of the free energy difference.
 
-
-print(f"Free energy difference: {bar_results['Delta_f']} ± {bar_results['dDelta_f']} kJ/mol")
+print(f"Forward Free energy difference: {forward_fep['Delta_f']} ± {forward_fep['dDelta_f']} kJ/mol")
+print(f"Reverse Free energy difference: {reverse_fep['Delta_f']} ± {reverse_fep['dDelta_f']} kJ/mol")
+print(f"BAR Free energy difference: {bar_results['Delta_f']} ± {bar_results['dDelta_f']} kJ/mol")
 
 # TODO: create a num_steps and a step_size flag for traversing the dcd file and also create a start flag and a stop flag in case the user wants to start or stop at a specific snapshot
 # to test:
