@@ -126,6 +126,8 @@ context = simulation.context
 vdwForce, multipoleForce = Alchemical.setup_alchemical_forces(system)
 default_elec_params = Alchemical.save_default_elec_params(multipoleForce, args.alchemical_atoms)
 
+print(f"Evaluating Free Energy using BAR between (vdw, elec): ({args.vdw_lambda_i}, {args.elec_lambda_i}) "
+      f"and ({args.vdw_lambda_ip1}, {args.elec_lambda_ip1})")
 # Forward and reverse work calculation
 forward_work, reverse_work = compute_work(args.traj_i, args.traj_ip1, context, args.pdb_file, args.vdw_lambda_i,
                                           args.vdw_lambda_ip1, args.elec_lambda_i, args.elec_lambda_ip1, vdwForce,
