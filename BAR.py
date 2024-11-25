@@ -34,6 +34,9 @@ def compute_work(traj_file1, traj_file2, context, pdb_file, vdw_lambda_1, vdw_la
         state = context.getState(getEnergy=True)
         potential_energy = state.getPotentialEnergy().value_in_unit(kilojoules_per_mole)
         energy11.append(potential_energy)
+        state = simulation.context.getState(getEnergy=True, groups={3})
+        if (state.getPotentialEnergy().value_in_unit(kilojoules_per_mole) >= 0.00001):
+            print(f"WARNING! Restraints triggered with energy of {state.getPotentialEnergy().in_units_of(kilojoules_per_mole)} at at frame {frame} at lambda {vdw_lambda_1}")
 
     Alchemical.update_lambda_values(context, vdw_lambda_2, elec_lambda_2, vdwForce, multipoleForce, alchemical_atoms,
                                     default_elec_params)
@@ -55,6 +58,9 @@ def compute_work(traj_file1, traj_file2, context, pdb_file, vdw_lambda_1, vdw_la
         state = context.getState(getEnergy=True)
         potential_energy = state.getPotentialEnergy().value_in_unit(kilojoules_per_mole)
         energy22.append(potential_energy)
+        state = simulation.context.getState(getEnergy=True, groups={3})
+        if (state.getPotentialEnergy().value_in_unit(kilojoules_per_mole) >= 0.00001):
+            print(f"WARNING! Restraints triggered with energy of {state.getPotentialEnergy().in_units_of(kilojoules_per_mole)} at at frame {frame} at lambda {vdw_lambda_2}")
         
     Alchemical.update_lambda_values(context, vdw_lambda_1, elec_lambda_1, vdwForce, multipoleForce, alchemical_atoms,
                                     default_elec_params)
@@ -106,6 +112,8 @@ if args.use_restraints:
     print("Adding Restraint with parameters: ", restraint.getBondParameters(0))
     restraint.setUsesPeriodicBoundaryConditions(True)
     print("Using PBC Conditions on Restraint? ", restraint.usesPeriodicBoundaryConditions())
+    # Set force group to own group for testing if restraints are triggered.
+    restraint.setForceGroup(3)
 
 # Setup simulation context
 numForces = system.getNumForces()
