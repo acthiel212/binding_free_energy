@@ -36,7 +36,7 @@ def compute_work(traj_file1, traj_file2, context, pdb_file, vdw_lambda_1, vdw_la
         energy11.append(potential_energy)
         state = simulation.context.getState(getEnergy=True, groups={3})
         if (state.getPotentialEnergy().value_in_unit(kilojoules_per_mole) >= 0.00001):
-            print(f"WARNING! Restraints triggered with energy of {state.getPotentialEnergy().in_units_of(kilojoules_per_mole)} at at frame {frame} at lambda {vdw_lambda_1}")
+            print(f"WARNING! Restraints triggered with energy of {state.getPotentialEnergy().in_units_of(kilojoules_per_mole)} at at frame {frame} at lambda ({vdw_lambda_1}, {elec_lambda_1})")
 
     Alchemical.update_lambda_values(context, vdw_lambda_2, elec_lambda_2, vdwForce, multipoleForce, alchemical_atoms,
                                     default_elec_params)
@@ -60,7 +60,7 @@ def compute_work(traj_file1, traj_file2, context, pdb_file, vdw_lambda_1, vdw_la
         energy22.append(potential_energy)
         state = simulation.context.getState(getEnergy=True, groups={3})
         if (state.getPotentialEnergy().value_in_unit(kilojoules_per_mole) >= 0.00001):
-            print(f"WARNING! Restraints triggered with energy of {state.getPotentialEnergy().in_units_of(kilojoules_per_mole)} at at frame {frame} at lambda {vdw_lambda_2}")
+            print(f"WARNING! Restraints triggered with energy of {state.getPotentialEnergy().in_units_of(kilojoules_per_mole)} at at frame {frame} at lambda ({vdw_lambda_2}, {elec_lambda_2})")
         
     Alchemical.update_lambda_values(context, vdw_lambda_1, elec_lambda_1, vdwForce, multipoleForce, alchemical_atoms,
                                     default_elec_params)
