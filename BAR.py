@@ -135,10 +135,23 @@ forward_work, reverse_work = compute_work(args.traj_i, args.traj_ip1, context, a
 
 uncorrelated_forward_work_indices = subsample_correlated_data(forward_work)
 uncorrelated_reverse_work_indices = subsample_correlated_data(reverse_work)
-# Perform BAR analysis
-forward_fep = other_estimators.exp(forward_work)
-reverse_fep = other_estimators.exp(reverse_work)
-bar_results = other_estimators.bar(forward_work, reverse_work)
+
+
+forward_work_first_half = forward_work[:len(forward_work)//2]
+forward_work_sec_half = forward_work[len(forward_work)//2:]
+
+reverse_work_first_half = reverse_work[:len(reverse_work)//2]
+reverse_work_sec_half = reverse_work[len(reverse_work)//2:]
+
+forward_work_dec = forward_work[uncorrelated_forward_work_indices]
+reverse_work_dec = reverse_work[uncorrelated_reverse_work_indices]
+# Perform BAR analysis on uncorrelated data
+forward_fep_dec = other_estimators.exp(forward_work)
+reverse_fep_dec = other_estimators.exp(reverse_work)
+bar_results_first = other_estimators.bar(forward_work_first_half, reverse_work_first_half)
+bar_results_sec = other_estimators.bar(forward_work_sec_half, reverse_work_sec_half)
+bar_results_dec = other_estimators.bar(forward_work_dec, reverse_work_dec)
+bar_overlap = other_estimators.bar_overlap(forward_work_dec, reverse_work_dec)
 
 # The `Delta_f` is the free energy difference between two states (lambda_i and lambda_i+1).
 # In this case, it's the change in free energy due to modifying the van der Waals and/or electrostatic parameters 
@@ -149,9 +162,11 @@ bar_results = other_estimators.bar(forward_work, reverse_work)
 # It provides an estimate of how much error or variation is present in the `Delta_f` calculation due to sampling noise.
 # Smaller values of `dDelta_f` indicate a more accurate and reliable estimate of the free energy difference.
 
-print(f"Forward Free energy difference: {forward_fep['Delta_f']} ± {forward_fep['dDelta_f']} kJ/mol")
-print(f"Reverse Free energy difference: {reverse_fep['Delta_f']} ± {reverse_fep['dDelta_f']} kJ/mol")
-print(f"BAR Free energy difference: {bar_results['Delta_f']} ± {bar_results['dDelta_f']} kJ/mol")
+print(f"Forward Free energy difference: {forward_fep_dec['Delta_f']} ± {forward_fep_dec['dDelta_f']} kJ/mol")
+print(f"Reverse Free energy difference: {reverse_fep_dec['Delta_f']} ± {reverse_fep_dec['dDelta_f']} kJ/mol")
+print(f"BAR Free energy difference from first half of samples: {bar_results_first['Delta_f']} ± {bar_results_first['dDelta_f']} kJ/mol")
+print(f"BAR Free energy difference from second half of samples: {bar_results_sec['Delta_f']} ± {bar_results_sec['dDelta_f']} kJ/mol")
+print(f"Total BAR Free energy difference: {bar_results_dec['Delta_f']} ± {bar_results_dec['dDelta_f']} kJ/mol with estimated overlap of {bar_overlap}")
 
 # TODO: create a num_steps and a step_size flag for traversing the dcd file and also create a start flag and a stop flag in case the user wants to start or stop at a specific snapshot
 # to test:
