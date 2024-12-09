@@ -21,7 +21,12 @@ nonbonded_method_map = {
 nonbonded_method = nonbonded_method_map.get(args.nonbonded_method, NoCutoff)
 # Load PDB and Force Field
 pdb = PDBFile(args.pdb_file)
-forcefield = ForceField(args.forcefield_file)
+forcefield = ForceField(args.forcefield_file[0])
+if (len(args.forcefield_file) > 1):
+    for file in args.forcefield_file[1:]:
+        forcefield.loadFile(file)
+
+
 system = forcefield.createSystem(pdb.topology, nonbondedMethod=nonbonded_method,
                                  nonbondedCutoff=args.nonbonded_cutoff*nanometer, constraints=None)
 # Create the restraint force
@@ -37,13 +42,14 @@ if args.use_restraints:
 # Setup simulation context
 numForces = system.getNumForces()
 forceDict = {}
+
+# Setup alchemical forces
+vdwForce, multipoleForce = Alchemical.setup_alchemical_forces(system)
+
 for i, f in enumerate(system.getForces()):
     f.setForceGroup(i)
     forceDict[system.getForce(i).getName()] = i
 print(forceDict)
-
-# Setup alchemical forces
-vdwForce, multipoleForce = Alchemical.setup_alchemical_forces(system)
 
 # Initialize the integrator
 integrator = MTSLangevinIntegrator(300*kelvin, 1/picosecond, 1.0*femtosecond, [(0,8),(1,1)])

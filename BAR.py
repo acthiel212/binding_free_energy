@@ -44,6 +44,10 @@ def compute_work(traj_file1, traj_file2, context, pdb_file, vdw_lambda_1, vdw_la
         energy12.append(potential_energy)
 
     forward_work = np.array(energy12) - np.array(energy11)
+    avgenergy11 = sum(energy11)/frames_to_process_i
+    avgenergy12 = sum(energy12)/frames_to_process_i
+    print(f"Average Energy of ensemble 1 at its lambda: {avgenergy11}")
+    print(f"Average Energy of ensemble 1 at neighbor lambda: {avgenergy12}")
 
     # Reverse work: lambda i+1 -> lambda i
     Alchemical.update_lambda_values(context, vdw_lambda_2, elec_lambda_2, vdwForce, multipoleForce, alchemical_atoms,
@@ -65,7 +69,10 @@ def compute_work(traj_file1, traj_file2, context, pdb_file, vdw_lambda_1, vdw_la
         energy21.append(potential_energy)
 
     reverse_work = np.array(energy21) - np.array(energy22)
-
+    avgenergy22 = sum(energy22)/frames_to_process_ip1
+    avgenergy21 = sum(energy21)/frames_to_process_ip1
+    print(f"Average Energy of ensemble 2 at its lambda: {avgenergy22}")
+    print(f"Average Energy of ensemble 2 at neighbor lambda: {avgenergy21}")
     return forward_work, reverse_work
 
 
@@ -78,7 +85,12 @@ args = parser.parse_args()
 
 # Load PDB and Force Field
 pdb = PDBFile(args.pdb_file)
-forcefield = ForceField(args.forcefield_file)
+forcefield = ForceField(args.forcefield_file[0])
+if (len(args.forcefield_file) > 1):
+    for file in args.forcefield_file[1:]:
+        forcefield.loadFile(file)
+
+
 # Convert nonbonded_method string to OpenMM constant
 nonbonded_method_map = {
     'NoCutoff': NoCutoff,
