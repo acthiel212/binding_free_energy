@@ -28,7 +28,7 @@ def create_restraint(restraint_atoms_1, restraint_atoms_2, restraint_constant, r
 
 def calculate_restraint_subsection(host_guest_file_path, cutoff):
     with open('RestrainGuest.log', "w") as outfile:
-        subprocess.run([f"{path_to_file}/../ffx-1.0.0/bin/ffxc", "test.RestrainGuest", "--distanceCutoff",f"{cutoff}",
+        subprocess.run([f"{path_to_file}/../ffx-1.0.0/bin/ffxc", "test.FindRestraints", "--distanceCutoff",f"{cutoff}",
                         f"{host_guest_file_path}"], stdout=outfile, text=True)
 
     with open('RestrainGuest.log', 'r') as infile:
