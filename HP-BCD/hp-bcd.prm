@@ -1,0 +1,932 @@
+
+      ##############################
+      ##                          ##
+      ##  Force Field Definition  ##
+      ##                          ##
+      ##############################
+
+
+forcefield              AMOEBA-HP-BCD
+
+bond-cubic              -2.55
+bond-quartic            3.793125
+angle-cubic             -0.014
+angle-quartic           0.000056
+angle-pentic            -0.0000007
+angle-sextic            0.000000022
+opbendtype              ALLINGER
+opbend-cubic            -0.014
+opbend-quartic          0.000056
+opbend-pentic           -0.0000007
+opbend-sextic           0.000000022
+torsionunit             0.5
+vdwtype                 BUFFERED-14-7
+radiusrule              CUBIC-MEAN
+radiustype              R-MIN
+radiussize              DIAMETER
+epsilonrule             HHG
+dielectric              1.0
+polarization            MUTUAL
+vdw-12-scale            0.0
+vdw-13-scale            0.0
+vdw-14-scale            1.0
+vdw-15-scale            1.0
+mpole-12-scale          0.0
+mpole-13-scale          0.0
+mpole-14-scale          0.4
+mpole-15-scale          0.8
+polar-12-scale          0.0
+polar-13-scale          0.0
+polar-14-scale          1.0
+polar-15-scale          1.0
+polar-12-intra          0.0
+polar-13-intra          0.0
+polar-14-intra          0.5
+polar-15-intra          1.0
+direct-11-scale         0.0
+direct-12-scale         1.0
+direct-13-scale         1.0
+direct-14-scale         1.0
+mutual-11-scale         1.0
+mutual-12-scale         1.0
+mutual-13-scale         1.0
+mutual-14-scale         1.0
+
+#############################
+##                         ##
+##  Literature References  ##
+##                         ##
+#############################
+
+Walker, B., Liu, C., Wait, E., Ren, P., J. Comput. Chem. 2022, 1. https://doi.org/10.1002/jcc.26954
+
+Wu, J.C.; Chattree, G.; Ren, P.Y.; Automation of AMOEBA polarizable force field
+parameterization for small molecules. Theor Chem Acc.
+
+###############################################
+##                                           ##
+##  Parameters for AMOEBA-03 Water and Ions  ##
+##                                           ##
+###############################################
+
+
+atom        301  301    Na+   "Sodium Ion Na+"              11    22.990    0
+atom        302  302    Cl-   "Chloride Ion Cl-"            17    35.453    0
+atom        349  349    O     "AMOEBA Water O"               8    15.995    2
+atom        350  350    H     "AMOEBA Water H"               1     1.008    1
+
+vdw         301               2.9550     0.2800
+vdw         302               4.1200     0.3400
+vdw         349               3.4050     0.1100
+vdw         350               2.6550     0.0135      0.910
+
+bond        349  350          556.85     0.9572
+angle       350  349  350      48.70     108.50
+ureybrad    350  349  350      -7.60     1.5326
+
+multipole   301                         1.00000
+                                        0.00000    0.00000    0.00000
+                                        0.00000
+                                        0.00000    0.00000
+                                        0.00000    0.00000    0.00000
+multipole   302                        -1.00000
+                                        0.00000    0.00000    0.00000
+                                        0.00000
+                                        0.00000    0.00000
+                                        0.00000    0.00000    0.00000
+multipole   349 -350 -350              -0.51966
+                                        0.00000    0.00000    0.14279
+                                        0.37928
+                                        0.00000   -0.41809
+                                        0.00000    0.00000    0.03881
+multipole   350  349  350               0.25983
+                                       -0.03859    0.00000   -0.05818
+                                       -0.03673
+                                        0.00000   -0.10739
+                                       -0.00203    0.00000    0.14412
+
+polarize    301          0.1200     0.3900
+polarize    302          4.0000     0.3900
+polarize    349          0.8370     0.3900    350
+polarize    350          0.4960     0.3900    349
+
+###############################################
+##                                           ##
+##  Parameters for AMOEBA HP-BCD             ##
+##                                           ##
+###############################################
+
+atom            1      1    C     "hydroxypropyl_betadex   "         6    12.011    4
+atom            2      2    O     "hydroxypropyl_betadex   "         8    15.999    2
+atom            3      3    C     "hydroxypropyl_betadex   "         6    12.011    4
+atom            4      4    C     "hydroxypropyl_betadex   "         6    12.011    4
+atom            5      5    C     "hydroxypropyl_betadex   "         6    12.011    4
+atom            6      6    C     "hydroxypropyl_betadex   "         6    12.011    4
+atom            7      7    O     "hydroxypropyl_betadex   "         8    15.999    2
+atom            8      8    O     "hydroxypropyl_betadex   "         8    15.999    2
+atom            9      9    O     "hydroxypropyl_betadex   "         8    15.999    2
+atom          10    10    C     "hydroxypropyl_betadex   "         6    12.011    4
+atom          11    11    O     "hydroxypropyl_betadex   "         8    15.999    2
+atom          12    12    C     "hydroxypropyl_betadex   "         6    12.011    4
+atom          13    13    C     "hydroxypropyl_betadex   "         6    12.011    4
+atom          14    14    C     "hydroxypropyl_betadex   "         6    12.011    4
+#Dead hydrogen/oxygen
+#atom          17    17    H     "hydroxypropyl_betadex   "         1     1.008    1
+#atom          18    18    H     "hydroxypropyl_betadex   "         1     1.008    1
+#atom          15    15    O     "hydroxypropyl_betadex   "         8    15.999    2
+atom          16    16    O     "hydroxypropyl_betadex   "         8    15.999    2
+atom          19    19    H     "hydroxypropyl_betadex   "         1     1.008    1
+atom          20    20    H     "hydroxypropyl_betadex   "         1     1.008    1
+atom          21    21    H     "hydroxypropyl_betadex   "         1     1.008    1
+atom          22    22    H     "hydroxypropyl_betadex   "         1     1.008    1
+atom          23    23    H     "hydroxypropyl_betadex   "         1     1.008    1
+atom          24    24    H     "hydroxypropyl_betadex   "         1     1.008    1
+atom          25    25    H     "hydroxypropyl_betadex   "         1     1.008    1
+atom          26    26    H     "hydroxypropyl_betadex   "         1     1.008    1
+atom          27    27    H     "hydroxypropyl_betadex   "         1     1.008    1
+atom          28    28    H     "hydroxypropyl_betadex   "         1     1.008    1
+atom          29    29    H     "hydroxypropyl_betadex   "         1     1.008    1
+atom          30    30    H     "hydroxypropyl_betadex   "         1     1.008    1
+#torsion DONE
+torsion   1   2   4  10 -0.489 0.0 1 0.404 180.0 2 0.695 0.0 3
+
+torsion   2   1   5   7 0.307 0.0 1 -0.000 180.0 2 0.837 0.0 3
+
+torsion   2   4  10   9 1.002 0.0 1 -0.165 180.0 2 0.504 0.0 3
+
+torsion  12   9  10   3 0 0.0 1 0 180.0 2 0 0.0 3
+
+torsion   5   1   2   4 -0.489 0.0 1 0.404 180.0 2 0.695 0.0 3
+
+torsion  12   9  10   4 0 0.0 1 0 180.0 2 0 0.0 3
+
+torsion  16   3  14   8 0 0.0 1 0 180.0 2 0 0.0 3
+
+torsion  11  13  14   8 0 0.0 1 0 180.0 2 0 0.0 3
+
+torsion  16   3  10   9 0 0.0 1 0 180.0 2 0 0.0 3
+
+torsion  11  13  12   9 0 0.0 1 0 180.0 2 0 0.0 3
+
+#[424  25  28 408] from isomal
+torsion   9  12  16   3 -0.665 0.0 1 -0.266 180.0 2 0.400 0.0 3
+
+torsion  13  12   9  10 0 0.0 1 0 180.0 2 0 0.0 3
+
+torsion  16  12   9  10 0 0.0 1 0 180.0 2 0 0.0 3
+
+torsion  16  12  13  11 0 0.0 1 0 180.0 2 0 0.0 3
+
+torsion  12  13  14   3 0 0.0 1 0 180.0 2 0 0.0 3
+
+torsion  14   3  10   4 0 0.0 1 0 180.0 2 0 0.0 3
+
+torsion  13  14   3  10 0 0.0 1 0 180.0 2 0 0.0 3
+
+torsion  27  13  14   3 0 0.0 1 0 180.0 2 0.108 0.0 3
+
+torsion  24  14   3  10 0 0.0 1 0 180.0 2 0.108 0.0 3
+
+torsion  25   3  14  13 0 0.0 1 0 180.0 2 0.108 0.0 3
+
+torsion  28  10   3  14 0 0.0 1 0 180.0 2 0.108 0.0 3
+
+torsion  25   3  14  24 0 0.0 1 0 180.0 2 0.299 0.0 3
+
+#[456  25  28 408]
+torsion  26  12  16   3 0 0.0 1 0 180.0 2 0.108 0.0 3
+
+#[457  17 431 450]
+torsion  30   8  14   3 0.293 0.0 1 0.000 180.0 2 0.000 0.0 3 
+
+#[423   8  28 425]
+torsion  10   3  16  12 -1.410 0.0 1 0.008 180.0 2 0.202 0.0 3 
+
+#[419  25  28 408]
+torsion  13  12  16   3 -0.009 0.0 1 -0.000 180.0 2 0.375 0.0 3 
+
+#[457  17 431 430]
+torsion  30   8  14  13 0.225 0.0 1 0.718 180.0 2 0.390 0.0 3 
+
+#[431   8  28 425]
+torsion  14   3  16  12 1.410 0.0 1 0.008 180.0 2 0.202 0.0 3 
+
+#[440  26  30 431]
+torsion  19  11  13  14 0.574 0.0 1 0.000 180.0 2 0.281 0.0 3
+
+torsion   1   2   4  29 0 0.0 1 0 180.0 2 0.108 0.0 3
+
+torsion  20   1   2   4 0 0.0 1 0 180.0 2 0.108 0.0 3
+
+torsion  26  12   9  10 0 0.0 1 0 180.0 2 0.108 0.0 3
+
+torsion  28  10   9  12 0 0.0 1 0 180.0 2 0.108 0.0 3
+
+#[451   8  28 425]
+torsion  25   3  16  12 0 0.0 1 0 180.0 2 0.108 0.0 3 
+
+#[440  26  30 453]
+torsion  19  11  13  27 0.793 0.0 1 0.495 180.0 2 0.317 0.0 3
+
+torsion  21   5   7  23 -0.000 0.0 1 -0.004 180.0 2 0.190 0.0 3
+
+#[457  17 431 450]
+torsion  30   8  14  24 0.293 0.0 1 0.000 180.0 2 0.000 0.0 3 
+
+torsion   1   5   7  23 0.191 0.0 1 -0.016 180.0 2 0.094 0.0 3
+
+torsion   6   5   7  23 -0.244 0.0 1 0.258 180.0 2 0.203 0.0 3
+
+#[440  26  30 429]
+torsion  19  11  13  12 -0.132 0.0 1 0.000 180.0 2 0.349 0.0 3
+
+torsion   2   1   5   6 0.128 0.0 1 0.808 180.0 2 1.083 0.0 3
+
+torsion   2   4  10   3 -0.050 0.0 1 0.242 180.0 2 0.504 0.0 3
+
+torsion   3  14  13  11 0 0.0 1 0 180.0 2 0 0.0 3
+
+torsion   4  10   3  16 0 0.0 1 0 180.0 2 0 0.0 3
+
+torsion  10   3  14   8 0 0.0 1 0 180.0 2 0 0.0 3
+
+torsion  12  13  14   8 0 0.0 1 0 180.0 2 0 0.0 3
+
+torsion  14   3  10   9 0 0.0 1 0 180.0 2 0 0.0 3
+
+torsion  14  13  12   9 0 0.0 1 0 180.0 2 0 0.0 3
+
+torsion  13  14   3  16 0 0.0 1 0 180.0 2 0 0.0 3
+
+torsion  14  13  12  16 0 0.0 1 0 180.0 2 0 0.0 3
+
+torsion   2   1   5  21 0 0.0 1 0 180.0 2 0.108 0.0 3
+
+torsion   2   4  10  28 0 0.0 1 0 180.0 2 0.108 0.0 3
+
+torsion  25   3  14   8 0 0.0 1 0 180.0 2 0.108 0.0 3
+
+torsion  27  13  14   8 0 0.0 1 0 180.0 2 0.108 0.0 3
+
+torsion  25   3  10   9 0 0.0 1 0 180.0 2 0.108 0.0 3
+
+torsion  27  13  12   9 0 0.0 1 0 180.0 2 0.108 0.0 3
+
+torsion  24  14  13  11 0 0.0 1 0 180.0 2 0.108 0.0 3
+
+torsion  27  13  12  16 0 0.0 1 0 180.0 2 0.108 0.0 3
+
+torsion  28  10   3  16 0 0.0 1 0 180.0 2 0.108 0.0 3
+
+torsion  24  14   3  16 0 0.0 1 0 180.0 2 0.108 0.0 3
+
+torsion  20   1   5   6 0 0.0 1 0 180.0 2 0.108 0.0 3
+
+torsion  20   1   5  21 0 0.0 1 0 180.0 2 0.299 0.0 3
+
+torsion  24  14  13  27 0 0.0 1 0 180.0 2 0.299 0.0 3
+
+torsion  29   4  10  28 0 0.0 1 0 180.0 2 0.299 0.0 3
+
+torsion   1   5   6  22 0.000 0.0 1 0.000 180.0 2 0.241 0.0 3
+
+torsion  29   4  10   3 0 0.0 1 0 180.0 2 0.108 0.0 3
+
+torsion  25   3  10   4 0 0.0 1 0 180.0 2 0.108 0.0 3
+
+torsion  24  14  13  12 0 0.0 1 0 180.0 2 0.108 0.0 3
+
+torsion  26  12  13  14 0 0.0 1 0 180.0 2 0.108 0.0 3
+
+torsion  20   1   5   7 0 0.0 1 0 180.0 2 0.108 0.0 3
+
+torsion   7   5   6  22 0.000 0.0 1 0.000 180.0 2 0.255 0.0 3
+
+torsion  29   4  10   9 0 0.0 1 0 180.0 2 0.108 0.0 3
+
+torsion  26  12  13  11 0 0.0 1 0 180.0 2 0.108 0.0 3
+
+torsion  21   5   6  22 0.000 0.0 1 0.000 180.0 2 0.223 0.0 3
+
+torsion  28  10   3  25 0 0.0 1 0 180.0 2 0.299 0.0 3
+
+torsion  26  12  13  27 0 0.0 1 0 180.0 2 0.299 0.0 3
+#torsion DONE
+#polarize DONE
+polarize             1          1.6200     0.3900   2 420
+polarize             2          0.8120     0.3900   1 404
+polarize             3          1.6200     0.3900  10 425
+polarize             4          1.6200     0.3900   2 429
+polarize             5          1.6200     0.3900   7 421
+polarize             6          1.4150     0.3900 422
+polarize             7          0.8120     0.3900   5 423
+polarize             8          0.8120     0.3900  14 430
+polarize             9          0.8120     0.3900 412
+polarize           10          1.6200     0.3900   3 428
+polarize           11          0.8120     0.3900  13 419
+polarize           12          1.6200     0.3900   9 426
+polarize           13          1.6200     0.3900  11 427
+polarize           14          1.6200     0.3900   8 424
+# Dead hydrogen
+#polarize           17          0.4570     0.3900 415
+#polarize           18          0.4570     0.3900 416
+#polarize           15          0.8120     0.3900  12 417
+polarize           16          0.8120     0.3900
+polarize           19          0.4570     0.3900 411
+polarize           20          0.4800     0.3900 401
+polarize           21          0.4800     0.3900 405
+polarize           22          0.4800     0.3900 406
+polarize           23          0.4570     0.3900 407
+polarize           24          0.4800     0.3900 414
+polarize           25          0.4800     0.3900 403
+polarize           26          0.4800     0.3900 412
+polarize           27          0.4800     0.3900 413
+polarize           28          0.4800     0.3900 410
+polarize           29          0.4800     0.3900 404
+polarize           30          0.4570     0.3900 408
+#polarize DONE
+#multipole DONE
+multipole     1    2    5               0.12185
+                                        0.21543    0.00000    0.20990
+                                       -0.21957
+                                        0.00000   -0.56001
+                                       -0.38464    0.00000    0.77958
+multipole     2    4    1              -0.27398
+                                        0.44335    0.00000    0.25622
+                                        0.33512
+                                        0.00000   -0.79424
+                                       -0.17255    0.00000    0.45912
+# [408   28  423] from isomal
+multipole     3   16   10              -0.13379
+                                       -0.07079    0.00000   -0.07869
+                                        0.10202
+                                        0.00000   -0.41703
+                                       -0.12222    0.00000    0.31501 
+multipole     4    2   10               0.12997
+                                        0.23056    0.00000    0.19186
+                                       -0.15462
+                                        0.00000   -0.55090
+                                       -0.46175    0.00000    0.70552
+multipole     5    7    1               0.18193
+                                        0.07531    0.00000    0.29884
+                                       -0.12441
+                                        0.00000   -0.42476
+                                       -0.15694    0.00000    0.54917
+multipole     6    5    7              -0.19343
+                                       -0.01785    0.00000    0.24671
+                                       -0.18999
+                                        0.00000   -0.21072
+                                        0.03472    0.00000    0.40071
+multipole     7    5   23              -0.42875
+                                        0.20046    0.00000    0.22146
+                                        0.23298
+                                        0.00000   -0.68017
+                                       -0.26398    0.00000    0.44719
+#[417  431  457] from isomal
+multipole     8   14   30              -0.35277
+                                        0.14774    0.00000    0.30695
+                                        0.10027
+                                        0.00000   -0.69223
+                                       -0.33893    0.00000    0.59196 
+#[424   25  405] from isomal
+multipole     9   12   10              -0.18657
+                                        0.56583    0.00000    0.31862
+                                        0.36487
+                                        0.00000   -0.99045
+                                       -0.03369    0.00000    0.62558
+#[423   22  408] from isomal
+multipole    10    9    3               0.09986
+                                        0.33820    0.00000   -0.16362
+                                        0.30020
+                                        0.00000   -0.65484
+                                       -0.28461    0.00000    0.35464 
+#[418   19  439] from isomal
+multipole    11   13   19              -0.35146
+                                        0.18727    0.00000    0.42836
+                                        0.19011
+                                        0.00000   -0.80337
+                                       -0.14651    0.00000    0.61326 
+#[425   28  424] from isomal
+multipole    12    9   16               0.26741
+                                        0.28056    0.00000   -0.04963
+                                       -0.06944
+                                        0.00000   -0.12736
+                                        0.28352    0.00000    0.19680 
+#[419   18  425] from isomal
+multipole    13   11   12              -0.05468
+                                        0.03846    0.00000    0.06953
+                                       -0.13611
+                                        0.00000   -0.31706
+                                        0.02925    0.00000    0.45317 
+#[431   17  408] from isomal
+multipole    14    8   13               0.13704
+                                        0.23118    0.00000    0.08489
+                                        0.18393
+                                        0.00000   -0.58020
+                                       -0.15583    0.00000    0.39627 
+#Dead multipoles
+#multipole    17   15   12               0.23394
+#                                       -0.06712    0.00000   -0.03236
+#                                       -0.04159
+#                                        0.00000   -0.11544
+#                                       -0.00125    0.00000    0.15703
+#multipole    18   16    3               0.22572
+#                                       -0.04077    0.00000   -0.03420
+#                                       -0.04950
+#                                        0.00000   -0.08067
+#                                       -0.00470    0.00000    0.13017
+#multipole    15   12   17              -0.42172
+#                                        0.19568    0.00000    0.22280
+#                                        0.32829
+#                                        0.00000   -0.74348
+#                                       -0.19132    0.00000    0.41519
+#[428   25  408] from isomal
+multipole    16    3   12              -0.16840
+                                        0.53697    0.00000    0.33622
+                                        0.34852
+                                        0.00000   -0.87809
+                                       -0.14854    0.00000    0.52957
+#[439   18  419] from isomal
+multipole    19   11   13               0.23482
+                                       -0.04360    0.00000   -0.02511
+                                        0.00075
+                                        0.00000   -0.08694
+                                       -0.00460    0.00000    0.08619 
+multipole    20    1    2              -0.00185
+                                       -0.01296    0.00000   -0.08336
+                                        0.03066
+                                        0.00000   -0.00439
+                                       -0.02267    0.00000   -0.02627
+multipole    21    5    7               0.07557
+                                       -0.02636    0.00000   -0.01736
+                                        0.00256
+                                        0.00000    0.03043
+                                       -0.04967    0.00000   -0.03299
+multipole    22    6    5               0.05797
+                                       -0.00081    0.00000   -0.05922
+                                       -0.01726
+                                        0.00000    0.00765
+                                       -0.01145    0.00000    0.00961
+multipole    23    7    5               0.20472
+                                       -0.04567    0.00000   -0.08280
+                                       -0.02313
+                                        0.00000   -0.09595
+                                       -0.02053    0.00000    0.11908
+#[450  431  417] from isomal
+multipole    24   14    8               0.09423
+                                        0.00920    0.00000   -0.00523
+                                       -0.03604
+                                        0.00000    0.03036
+                                       -0.00376    0.00000    0.00568 
+#[451    8  428] from isomal
+multipole    25    3   16               0.05048
+                                        0.03340    0.00000   -0.00536
+                                        0.02491
+                                        0.00000    0.02272
+                                       -0.01574    0.00000   -0.04763 
+#[456   25  428] from isomal
+multipole    26   12    9               0.00941
+                                       -0.03381    0.00000   -0.06383
+                                       -0.03043
+                                        0.00000    0.01457
+                                       -0.07122    0.00000    0.01586
+#[433   19  418] from isomal 
+multipole    27   13   11               0.06044
+                                        0.03068    0.00000   -0.00712
+                                        0.00866
+                                        0.00000   -0.00547
+                                        0.00538    0.00000   -0.00319 
+#[454   23  422]
+multipole    28   10    9               0.07071
+                                        0.01498    0.00000   -0.00321
+                                        0.00242
+                                        0.00000    0.01014
+                                       -0.04264    0.00000   -0.01256 
+multipole    29    4    2               0.00105
+                                        0.00518    0.00000   -0.13789
+                                        0.06122
+                                        0.00000    0.04432
+                                       -0.00409    0.00000   -0.10554
+#[457   17  431]
+multipole    30    8   14               0.23315
+                                       -0.03892    0.00000   -0.04798
+                                       -0.03730
+                                        0.00000   -0.10184
+                                       -0.01143    0.00000    0.13914
+ 
+#multipole DONE
+
+#bond DONE
+bond     1     2   274.9685   1.3967
+bond     1     5   214.7317   1.4853
+bond     1    20   340.5325   1.1041
+bond     2     4   274.9685   1.3968
+bond     3    10   245.7010   1.5006
+bond     3    14   214.1817   1.4935
+#[408   428] from isomal
+bond     3    16   325.9392   1.4281
+bond     3    25   337.9811   1.1025
+bond     4    10   223.6420   1.4916
+bond     4    29   340.5325   1.1029
+bond     5     6   280.3532   1.5050
+bond     5     7   280.7787   1.4162
+bond     5    21   338.7194   1.0949
+bond     6    22   345.9789   1.0934
+bond     7    23   520.6964   0.9720
+bond     8    14   204.1189   1.4223
+bond     8    30   520.6964   0.9710
+bond     9    10   208.0798   1.4014
+bond     9    12   208.0798   1.4182
+bond    10    28   348.6747   1.0949
+bond    11    13   204.1189   1.4001
+bond    11    19   520.6964   0.9730
+bond    12    13   245.7010   1.4991
+#[425   428]
+bond    12    16   268.1441   1.3888
+bond    12    26   348.6747   1.1035
+bond    13    14   214.1817   1.4852
+bond    13    27   337.9811   1.1020
+bond    14    24   337.9811   1.0911
+#Dead hydrogen/oxygen
+#bond    15    17   520.6964   0.9709
+#bond    16    18   520.6964   0.9718
+#bond DONE
+
+#angle DONE
+angle     2     1     5   88.9161   108.7706
+angle     2     1    20   54.8872   110.7022
+angle     5     1    20   45.7431   109.7891
+angle    20     1    20   30.4905   107.624
+angle     1     2     4   88.1869   108.088
+angle    10     3    14   93.9888   108.2474
+#[423     8   428]
+angle    10     3    16   53.7142   111.388
+angle    10     3    25   42.1540   112.2213
+#[428     8   431]
+angle    14     3    16   66.6352   103.7129 
+angle    14     3    25   49.9965   109.160
+#[428     8   451]
+angle    16     3    25   68.9044   110.029
+angle     2     4    10   62.5174   108.2923
+angle     2     4    29   54.8872   109.830
+angle    10     4    29   48.5197   110.173
+angle    29     4    29   30.4905   108.362
+angle     1     5     6   97.7456   110.130
+angle     1     5     7   92.4184   110.951
+angle     1     5    21   43.4448   108.274
+angle     6     5     7   86.3486   110.8144
+angle     6     5    21   44.3192   110.665
+angle     7     5    21   55.3762   105.981
+angle     5     6    22   47.4245   109.690
+angle    22     6    22   36.4069   109.125
+angle     5     7    23   47.5728   106.045
+angle    14     8    30   46.9239   107.544
+angle    10     9    12   87.5400   110.096
+angle     3    10     4   97.2756   110.991
+angle     3    10     9   80.9137   111.5263
+angle     3    10    28   50.1256   107.2003
+angle     4    10     9   84.3328   111.547
+angle     4    10    28   49.3589   108.826
+angle     9    10    28   63.6824   107.133
+angle    13    11    19   46.9239   104.759
+angle     9    12    13   80.9137   110.4247
+#[424    25   428]
+angle     9    12    16   43.1275   108.008
+angle     9    12    26   63.6824   107.1090
+#[419    25   428]
+angle    13    12    16   51.1904   112.4099
+angle    13    12    26   50.1256   109.5314
+#[428    25   456]
+angle    16    12    26   41.6040   110.5248
+angle    11    13    12   91.7411   108.009
+angle    11    13    14   91.4960   111.955
+angle    11    13    27   51.7146   111.898
+angle    12    13    14   93.9888   107.498
+angle    12    13    27   42.1540   110.181
+angle    14    13    27   49.9965   107.4821
+angle     3    14     8   91.4960   110.7390
+angle     3    14    13   98.7285   110.244
+angle     3    14    24   49.9965   107.8002
+angle     8    14    13   91.4960   108.1534
+angle     8    14    24   51.7146   111.0410
+angle    13    14    24   49.9965   108.2012
+#[408    28   425]
+angle    12    16     3   68.8244   112.566
+#angle DONE
+#strbnd DONE
+strbnd     2     1     5   5.7126   5.7126
+strbnd     2     1    20   5.7126   5.7126
+strbnd     5     1    20   5.7126   5.7126
+strbnd    20     1    20   5.7126   5.7126
+strbnd     1     2     4   6.8713   6.8713
+strbnd    10     3    14   24.2731   24.2731
+#[423     8   428]
+strbnd    10     3    16   5.7126   5.7126
+strbnd    10     3    25   24.2731   24.2731
+#[428     8   431]
+strbnd    14     3    16   6.8624   6.8624
+strbnd    14     3    25   24.2731   24.2731
+#[428     8   451]
+strbnd    16     3    25   7.6289   7.6289
+strbnd     2     4    10   20.4528   20.4528
+strbnd     2     4    29   5.7126   5.7126
+strbnd    10     4    29   5.7126   5.7126
+strbnd    29     4    29   5.7126   5.7126
+strbnd     1     5     6   5.7126   5.7126
+strbnd     1     5     7   5.7126   5.7126
+strbnd     1     5    21   5.7126   5.7126
+strbnd     6     5     7   5.7126   5.7126
+strbnd     6     5    21   5.7126   5.7126
+strbnd     7     5    21   5.7126   5.7126
+strbnd     5     6    22   5.7126   5.7126
+strbnd    22     6    22   5.7126   5.7126
+strbnd     5     7    23   6.2784   6.2784
+strbnd    14     8    30   6.2784   6.2784
+strbnd    10     9    12   -18.0208   -18.0208
+strbnd     3    10     4   24.2731   24.2731
+strbnd     3    10     9   24.2731   24.2731
+strbnd     3    10    28   24.2731   24.2731
+strbnd     4    10     9   24.2731   24.2731
+strbnd     4    10    28   24.2731   24.2731
+strbnd     9    10    28   24.2731   24.2731
+strbnd    13    11    19   6.2784   6.2784
+strbnd     9    12    13   24.2731   24.2731
+#[424    25   428]
+strbnd     9    12    16   27.9302   27.9302
+strbnd     9    12    26   24.2731   24.2731
+#[419    25   428]
+strbnd    13    12    16   27.9302   27.9302
+strbnd    13    12    26   24.2731   24.2731
+#[428    25   456 ]
+strbnd    16    12    26   27.9302   27.9302 
+strbnd    11    13    12   24.2731   24.2731
+strbnd    11    13    14   24.2731   24.2731
+strbnd    11    13    27   24.2731   24.2731
+strbnd    12    13    14   24.2731   24.2731
+strbnd    12    13    27   24.2731   24.2731
+strbnd    14    13    27   24.2731   24.2731
+strbnd     3    14     8   24.2731   24.2731
+strbnd     3    14    13   24.2731   24.2731
+strbnd     3    14    24   24.2731   24.2731
+strbnd     8    14    13   24.2731   24.2731
+strbnd     8    14    24   24.2731   24.2731
+strbnd    13    14    24   24.2731   24.2731
+#[408    28   425]
+strbnd    12    16     3   12.3252   12.3252 
+#strbnd DONE
+#vdw DONE
+vdw   1 3.8200  0.1010  0.0000
+vdw   2 3.4050  0.1100  0.0000
+vdw   3 3.6500  0.1010  0.0000
+vdw   4 3.8200  0.1010  0.0000
+vdw   5 3.6500  0.1010  0.0000
+vdw   6 3.8200  0.1010  0.0000
+vdw   7 3.4050  0.1100  0.0000
+vdw   8 3.4050  0.1100  0.0000
+vdw   9 3.4050  0.1100  0.0000
+vdw  10 3.6500  0.1010  0.0000
+vdw  11 3.4050  0.1100  0.0000
+vdw  12 3.6500  0.1010  0.0000
+vdw  13 3.6500  0.1010  0.0000
+vdw  14 3.6500  0.1010  0.0000
+#Dead hydrogen/oxygen
+#vdw  17 2.6550  0.0135  0.9100
+#vdw  18 2.6550  0.0135  0.9100
+#vdw  15 3.4050  0.1100  0.0000
+vdw  16 3.4050  0.1100  0.0000
+vdw  19 2.6550  0.0135  0.9100
+vdw  20 2.9600  0.0240  0.9200
+vdw  21 2.8700  0.0240  0.9100
+vdw  22 2.9600  0.0240  0.9200
+vdw  23 2.6550  0.0135  0.9100
+vdw  24 2.8700  0.0240  0.9100
+vdw  25 2.8700  0.0240  0.9100
+vdw  26 2.9600  0.0240  0.9200
+vdw  27 2.8700  0.0240  0.9100
+vdw  28 2.9800  0.0240  0.9200
+vdw  29 2.9600  0.0240  0.9200
+vdw  30 2.6550  0.0135  0.9100
+
+biotype      1  H0    "BCD"     23  O0  
+biotype      2  O0    "BCD"      7  H0    C0  
+biotype      3  C0    "BCD"      5  O0    C1    C2    H1  
+biotype      4  C1    "BCD"      1  C0    O1    H2    H3  
+biotype      5  C2    "BCD"      6  C0    H109  H110  H111
+biotype      6  H1    "BCD"     21  C0  
+biotype      7  O1    "BCD"      2  C1    C3  
+biotype      8  H2    "BCD"     20  C1  
+biotype      9  H3    "BCD"     20  C1  
+biotype     10  C3    "BCD"      4  O1    C4    H4    H5  
+biotype     11  C4    "BCD"     10  C3    H6    O2    C5  
+biotype     12  H4    "BCD"     29  C3  
+biotype     13  H5    "BCD"     29  C3  
+biotype     14  H6    "BCD"     28  C4  
+biotype     15  O2    "BCD"      9  C4    C6  
+biotype     16  C5    "BCD"      3  C4    H7    O3    C7  
+biotype     17  C6    "BCD"     12  O2    H8    O4    C8  
+biotype     18  H7    "BCD"     25  C5  
+biotype     19  O3    "BCD"     16  C5    C59 
+biotype     20  C7    "BCD"     14  C5    C8    H9    O5  
+biotype     21  H8    "BCD"     26  C6  
+biotype     22  O4    "BCD"     16  C6    C9  
+biotype     23  C8    "BCD"     13  C6    C7    H10   O6  
+biotype     24  H9    "BCD"     24  C7  
+biotype     25  O5    "BCD"      8  C7    H11 
+biotype     26  C9    "BCD"      3  O4    H12   C10   C11 
+biotype     27  H10   "BCD"     27  C8  
+biotype     28  O6    "BCD"     11  C8    H13 
+biotype     29  H11   "BCD"     30  O5  
+biotype     30  H12   "BCD"     25  C9  
+biotype     31  C10   "BCD"     10  C9    H14   O7    C12 
+biotype     32  C11   "BCD"     14  C9    H15   O8    C13 
+biotype     33  H13   "BCD"     19  O6  
+biotype     34  H14   "BCD"     28  C10 
+biotype     35  O7    "BCD"      9  C10   C14 
+biotype     36  C12   "BCD"      4  C10   O9    H16   H17 
+biotype     37  H15   "BCD"     24  C11 
+biotype     38  O8    "BCD"      8  C11   H18 
+biotype     39  C13   "BCD"     13  C11   C14   H19   O10 
+biotype     40  C14   "BCD"     12  O7    C13   H20   O11 
+biotype     41  O9    "BCD"      2  C12   C15 
+biotype     42  H16   "BCD"     29  C12 
+biotype     43  H17   "BCD"     29  C12 
+biotype     44  H18   "BCD"     30  O8  
+biotype     45  H19   "BCD"     27  C13 
+biotype     46  O10   "BCD"     11  C13   H21 
+biotype     47  H20   "BCD"     26  C14 
+biotype     48  O11   "BCD"     16  C14   C16 
+biotype     49  C15   "BCD"      1  O9    C17   H22   H23 
+biotype     50  H21   "BCD"     19  O10 
+biotype     51  C16   "BCD"      3  O11   H29   C19   C20 
+biotype     52  C17   "BCD"      5  C15   C18   O12   H24 
+biotype     53  H22   "BCD"     20  C15 
+biotype     54  H23   "BCD"     20  C15 
+biotype     55  C18   "BCD"      6  C17   H25   H26   H27 
+biotype     56  O12   "BCD"      7  C17   H28 
+biotype     57  H24   "BCD"     21  C17 
+biotype     58  H25   "BCD"     22  C18 
+biotype     59  H26   "BCD"     22  C18 
+biotype     60  H27   "BCD"     22  C18 
+biotype     61  H28   "BCD"     23  O12 
+biotype     62  H29   "BCD"     25  C16 
+biotype     63  C19   "BCD"     10  C16   H30   O13   C21 
+biotype     64  C20   "BCD"     14  C16   H31   O14   C22 
+biotype     65  H30   "BCD"     28  C19 
+biotype     66  O13   "BCD"      9  C19   C23 
+biotype     67  C21   "BCD"      4  C19   O15   H32   H33 
+biotype     68  H31   "BCD"     24  C20 
+biotype     69  O14   "BCD"      8  C20   H34 
+biotype     70  C22   "BCD"     13  C20   C23   H35   O16 
+biotype     71  C23   "BCD"     12  O13   C22   H36   O17 
+biotype     72  O15   "BCD"      2  C21   C24 
+biotype     73  H32   "BCD"     29  C21 
+biotype     74  H33   "BCD"     29  C21 
+biotype     75  H34   "BCD"     30  O14 
+biotype     76  H35   "BCD"     27  C22 
+biotype     77  O16   "BCD"     11  C22   H37 
+biotype     78  H36   "BCD"     26  C23 
+biotype     79  O17   "BCD"     16  C23   C25 
+biotype     80  C24   "BCD"      1  O15   C26   H38   H39 
+biotype     81  H37   "BCD"     19  O16 
+biotype     82  C25   "BCD"      3  O17   H45   C28   C29 
+biotype     83  C26   "BCD"      5  C24   C27   O18   H40 
+biotype     84  H38   "BCD"     20  C24 
+biotype     85  H39   "BCD"     20  C24 
+biotype     86  C27   "BCD"      6  C26   H41   H42   H43 
+biotype     87  O18   "BCD"      7  C26   H44 
+biotype     88  H40   "BCD"     21  C26 
+biotype     89  H41   "BCD"     22  C27 
+biotype     90  H42   "BCD"     22  C27 
+biotype     91  H43   "BCD"     22  C27 
+biotype     92  H44   "BCD"     23  O18 
+biotype     93  H45   "BCD"     25  C25 
+biotype     94  C28   "BCD"     10  C25   H46   O19   C30 
+biotype     95  C29   "BCD"     14  C25   H47   O20   C31 
+biotype     96  H46   "BCD"     28  C28 
+biotype     97  O19   "BCD"      9  C28   C32 
+biotype     98  C30   "BCD"      4  C28   O21   H48   H49 
+biotype     99  H47   "BCD"     24  C29 
+biotype    100  O20   "BCD"      8  C29   H50 
+biotype    101  C31   "BCD"     13  C29   C32   H51   O22 
+biotype    102  C32   "BCD"     12  O19   C31   H52   O23 
+biotype    103  O21   "BCD"      2  C30   C33 
+biotype    104  H48   "BCD"     29  C30 
+biotype    105  H49   "BCD"     29  C30 
+biotype    106  H50   "BCD"     30  O20 
+biotype    107  H51   "BCD"     27  C31 
+biotype    108  O22   "BCD"     11  C31   H53 
+biotype    109  H52   "BCD"     26  C32 
+biotype    110  O23   "BCD"     16  C32   C34 
+biotype    111  C33   "BCD"      1  O21   C35   H54   H55 
+biotype    112  H53   "BCD"     19  O22 
+biotype    113  C34   "BCD"      3  O23   H61   C37   C38 
+biotype    114  C35   "BCD"      5  C33   C36   O24   H56 
+biotype    115  H54   "BCD"     20  C33 
+biotype    116  H55   "BCD"     20  C33 
+biotype    117  C36   "BCD"      6  C35   H57   H58   H59 
+biotype    118  O24   "BCD"      7  C35   H60 
+biotype    119  H56   "BCD"     21  C35 
+biotype    120  H57   "BCD"     22  C36 
+biotype    121  H58   "BCD"     22  C36 
+biotype    122  H59   "BCD"     22  C36 
+biotype    123  H60   "BCD"     23  O24 
+biotype    124  H61   "BCD"     25  C34 
+biotype    125  C37   "BCD"     10  C34   H62   O25   C39 
+biotype    126  C38   "BCD"     14  C34   H63   O26   C40 
+biotype    127  H62   "BCD"     28  C37 
+biotype    128  O25   "BCD"      9  C37   C41 
+biotype    129  C39   "BCD"      4  C37   O27   H64   H65 
+biotype    130  H63   "BCD"     24  C38 
+biotype    131  O26   "BCD"      8  C38   H66 
+biotype    132  C40   "BCD"     13  C38   C41   H67   O28 
+biotype    133  C41   "BCD"     12  O25   C40   H68   O29 
+biotype    134  O27   "BCD"      2  C39   C42 
+biotype    135  H64   "BCD"     29  C39 
+biotype    136  H65   "BCD"     29  C39 
+biotype    137  H66   "BCD"     30  O26 
+biotype    138  H67   "BCD"     27  C40 
+biotype    139  O28   "BCD"     11  C40   H69 
+biotype    140  H68   "BCD"     26  C41 
+biotype    141  O29   "BCD"     16  C41   C43 
+biotype    142  C42   "BCD"      1  O27   C44   H70   H71 
+biotype    143  H69   "BCD"     19  O28 
+biotype    144  C43   "BCD"      3  O29   H77   C46   C47 
+biotype    145  C44   "BCD"      5  C42   C45   O30   H72 
+biotype    146  H70   "BCD"     20  C42 
+biotype    147  H71   "BCD"     20  C42 
+biotype    148  C45   "BCD"      6  C44   H73   H74   H75 
+biotype    149  O30   "BCD"      7  C44   H76 
+biotype    150  H72   "BCD"     21  C44 
+biotype    151  H73   "BCD"     22  C45 
+biotype    152  H74   "BCD"     22  C45 
+biotype    153  H75   "BCD"     22  C45 
+biotype    154  H76   "BCD"     23  O30 
+biotype    155  H77   "BCD"     25  C43 
+biotype    156  C46   "BCD"     10  C43   H78   O31   C48 
+biotype    157  C47   "BCD"     14  C43   H79   O32   C49 
+biotype    158  H78   "BCD"     28  C46 
+biotype    159  O31   "BCD"      9  C46   C50 
+biotype    160  C48   "BCD"      4  C46   O33   H80   H81 
+biotype    161  H79   "BCD"     24  C47 
+biotype    162  O32   "BCD"      8  C47   H82 
+biotype    163  C49   "BCD"     13  C47   C50   H83   O34 
+biotype    164  C50   "BCD"     12  O31   C49   H84   O35 
+biotype    165  O33   "BCD"      2  C48   C51 
+biotype    166  H80   "BCD"     29  C48 
+biotype    167  H81   "BCD"     29  C48 
+biotype    168  H82   "BCD"     30  O32 
+biotype    169  H83   "BCD"     27  C49 
+biotype    170  O34   "BCD"     11  C49   H85 
+biotype    171  H84   "BCD"     26  C50 
+biotype    172  O35   "BCD"     16  C50   C52 
+biotype    173  C51   "BCD"      1  O33   C53   H86   H87 
+biotype    174  H85   "BCD"     19  O34 
+biotype    175  C52   "BCD"      3  O35   H93   C55   C56 
+biotype    176  C53   "BCD"      5  C51   C54   O36   H88 
+biotype    177  H86   "BCD"     20  C51 
+biotype    178  H87   "BCD"     20  C51 
+biotype    179  C54   "BCD"      6  C53   H89   H90   H91 
+biotype    180  O36   "BCD"      7  C53   H92 
+biotype    181  H88   "BCD"     21  C53 
+biotype    182  H89   "BCD"     22  C54 
+biotype    183  H90   "BCD"     22  C54 
+biotype    184  H91   "BCD"     22  C54 
+biotype    185  H92   "BCD"     23  O36 
+biotype    186  H93   "BCD"     25  C52 
+biotype    187  C55   "BCD"     14  C52   H94   O37   C57 
+biotype    188  C56   "BCD"     10  C52   H95   O38   C58 
+biotype    189  H94   "BCD"     24  C55 
+biotype    190  O37   "BCD"      8  C55   H96 
+biotype    191  C57   "BCD"     13  C55   H97   O39   C59 
+biotype    192  H95   "BCD"     28  C56 
+biotype    193  O38   "BCD"      9  C56   C59 
+biotype    194  C58   "BCD"      4  C56   O40   H98   H99 
+biotype    195  H96   "BCD"     30  O37 
+biotype    196  H97   "BCD"     27  C57 
+biotype    197  O39   "BCD"     11  C57   H100
+biotype    198  C59   "BCD"     12  O3    C57   O38   H101
+biotype    199  O40   "BCD"      2  C58   C60 
+biotype    200  H98   "BCD"     29  C58 
+biotype    201  H99   "BCD"     29  C58 
+biotype    202  H100  "BCD"     19  O39 
+biotype    203  H101  "BCD"     26  C59 
+biotype    204  C60   "BCD"      1  O40   C61   H102  H103
+biotype    205  C61   "BCD"      5  C60   C62   O41   H104
+biotype    206  H102  "BCD"     20  C60 
+biotype    207  H103  "BCD"     20  C60 
+biotype    208  C62   "BCD"      6  C61   H105  H106  H107
+biotype    209  O41   "BCD"      7  C61   H108
+biotype    210  H104  "BCD"     21  C61 
+biotype    211  H105  "BCD"     22  C62 
+biotype    212  H106  "BCD"     22  C62 
+biotype    213  H107  "BCD"     22  C62 
+biotype    214  H108  "BCD"     23  O41 
+biotype    215  H109  "BCD"     22  C2  
+biotype    216  H110  "BCD"     22  C2  
+biotype    217  H111  "BCD"     22  C2  
+biotype    218  NA    "NA"     301
+biotype    219  CL    "CL"     302
+biotype    220  O     "WAT"    349
+biotype    221  H1    "WAT"    350
+biotype    222  H2    "WAT"    350
+

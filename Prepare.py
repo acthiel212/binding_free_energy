@@ -69,6 +69,6 @@ shutil.copy(f"{guest_dir}/{filename}.xml", host_guest_dir)
 os.chdir(host_guest_dir)
 merge_host_guest_files(f"{host_guest_dir}/{filename}.pdb", f"{host_guest_dir}/hp-bcd.pdb")
 copy_XYZ_coords(f"{host_guest_dir}/hp-bcd_{filename}.pdb", f"{args.docked_file}")
-os.remove(f"{filename}.pdb"), os.remove(f"{filename}.prm"), os.remove("hp-bcd.pdb"), os.remove("hp-bcd.prm")
+#os.remove(f"{filename}.prm"), os.remove("hp-bcd.prm")
 os.chdir(CWD)
 
