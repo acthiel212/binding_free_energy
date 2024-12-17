@@ -13,16 +13,6 @@ from shutil import copyfile
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 BINDING_FREE_ENERGY_DIR = SCRIPT_DIR # Assuming workflow.py exists in binding_free_energy
 
-NAME = "Diflunisal"
-
-# Template directories
-TEMPLATE_GUEST_DIR = os.path.join(SCRIPT_DIR, "Template", "Guest")
-TEMPLATE_HOST_GUEST_DIR = os.path.join(SCRIPT_DIR, "Template", "Host_Guest")
-
-# Working directories
-WORKING_GUEST_DIR = os.path.join(os.getcwd(), "Guest_Workflow")
-WORKING_HOST_GUEST_DIR = os.path.join(os.getcwd(), "Host_Guest_Workflow")
-
 VDW_LAMBDAS = [
     0, 0.4, 0.5, 0.525, 0.55, 0.575, 0.5875, 0.6, 0.6125, 0.625, 0.6375, 0.65, 0.6625, 0.675, 0.7,
     0.725, 0.75, 0.775, 0.8, 0.85, 0.9, 0.95, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0
@@ -32,26 +22,20 @@ ELEC_LAMBDAS = [
     0.0, 0.0, 0.0, 0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 1.0
 ]
 
-# Structure and forcefield files
-STRUCTURE_GUEST = "Diflunisal_solv_min.pdb"
-FORCEFIELD_GUEST = "Diflunisal.xml"
-STRUCTURE_HOST_GUEST = "host-Diflunisal_solv_min.pdb"
-FORCEFIELD_HOST_GUEST = "Diflunisal.xml"
-
-
-# Analysis directories
-ANALYSIS_GUEST_DIR = os.path.join(WORKING_GUEST_DIR, "analysis")
-ANALYSIS_HOST_GUEST_DIR = os.path.join(WORKING_HOST_GUEST_DIR, "analysis")
-
-os.makedirs(ANALYSIS_GUEST_DIR, exist_ok=True)
-os.makedirs(ANALYSIS_HOST_GUEST_DIR, exist_ok=True)
-
 # ----------------------------
 # User-Defined Flags
 # ----------------------------
 
 
 # Default values for user-defined flags
+CWD = os.getcwd()
+TEMPLATE_GUEST_DIR = ""
+TEMPLATE_HOST_GUEST_DIR = ""
+WORKING_GUEST_DIR = ""
+WORKING_HOST_GUEST_DIR = ""
+ANALYSIS_GUEST_DIR = ""
+ANALYSIS_HOST_GUEST_DIR = ""
+NAME = ""
 ALCHEMICAL_ATOMS = ""
 RESTRAINT_ATOMS_1 = ""
 RESTRAINT_ATOMS_2 = ""
@@ -59,59 +43,49 @@ START_AT = ""
 RUN_EQ = True
 
 def parse_arguments():
-    global ALCHEMICAL_ATOMS, RESTRAINT_ATOMS_1, RESTRAINT_ATOMS_2, START_AT, RUN_EQ
+    global NAME, ALCHEMICAL_ATOMS, RESTRAINT_ATOMS_1, RESTRAINT_ATOMS_2, START_AT, RUN_EQ, \
+        TEMPLATE_GUEST_DIR, TEMPLATE_HOST_GUEST_DIR, WORKING_GUEST_DIR, WORKING_HOST_GUEST_DIR, \
+        ANALYSIS_GUEST_DIR, ANALYSIS_HOST_GUEST_DIR
+
 
     parser = argparse.ArgumentParser(description="Script options for the workflow.")
 
     # Define command-line arguments
-    parser.add_argument("--xyz", type=str, default="", required=True, help="Name of guest molecule. (Should match the name of the XYZ file.)")
+    parser.add_argument("--guest_name", type=str, default="", required=True, help="Name of guest molecule. (Should match the name of the XYZ file.)")
     parser.add_argument("--start_at", type=str, default="", help="Start the script at the specified method. Available methods: setup_directories, submit_equil, submit_thermo, submit_bar, collect_energy.")
     parser.add_argument("--run_equilibration", type=str, choices=["true", "false"], default="true",
                         help="Whether to run equilibration. Defaults to true.")
-    #parser.add_argument("--alchemical_atoms", type=str, required=True, help="Comma-separated list of alchemical atoms (required).")
-    #parser.add_argument("--restraint_atoms1", type=str, default="", help="Comma-separated list of restraint atoms 1 (optional).")
-    #parser.add_argument("--restraint_atoms2", type=str, default="", help="Comma-separated list of restraint atoms 2 (optional).")
+    parser.add_argument("--alchemical_atoms", type=str, required=True, help="Comma-separated list of alchemical atoms (required). "
+                                                                            "If not set, automatically determines set from guest atoms.")
+    parser.add_argument("--restraint_atoms1", type=str, default="", help="Comma-separated list of restraint atoms 1 (optional). If not set, automatically choose restraints.")
+    parser.add_argument("--restraint_atoms2", type=str, default="", help="Comma-separated list of restraint atoms 2 (optional). If not set, automatically choose restraints.")
 
     # Parse the arguments
     args = parser.parse_args()
 
     # Assign values from the parsed arguments
+    NAME = args.guest_name
     START_AT = args.start_at
     RUN_EQ = args.run_equilibration.lower() == "true"
     ALCHEMICAL_ATOMS = args.alchemical_atoms
     RESTRAINT_ATOMS_1 = args.restraint_atoms1
     RESTRAINT_ATOMS_2 = args.restraint_atoms2
+    # Template directories
+    TEMPLATE_GUEST_DIR = os.path.join(SCRIPT_DIR, "workflow", f"{NAME}", "Template", "Guest")
+    TEMPLATE_HOST_GUEST_DIR = os.path.join(SCRIPT_DIR, "workflow", f"{NAME}", "Template", "Host_Guest")
+
+    # Working directories
+    WORKING_GUEST_DIR = os.path.join(SCRIPT_DIR, "workflow", f"{NAME}", "Guest_Workflow")
+    WORKING_HOST_GUEST_DIR = os.path.join(SCRIPT_DIR, "workflow", f"{NAME}", "Host_Guest_Workflow")
+
+    # Analysis directories
+    ANALYSIS_GUEST_DIR = os.path.join(WORKING_GUEST_DIR, "analysis")
+    ANALYSIS_HOST_GUEST_DIR = os.path.join(WORKING_HOST_GUEST_DIR, "analysis")
+
+    os.makedirs(ANALYSIS_GUEST_DIR, exist_ok=True)
+    os.makedirs(ANALYSIS_HOST_GUEST_DIR, exist_ok=True)
 
     return args
-
-
-# ----------------------------
-# Prepare Step
-# ----------------------------
-print("Running Prepare.py...")
-prepare_command = [
-    "python", os.path.join(BINDING_FREE_ENERGY_DIR, "Prepare.py"),
-    "--guest_file", "Diflunisal.xyz",
-    "--prm_file", "Diflunisal.prm",
-    "--host_file_dir", "/HP-BCD/",
-    "--target_dir", "/workflow/",
-    "--docked_file", "/DockedStructures/HPBCD_1_diflunisal.results.xyz"
-]
-subprocess.run(prepare_command, check=True)
-print("Prepare step completed.")
-
-# ----------------------------
-# Solvate Step
-# ----------------------------
-print("Running Solvate.py...")
-solvate_command = [
-    "python", os.path.join(BINDING_FREE_ENERGY_DIR, "Solvate.py"),
-    "--pdb_file", "Diflunisal.pdb",
-    "--forcefield_file", "Diflunisal.xml", "hp-bcd.xml",
-    "--nonbonded_method", "PME"
-]
-subprocess.run(solvate_command, check=True)
-print("Solvate step completed.")
 
 
 # ----------------------------
@@ -141,7 +115,44 @@ def setup_directories(target_dir, structure_file, forcefield_file, alchemical_at
         restraint_atoms_2 (str): Restraint atoms set 2.
         workflow_type (str): Workflow type, either 'Guest' or 'Host_Guest'.
     """
-    print(f"Setting up directory: {target_dir}")
+
+    # ----------------------------
+    # Prepare Step
+    # ----------------------------
+    print("Running Prepare.py...")
+    os.chdir(os.path.join(BINDING_FREE_ENERGY_DIR, "Guests"))
+    prepare_command = [
+        "python", os.path.join(BINDING_FREE_ENERGY_DIR, "Prepare.py"),
+        "--guest_file", f"{NAME}.xyz",
+        "--prm_file", f"{NAME}.prm",
+        "--host_file_dir", os.path.join(BINDING_FREE_ENERGY_DIR, "HP-BCD"),
+        "--target_dir", os.path.join(BINDING_FREE_ENERGY_DIR, "workflow"),
+        "--docked_file", os.path.join(BINDING_FREE_ENERGY_DIR, "DockedStructures", f"HPBCD_1_{NAME}.results.xyz")
+    ]
+    subprocess.run(prepare_command, check=True)
+    print("Prepare step completed.")
+
+    # ----------------------------
+    # Solvate Step
+    # ----------------------------
+    print("Running Solvate.py...")
+    for directory in [TEMPLATE_GUEST_DIR, TEMPLATE_HOST_GUEST_DIR]:
+        os.chdir(directory)
+        mol_name = NAME
+        if(directory == TEMPLATE_HOST_GUEST_DIR):
+            mol_name = f"hp-bcd_{NAME}"
+        solvate_command = [
+            "python", os.path.join(BINDING_FREE_ENERGY_DIR, "Solvate.py"),
+            "--pdb_file", f"{mol_name}.pdb",
+            "--forcefield_file", f"{NAME}.xml", "hp-bcd.xml",
+            "--nonbonded_method", "PME"
+        ]
+        subprocess.run(solvate_command, check=True)
+        os.chdir(CWD)
+
+    print("Solvate step completed.")
+
+    print(f"Setting up production directories: {target_dir}")
 
     # Create target directory
     os.makedirs(target_dir, exist_ok=True)
@@ -503,7 +514,7 @@ def execute_workflow(start_method):
         print(f"Executing method: {method}")
 
         if method == "setup_directories":
-            setup_directories(WORKING_GUEST_DIR, STRUCTURE_GUEST, FORCEFIELD_GUEST, ALCHEMICAL_ATOMS, "", "", "Guest")
+            setup_directories(WORKING_GUEST_DIR, f"{NAME}.pdb", f"{NAME}.xml", ALCHEMICAL_ATOMS, "", "", "Guest")
 
             # Adjust alchemical atom indices for host-guest
             start, end = map(int, ALCHEMICAL_ATOMS.split("-"))
@@ -513,8 +524,8 @@ def execute_workflow(start_method):
 
             setup_directories(
                 WORKING_HOST_GUEST_DIR,
-                STRUCTURE_HOST_GUEST,
-                FORCEFIELD_HOST_GUEST,
+                f"hp-bcd_{NAME}.pdb",
+                f"{NAME}.xml",
                 alchemical_atoms_host_guest,
                 RESTRAINT_ATOMS_1,
                 RESTRAINT_ATOMS_2,
