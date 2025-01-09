@@ -57,7 +57,7 @@ def parse_arguments():
     parser.add_argument("--start_at", type=str, default="", help="Start the script at the specified method. Available methods: setup_directories, submit_equil, submit_thermo, submit_bar, collect_energy.")
     parser.add_argument("--run_equilibration", type=str, choices=["true", "false"], default="true",
                         help="Whether to run equilibration. Defaults to true.")
-    parser.add_argument("--alchemical_atoms", type=str, required=True, help="Comma-separated list of alchemical atoms (required). "
+    parser.add_argument("--alchemical_atoms", type=str, default="", help="Comma-separated list of alchemical atoms (required). "
                                                                             "If not set, automatically determines set from guest atoms.")
     parser.add_argument("--restraint_atoms1", type=str, default="", help="Comma-separated list of restraint atoms 1 (optional). If not set, automatically choose restraints.")
     parser.add_argument("--restraint_atoms2", type=str, default="", help="Comma-separated list of restraint atoms 2 (optional). If not set, automatically choose restraints.")
