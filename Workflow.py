@@ -144,7 +144,7 @@ def setup_directories(target_dir, structure_file, forcefield_file, alchemical_at
     print("Prepare step completed.")
 
     if RESTRAINT_ATOMS_2 =="":
-        RESTRAINT_ATOMS_2 = calculate_restraint_subsection(f"{TEMPLATE_HOST_GUEST_DIR}/{structure_file}")
+        RESTRAINT_ATOMS_2 = calculate_restraint_subsection(f"{TEMPLATE_HOST_GUEST_DIR}/{structure_file}", 2.5)
 
     # ----------------------------
     # Solvate Step
