@@ -111,6 +111,25 @@ def replace_in_file(file_path, replacements):
     with open(file_path, "w") as f:
         f.write(content)
 
+def run_prepare():
+
+    # ----------------------------
+    # Prepare Step
+    # ----------------------------
+    print("Running Prepare.py...")
+    os.chdir(os.path.join(BINDING_FREE_ENERGY_DIR, "Guests"))
+    prepare_command = [
+        "python", os.path.join(BINDING_FREE_ENERGY_DIR, "Prepare.py"),
+        "--guest_file", f"{NAME}.xyz",
+        "--prm_file", f"{NAME}.prm",
+        "--host_file_dir", os.path.join(BINDING_FREE_ENERGY_DIR, "HP-BCD"),
+        "--target_dir", os.path.join(BINDING_FREE_ENERGY_DIR, "workflow"),
+        "--docked_file", os.path.join(BINDING_FREE_ENERGY_DIR, "DockedStructures", f"HPBCD_1_{NAME}.results.xyz")
+    ]
+
+    subprocess.run(prepare_command, check=True)
+    print("Prepare step completed.")
+
 def setup_directories(target_dir, structure_file, forcefield_file, alchemical_atoms,
                       restraint_atoms_1, restraint_atoms_2, workflow_type):
     global RESTRAINT_ATOMS_2
@@ -127,21 +146,6 @@ def setup_directories(target_dir, structure_file, forcefield_file, alchemical_at
         workflow_type (str): Workflow type, either 'Guest' or 'Host_Guest'.
     """
 
-    # ----------------------------
-    # Prepare Step
-    # ----------------------------
-    print("Running Prepare.py...")
-    os.chdir(os.path.join(BINDING_FREE_ENERGY_DIR, "Guests"))
-    prepare_command = [
-        "python", os.path.join(BINDING_FREE_ENERGY_DIR, "Prepare.py"),
-        "--guest_file", f"{NAME}.xyz",
-        "--prm_file", f"{NAME}.prm",
-        "--host_file_dir", os.path.join(BINDING_FREE_ENERGY_DIR, "HP-BCD"),
-        "--target_dir", os.path.join(BINDING_FREE_ENERGY_DIR, "workflow"),
-        "--docked_file", os.path.join(BINDING_FREE_ENERGY_DIR, "DockedStructures", f"HPBCD_1_{NAME}.results.xyz")
-    ]
-    subprocess.run(prepare_command, check=True)
-    print("Prepare step completed.")
 
     if RESTRAINT_ATOMS_2 =="":
         RESTRAINT_ATOMS_2 = calculate_restraint_subsection(f"{TEMPLATE_HOST_GUEST_DIR}/{structure_file}", 2.5)
@@ -152,9 +156,7 @@ def setup_directories(target_dir, structure_file, forcefield_file, alchemical_at
     print("Running Solvate.py...")
     for directory in [TEMPLATE_GUEST_DIR, TEMPLATE_HOST_GUEST_DIR]:
         os.chdir(directory)
-        mol_name = NAME
-        if(directory == TEMPLATE_HOST_GUEST_DIR):
-            mol_name = f"hp-bcd_{NAME}"
+        mol_name = f"hp-bcd_{NAME}" if directory == TEMPLATE_HOST_GUEST_DIR else NAME
         solvate_command = [
             "python", os.path.join(BINDING_FREE_ENERGY_DIR, "Solvate.py"),
             "--pdb_file", f"{mol_name}.pdb",
@@ -501,7 +503,6 @@ def collect_energy(target_dir):
     print(f"Total free energy collected from {target_dir}: {free_energy}")
     return free_energy
 
-
 # Define the workflow execution function
 def execute_workflow(start_method):
 
@@ -518,6 +519,10 @@ def execute_workflow(start_method):
     thermo_job_ids_guest = []
     thermo_job_ids_host_guest = []
 
+    if "setup_directories" in methods_order and not start_found:
+        print("Running the prepare step before setting up directories...")
+        run_prepare()
+
     for method in methods_order:
         if not start_found:
             if method == start_method:
@@ -526,6 +531,8 @@ def execute_workflow(start_method):
                 continue
 
         print(f"Executing method: {method}")
+
+
 
         if method == "setup_directories":
             setup_directories(WORKING_GUEST_DIR, f"{NAME}.pdb", f"{NAME}.xml", ALCHEMICAL_ATOMS, "", "", "Guest")
