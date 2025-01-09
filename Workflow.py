@@ -10,6 +10,8 @@ from shutil import copyfile
 # ----------------------------
 # Configuration Parameters
 # ----------------------------
+from alchemistry.Harmonic_Restraint import calculate_restraint_subsection
+
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 BINDING_FREE_ENERGY_DIR = SCRIPT_DIR # Assuming workflow.py exists in binding_free_energy
 
@@ -67,6 +69,14 @@ def parse_arguments():
     NAME = args.guest_name
     START_AT = args.start_at
     RUN_EQ = args.run_equilibration.lower() == "true"
+    if args.alchemical_atoms == "":
+        guest_dir = os.path.join(BINDING_FREE_ENERGY_DIR, "Guests")
+        with open(f"{guest_dir}/{NAME}.xyz", 'r') as f:
+            first_line = f.readline()
+            first_column = first_line.split()[0]
+
+        args.alchemical_atoms = f"1-{first_column}"
+
     ALCHEMICAL_ATOMS = args.alchemical_atoms
     RESTRAINT_ATOMS_1 = args.restraint_atoms1
     RESTRAINT_ATOMS_2 = args.restraint_atoms2
@@ -103,6 +113,7 @@ def replace_in_file(file_path, replacements):
 
 def setup_directories(target_dir, structure_file, forcefield_file, alchemical_atoms,
                       restraint_atoms_1, restraint_atoms_2, workflow_type):
+    global RESTRAINT_ATOMS_2
     """
     Sets up the directory and job files for the specified workflow type.
 
@@ -131,6 +142,9 @@ def setup_directories(target_dir, structure_file, forcefield_file, alchemical_at
     ]
     subprocess.run(prepare_command, check=True)
     print("Prepare step completed.")
+
+    if RESTRAINT_ATOMS_2 =="":
+        RESTRAINT_ATOMS_2 = calculate_restraint_subsection(f"{TEMPLATE_HOST_GUEST_DIR}/{structure_file}")
 
     # ----------------------------
     # Solvate Step
