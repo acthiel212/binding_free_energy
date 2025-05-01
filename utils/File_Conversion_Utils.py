@@ -41,16 +41,18 @@ def transfer_CONECT_records(file1_path, file2_path):
 def merge_host_guest_files(guest_file_path, host_file_path):
     # Count number of HETATM records in Host file
     host_hetatm_number = 0
-    guest_name = os.path.splitext(guest_file_path)[0]
-    host_name = os.path.splitext(host_file_path)[0]
-    if os.path.exists(f"{guest_name}.prm") and os.path.exists(f"{host_name}.prm"):
-        print(f"Corresponding parameter files: {guest_name}.prm and {host_name}.prm")
+    guest_name_path = os.path.splitext(guest_file_path)[0]
+    host_name_path = os.path.splitext(host_file_path)[0]
+    guest_name = os.path.basename(guest_file_path).split('.')[0]
+    host_name = os.path.basename(host_file_path).split('.')[0]
+    if os.path.exists(f"{guest_name_path}.prm") and os.path.exists(f"{host_name_path}.prm"):
+        print(f"Corresponding parameter files: {guest_name_path}.prm and {host_name_path}.prm")
     else:
         print("Parameter files missing for the host or guess. "
               "Please make sure parameter files are located in the same location as these structures!")
         exit()
 
-
+    # Prepare host file to be merged at top by stripping out CONECT records and counting number of HETATMs
     with open(host_file_path, 'r') as infile, open('host_file_temp.txt', 'w') as outfile:
         for line in infile:
             if re.search('HETATM', line):
@@ -59,7 +61,7 @@ def merge_host_guest_files(guest_file_path, host_file_path):
                 line = str("")
             outfile.write(line)
 
-    # Read in the file
+    # Prepare guest file to be merged to host by stripping out CONECT records and offsetting HETATM number by number of host atoms
     with open(guest_file_path, 'r') as infile, open('guest_file_temp.txt', 'w') as outfile:
         for line in infile:
             if re.search('HETATM|TER', line):
@@ -86,5 +88,23 @@ def merge_host_guest_files(guest_file_path, host_file_path):
     os.remove('SaveAsXYZ.log')
 
 
+def copy_XYZ_coords(host_guest_pdb_file, host_guest_xyz_file):
+    # Prepare guest file to be merged to host by stripping out CONECT records and offsetting HETATM number by number of host atoms
+    xyzfile = open(host_guest_xyz_file)
+    xyz_content = xyzfile.readlines()
 
-merge_host_guest_files("Diflunisal.pdb", "hp-bcd.pdb")
+    with open(host_guest_pdb_file, 'r') as infile, open('host_guest_temp.txt', 'w') as outfile:
+        i = 0
+        for line in infile:
+            if re.search('HETATM', line):
+                xyz_line = xyz_content[i+2].strip()
+                # Split xyz_line and get (first,second,third) position for (x,y,z) coordinate, cast to float, and truncate to 3 decimal places for pdb format
+                x = '%.3f'%(float(str.split(xyz_line)[1]))
+                y = '%.3f'%(float(str.split(xyz_line)[2]))
+                z = '%.3f'%(float(str.split(xyz_line)[3]))
+                line = line[0:31:1] + '%7s'%(x) + line[38:]
+                line = line[0:39:1] + '%7s'%(y) + line[46:]
+                line = line[0:47:1] + '%7s'%(z) + line[54:]
+                i = i + 1
+            outfile.write(line)
+        os.rename("host_guest_temp.txt", host_guest_pdb_file)
