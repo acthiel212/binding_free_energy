@@ -22,21 +22,8 @@ def get_next_arg(string_list):
 
 
 def hfix(args):
-    # Initialize variables
-    fi, ri, fo, ro, temp = 0.0, 0.0, 15, 4, 298.0
-
-    # Process arguments
-    for arg in args:
-        if ri == 0.0:
-            ri = float(arg)
-        elif fi == 0.0:
-            fi = float(arg)
-        elif ro == 0.0:
-            ro = float(arg)
-        elif fo == 1.0:
-            fo = float(arg)
-        else:
-            temp = float(arg)
+    # Initialize variables ri fi ro fo temp
+    ri,fi,ro,fo,temp = [float(arg) for arg in args]
 
     if fi == 0.0:
         fi = 1.0
@@ -146,13 +133,9 @@ def freefix(args):
     initial()
     method = 'HARMONIC'
 
-    if args:
-        answer = args.pop(0).upper()
-        if answer == 'B':
-            method = 'BORESCH'
-
     # Call corresponding method based on the method type
     if method == 'HARMONIC':
+        print("Calculating energy of HARMONIC restraints. BORESCH restraints not implemented yet.")
         hfix(args)
     elif method == 'BORESCH':
         print("BORESCH method not implemented yet.")
