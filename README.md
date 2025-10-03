@@ -1,69 +1,508 @@
 # Binding Free Energy Workflow
 
-This repository provides a pipeline for calculating the binding free energy of molecular systems using alchemical free energy methods. The workflow combines molecular dynamics (MD) simulations, free energy perturbation (FEP), and Bennett acceptance ratio (BAR) analysis.
+This repository provides a complete pipeline for calculating the binding free energy of molecular systems using alchemical free energy methods. The workflow combines molecular dynamics (MD) simulations, free energy perturbation (FEP), and Bennett acceptance ratio (BAR) analysis to compute binding affinities for host-guest complexes.
 
-This guide will walk you through the installation process, high-level workflow descriptions, and detailed instructions for running the bash-based pipeline.
+---
+
+## Overview
+
+The pipeline implements a double decoupling method to calculate binding free energies:
+1. **Guest in solution**: Decouple the guest molecule in a solvated environment
+2. **Host-guest complex**: Decouple the guest molecule from the host-guest complex
+3. **Binding free energy**: Calculate the difference between these two processes
+
+The workflow uses OpenMM for MD simulations with alchemical transformations, applying a lambda schedule for van der Waals and electrostatic coupling/decoupling. Free energy differences are calculated using the Bennett Acceptance Ratio (BAR) method via pymbar.
+
+---
+
+## Requirements
+
+### System Requirements
+- Linux/Unix environment (tested on cluster systems)
+- Python 3.x
+- CUDA-capable GPU (for CUDA platform in simulations)
+
+### Software Dependencies
+
+This project requires the following packages, managed via conda and pip:
+
+#### Required Packages
+1. **OpenMM** (with OpenMM-Setup)  
+   Molecular dynamics simulation engine
+   ```bash
+   conda install -c conda-forge openmm-setup
+   ```
+
+2. **pymbar** (version < 4)  
+   Free energy calculations and BAR analysis
+   ```bash
+   conda install -c conda-forge "pymbar<4"
+   ```
+
+3. **MDTraj**  
+   Trajectory analysis and manipulation
+   ```bash
+   conda install -c conda-forge mdtraj
+   ```
+
+4. **PDBFixer**  
+   PDB file preparation and solvation
+   ```bash
+   conda install -c conda-forge pdbfixer
+   ```
+
+5. **intspan**  
+   Interval handling utilities
+   ```bash
+   pip install intspan
+   ```
+
+6. **Standard scientific Python stack**  
+   - numpy
+   - scipy
+   - (typically included with conda environment)
+
+#### Bundled Software
+- **Force Field X (FFX)**: Version 1.0.0 is bundled in the `ffx-1.0.0/` directory. Used for force field parameterization and file conversions. If a new version is needed, download from the [official Force Field X website](http://ffx.biochem.uiowa.edu/).
 
 ---
 
 ## Installation
 
-### Prerequisite: Miniconda
-First, install Miniconda by following the [official installation guide](https://docs.anaconda.com/miniconda/install/).
+### Step 1: Install Miniconda
+If not already installed, follow the [official Miniconda installation guide](https://docs.anaconda.com/miniconda/install/).
 
-### Required Packages
-After Miniconda is installed, set up the required environment with the following commands:
+### Step 2: Create and Activate Environment
+```bash
+# Create a new conda environment
+conda create -n binding_free_energy python=3.9
+conda activate binding_free_energy
+```
 
-1. **OpenMM**  
-   Install OpenMM for molecular dynamics simulations:  
-   conda install -c conda-forge openmm-setup
+### Step 3: Install Dependencies
+```bash
+# Install OpenMM
+conda install -c conda-forge openmm-setup
 
-2. **pymbar**
-    Install pymbar for free energy calculations:
-    conda install -c conda-forge "pymbar<4"
+# Install pymbar (version < 4)
+conda install -c conda-forge "pymbar<4"
 
-3. **mdtraj**
-    Install MDTraj for trajectory analysis:
-    conda install -c conda-forge mdtraj
+# Install MDTraj
+conda install -c conda-forge mdtraj
 
-4. **pdbfixer**
-    Install pdbfixer for fixing PDB files:
-    conda install -c conda-forge pdbfixer
+# Install PDBFixer
+conda install -c conda-forge pdbfixer
 
-5. **intspan**
-    Install intspan for handling intervals in the workflow:
-    pip install intspan
+# Install intspan
+pip install intspan
+```
 
-6. **Force Field X**
-    Force Field X is bundled in this repository. If a new version is needed, download it from the official Force Field X website.
-
-
-# Binding Free Energy Workflow Overview
-
-This section provides a detailed breakdown of the workflow for calculating binding free energy using alchemical free energy methods. Follow the steps below to execute the pipeline successfully.
+### Step 4: Clone Repository
+```bash
+git clone <repository_url>
+cd binding_free_energy
+```
 
 ---
 
 ## Input Files
 
-You will need two sets of input files for the simulation:
+The workflow requires prepared input files for both the guest molecule and host-guest complex:
 
-- **Guest molecule**:
-  - `guest_mol.pdb`: This file contains the atomic coordinates of the guest molecule.  
-  - `guest_mol.xml`: This file contains the force field parameters specific to the guest molecule.
+### Guest Molecule
+- **`<guest>.xyz`**: Atomic coordinates from PolType (placed in `Guests/` directory)
+- **`<guest>.prm`**: Force field parameters from PolType
+- **`<guest>.pdb`**: PDB format structure (generated by `Prepare.py`)
+- **`<guest>.xml`**: OpenMM force field XML (generated by `Prepare.py`)
 
-- **Host-guest complex**:
-  - `host_guest_mol.pdb`: This file contains the atomic coordinates of the host molecule, guest molecule, water, and ions in the system.  
-  - `host_guest_mol.xml`: This file contains pre-generated force field parameters for the host, water, and ions.  
+### Host-Guest Complex
+- **`hp-bcd.pdb`**: Host molecule structure
+- **`hp-bcd.xml`**: Host force field parameters
+- **Docked structure**: XYZ file with docked host-guest coordinates
 
+---
 
+## Scripts and Entry Points
 
+### Main Workflow Script
 
+#### `Workflow.py`
+**Purpose**: Main orchestrator for the complete binding free energy calculation workflow.
 
+**Usage**:
+```bash
+python Workflow.py --guest_name <name> [options]
+```
 
+**Required Arguments**:
+- `--guest_name`: Name of guest molecule (must match XYZ file in `Guests/` directory)
 
-ex: 
-output1: python BindingFreeEnergy.py 
+**Optional Arguments**:
+- `--start_at <method>`: Start workflow at specific step (options: `setup_directories`, `submit_equil`, `submit_thermo`, `submit_bar`, `collect_energy`)
+- `--run_equilibration <true|false>`: Whether to run equilibration (default: `true`)
+- `--alchemical_atoms <list>`: Comma-separated atom indices for alchemical transformation (auto-detected from guest if not specified)
+- `--restraint_atoms1 <list>`: Comma-separated indices for restraint group 1
+- `--restraint_atoms2 <list>`: Comma-separated indices for restraint group 2
 
-python BAR.py --traj_i output1.dcd --traj_ip1 output2.dcd --pdb_file temoa_g3-15-0000-0000.pdb --forcefield_file hostsG3.xml  --vdw_lambda_i 0 --elec_lambda_i 0 --vdw_lambda_ip1 0.4 --elec_lambda_ip1 0 --alchemical_atoms "0,2" --nonbonded_method NoCutoff
+**Environment Variables** (optional):
+- `NAME`: Override guest name
+- `USE_RESTRAINTS`: Enable/disable restraints (`true`/`false`)
 
+**Example**:
+```bash
+python Workflow.py --guest_name g3-15 --alchemical_atoms "1-20" --run_equilibration true
+```
+
+### Preparation Scripts
+
+#### `Prepare.py`
+**Purpose**: Convert guest molecule files from PolType output to OpenMM-compatible formats and merge with host structures.
+
+**Usage**:
+```bash
+python Prepare.py --guest_file <xyz> --prm_file <prm> --host_file_dir <dir> --target_dir <dir> --docked_file <xyz>
+```
+
+**Required Arguments**:
+- `--guest_file`: Guest XYZ file from PolType
+- `--prm_file`: PRM parameter file from PolType
+- `--host_file_dir`: Directory containing host PDB and XML files
+- `--target_dir`: Output directory for prepared files
+- `--docked_file`: XYZ file with docked coordinates
+
+**Example**:
+```bash
+python Prepare.py --guest_file Guests/g3-15.xyz --prm_file g3-15.prm --host_file_dir HP-BCD --target_dir workflow/g3-15 --docked_file DockedStructures/g3-15_docked.xyz
+```
+
+#### `Solvate.py`
+**Purpose**: Add explicit solvent to a molecular system using PDBFixer and perform energy minimization.
+
+**Usage**:
+```bash
+python Solvate.py --pdb_file <pdb> --forcefield_file <xml> [<xml> ...]
+```
+
+**Required Arguments**:
+- `--pdb_file`: Input PDB file
+- `--forcefield_file`: One or more OpenMM XML force field files
+
+**Output**: Creates `<filename>_solv.pdb` with solvated and minimized structure.
+
+**Example**:
+```bash
+python Solvate.py --pdb_file guest.pdb --forcefield_file guest.xml
+```
+
+### Simulation Scripts
+
+#### `Equil.py`
+**Purpose**: Run equilibration MD simulation.
+
+**Usage**:
+```bash
+python Equil.py --pdb_file <pdb> --forcefield_file <xml> [options]
+```
+
+**Common Arguments**:
+- `--pdb_file`: Input PDB structure
+- `--forcefield_file`: Force field XML file(s)
+- `--nonbonded_method`: Method for nonbonded interactions (`NoCutoff`, `CutoffNonPeriodic`, `PME`, `Ewald`)
+- `--nonbonded_cutoff`: Cutoff distance in nm (default: 1.0)
+- `--num_steps`: Number of simulation steps
+- `--step_size`: Integration time step in fs
+- `--use_restraints`: Enable harmonic restraints
+- `--restraint_atoms_1`, `--restraint_atoms_2`: Atom indices for restraints
+- `--restraint_constant`: Force constant for restraints (kcal/mol/Å²)
+- `--restraint_lower_distance`, `--restraint_upper_distance`: Flat-bottom restraint distances (Å)
+
+#### `Production.py`
+**Purpose**: Run production MD simulation with alchemical transformations.
+
+**Usage**:
+```bash
+python Production.py --pdb_file <pdb> --forcefield_file <xml> --vdw_lambda <value> --elec_lambda <value> --alchemical_atoms <list> [options]
+```
+
+**Additional Arguments**:
+- `--vdw_lambda`: Van der Waals lambda value (0.0 to 1.0)
+- `--elec_lambda`: Electrostatic lambda value (0.0 to 1.0)
+- `--alchemical_atoms`: Comma-separated atom indices to transform
+
+**Example**:
+```bash
+python Production.py --pdb_file system.pdb --forcefield_file host.xml guest.xml --vdw_lambda 0.5 --elec_lambda 0.0 --alchemical_atoms "197-216" --num_steps 500000 --step_size 2 --nonbonded_method PME
+```
+
+### Analysis Scripts
+
+#### `BAR.py`
+**Purpose**: Calculate free energy differences between adjacent lambda windows using Bennett Acceptance Ratio method.
+
+**Usage**:
+```bash
+python BAR.py --traj_i <dcd> --traj_ip1 <dcd> --pdb_file <pdb> --forcefield_file <xml> --vdw_lambda_i <value> --vdw_lambda_ip1 <value> --elec_lambda_i <value> --elec_lambda_ip1 <value> --alchemical_atoms <list> [options]
+```
+
+**Required Arguments**:
+- `--traj_i`: Trajectory file at lambda i (DCD format)
+- `--traj_ip1`: Trajectory file at lambda i+1
+- `--pdb_file`: Reference PDB structure
+- `--forcefield_file`: Force field XML file(s)
+- `--vdw_lambda_i`, `--vdw_lambda_ip1`: VDW lambda values
+- `--elec_lambda_i`, `--elec_lambda_ip1`: Electrostatic lambda values
+- `--alchemical_atoms`: Atoms undergoing transformation
+
+**Optional Arguments**:
+- `--start`: Starting frame index (default: 0)
+- `--stop`: Ending frame index (default: all frames)
+- `--step_size`: Frame sampling interval (default: 1)
+- `--nonbonded_method`: Nonbonded method
+- `--nonbonded_cutoff`: Cutoff distance
+
+**Output**: Prints forward/reverse FEP and BAR free energy differences with uncertainties.
+
+**Example**:
+```bash
+python BAR.py --traj_i output0.dcd --traj_ip1 output1.dcd --pdb_file system.pdb --forcefield_file host.xml guest.xml --vdw_lambda_i 0.0 --vdw_lambda_ip1 0.4 --elec_lambda_i 0.0 --elec_lambda_ip1 0.0 --alchemical_atoms "197-216" --nonbonded_method PME
+```
+
+#### `Energy.py`
+**Purpose**: Calculate potential energy of a system at specific alchemical lambda values.
+
+**Usage**:
+```bash
+python Energy.py --pdb_file <pdb> --forcefield_file <xml> --vdw_lambda <value> --elec_lambda <value> --alchemical_atoms <list> [options]
+```
+
+### Utility Scripts
+
+#### `freefix.py`
+**Purpose**: Calculate analytical corrections for harmonic restraint contributions to binding free energy.
+
+**Usage**:
+```bash
+python freefix.py <ri> <fi> <ro> <fo> <temp>
+```
+
+**Arguments**:
+- `ri`: Inner flat-bottom radius (Å)
+- `fi`: Inner force constant (kcal/mol/Å²)
+- `ro`: Outer flat-bottom radius (Å)
+- `fo`: Outer force constant (kcal/mol/Å²)
+- `temp`: Temperature (K)
+
+**Note**: Currently implements HARMONIC method; BORESCH method not yet implemented.
+
+---
+
+## Project Structure
+
+```
+binding_free_energy/
+├── README.md                     # This file
+├── Workflow.py                   # Main workflow orchestrator
+├── Prepare.py                    # File preparation script
+├── Solvate.py                    # Solvation script
+├── Equil.py                      # Equilibration MD script
+├── Production.py                 # Production MD with alchemical transformations
+├── BAR.py                        # BAR free energy analysis
+├── Energy.py                     # Energy calculation utility
+├── freefix.py                    # Restraint correction calculations
+├── alchemistry/                  # Alchemical transformation modules
+│   ├── Alchemical.py            # Alchemical force setup and lambda control
+│   └── Harmonic_Restraint.py    # Harmonic restraint implementation
+├── utils/                        # Utility modules
+│   ├── Parser_Utils.py          # Common argument parsers
+│   ├── File_Conversion_Utils.py # File format conversion utilities
+│   └── Restart_Utils.py         # Simulation restart utilities
+├── ffx-1.0.0/                   # Bundled Force Field X distribution
+│   ├── bin/                     # FFX executables
+│   ├── lib/                     # FFX libraries
+│   └── ...
+├── Guests/                       # Guest molecule input files (.xyz)
+├── HP-BCD/                       # Host molecule files
+├── DockedStructures/             # Docked complex structures
+└── workflow/                     # Generated workflow directories (created by Workflow.py)
+    └── <guest_name>/
+        ├── Template/
+        │   ├── Guest/           # Guest-only templates
+        │   └── Host_Guest/      # Host-guest templates
+        ├── Guest_Workflow/      # Guest simulation outputs
+        └── Host_Guest_Workflow/ # Host-guest simulation outputs
+```
+
+---
+
+## Workflow Steps
+
+The complete workflow consists of the following steps:
+
+### 1. Preparation
+Prepare input files from PolType output:
+```bash
+python Prepare.py --guest_file Guests/<guest>.xyz --prm_file <guest>.prm --host_file_dir HP-BCD --target_dir workflow/<guest> --docked_file DockedStructures/<docked>.xyz
+```
+
+### 2. Solvation (if needed)
+Add explicit solvent to structures:
+```bash
+python Solvate.py --pdb_file guest.pdb --forcefield_file guest.xml
+```
+
+### 3. Run Complete Workflow
+Execute the automated workflow:
+```bash
+python Workflow.py --guest_name <guest> --alchemical_atoms "<indices>"
+```
+
+This will:
+- Set up directory structure and template files
+- Submit equilibration jobs (if enabled)
+- Submit production MD jobs across lambda windows
+- Submit BAR analysis jobs for free energy calculation
+- Collect final energy results
+
+### 4. Manual Step-by-Step Execution (Alternative)
+You can also run individual steps:
+
+**a. Setup directories**:
+```bash
+python Workflow.py --guest_name <guest> --start_at setup_directories
+```
+
+**b. Run equilibration**:
+```bash
+python Equil.py --pdb_file <pdb> --forcefield_file <xml> [options]
+```
+
+**c. Run production MD at each lambda**:
+```bash
+python Production.py --pdb_file <pdb> --forcefield_file <xml> --vdw_lambda <value> --elec_lambda <value> --alchemical_atoms "<indices>" [options]
+```
+
+**d. Calculate free energy differences**:
+```bash
+python BAR.py --traj_i <dcd_i> --traj_ip1 <dcd_ip1> --pdb_file <pdb> --forcefield_file <xml> --vdw_lambda_i <value> --vdw_lambda_ip1 <value> --elec_lambda_i <value> --elec_lambda_ip1 <value> --alchemical_atoms "<indices>"
+```
+
+**e. Apply restraint corrections**:
+```bash
+python freefix.py <ri> <fi> <ro> <fo> <temp>
+```
+
+### Lambda Schedule
+The default lambda schedule is defined in `Workflow.py`:
+- **VDW lambdas**: 0.0 → 1.0 (23 windows with dense sampling near endpoints)
+- **Electrostatic lambdas**: 0.0 → 1.0 (11 windows after VDW decoupling)
+
+Total: 34 lambda windows per leg of the thermodynamic cycle.
+
+---
+
+## Environment Variables
+
+The following environment variables can be used (primarily for cluster job submission):
+
+- `NAME`: Override the guest molecule name
+- `USE_RESTRAINTS`: Enable (`true`) or disable (`false`) harmonic restraints in simulations
+
+**Note**: Most configuration is done via command-line arguments rather than environment variables.
+
+---
+
+## Testing
+
+**TODO**: No automated test suite is currently available. Testing is performed manually by:
+1. Running the workflow on known host-guest systems
+2. Comparing BAR results with published values
+3. Checking overlap statistics for convergence
+
+Future work should include:
+- Unit tests for utility functions
+- Integration tests for simulation setup
+- Validation tests with benchmark systems
+
+---
+
+## Output Files
+
+### Simulation Outputs
+- **`output*.dcd`**: Trajectory files in DCD format
+- **`output*.xml`**: Simulation state files for restart
+- **`output*.log`**: Simulation log files
+- **`*_solv.pdb`**: Solvated structures
+
+### Analysis Outputs
+- BAR free energy differences printed to stdout
+- **TODO**: Add file-based output for BAR results and final binding free energies
+
+---
+
+## Troubleshooting
+
+### Common Issues
+
+1. **CUDA Platform Not Found**
+   - Ensure CUDA-compatible GPU is available
+   - Check OpenMM CUDA platform installation: `python -c "import openmm; print(openmm.Platform.getPlatformByName('CUDA'))"`
+
+2. **Restraint Warnings**
+   - If you see "WARNING! Restraints triggered" messages, the system may have drifted outside restraint boundaries
+   - Consider adjusting restraint parameters or checking system stability
+
+3. **Force Field X Errors**
+   - Ensure `ffx-1.0.0/bin` is accessible
+   - Check Java installation for FFX execution
+
+4. **Memory Issues**
+   - Large systems may require significant GPU memory
+   - Reduce trajectory output frequency or system size if needed
+
+---
+
+## Contributing
+
+**TODO**: Add contribution guidelines
+
+---
+
+## License
+
+**TODO**: No license file is currently present in the repository. Please add appropriate license information.
+
+---
+
+## Citation
+
+**TODO**: Add citation information for publications using this workflow.
+
+---
+
+## Contact and Support
+
+**TODO**: Add contact information for questions and support.
+
+---
+
+## Acknowledgments
+
+This workflow uses the following software packages:
+- [OpenMM](http://openmm.org/) for molecular dynamics simulations
+- [pymbar](https://github.com/choderalab/pymbar) for free energy analysis
+- [MDTraj](https://www.mdtraj.org/) for trajectory processing
+- [Force Field X](http://ffx.biochem.uiowa.edu/) for force field parameterization
+
+---
+
+## References
+
+**TODO**: Add relevant literature references for:
+- Alchemical free energy methods
+- Bennett Acceptance Ratio method
+- Double decoupling approach
+- Force field parameterization
+
+---
+
+**Last Updated**: 2025-10-03

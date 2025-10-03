@@ -7,14 +7,6 @@ AVOGADRO = 6.02214076e23  # molecules/mol
 STD_CONVERSION = 1.0e27 / AVOGADRO  # Ang^3/molecule at 1 mole/L
 
 
-def initial():
-    pass  # Placeholder for initial setup function
-
-
-def final():
-    pass  # Placeholder for finalization function
-
-
 def get_next_arg(string_list):
     if string_list:
         return string_list.pop(0), True
@@ -130,7 +122,6 @@ def compute_volume_integrals(ri, fi, ro, fo, temp):
 
 
 def freefix(args):
-    initial()
     method = 'HARMONIC'
 
     # Call corresponding method based on the method type
@@ -139,8 +130,6 @@ def freefix(args):
         hfix(args)
     elif method == 'BORESCH':
         print("BORESCH method not implemented yet.")
-
-    final()
 
 
 # Example of how to run the code
