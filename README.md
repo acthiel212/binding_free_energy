@@ -138,6 +138,7 @@ python Workflow.py --guest_name <name> [options]
 - `--guest_name`: Name of guest molecule (must match XYZ file in `Guests/` directory)
 
 **Optional Arguments**:
+- `--setup_only <true|false>`: Run setup only without submitting jobs (default: `false`)
 - `--start_at <method>`: Start workflow at specific step (options: `setup_directories`, `submit_equil`, `submit_thermo`, `submit_bar`, `collect_energy`)
 - `--run_equilibration <true|false>`: Whether to run equilibration (default: `true`)
 - `--alchemical_atoms <list>`: Comma-separated atom indices for alchemical transformation (auto-detected from guest if not specified)
@@ -151,6 +152,101 @@ python Workflow.py --guest_name <name> [options]
 **Example**:
 ```bash
 python Workflow.py --guest_name g3-15 --alchemical_atoms "1-20" --run_equilibration true
+```
+
+### Setup-Only Mode
+
+The workflow supports a `--setup_only` flag that allows you to run the workflow to only set up directories and files without submitting any jobs or scripts.
+
+#### Usage
+
+**Basic Command**:
+```bash
+python Workflow.py --guest_name Diflunisal --setup_only true
+```
+
+**What Happens in Setup-Only Mode**:
+
+When `--setup_only true` is specified, the workflow will:
+
+1. ✅ Run the preparation step (Prepare.py)
+   - Processes the guest molecule structure
+   - Creates template files for Guest and Host_Guest workflows
+
+2. ✅ Set up directory structure
+   - Creates working directories for Guest and Host_Guest workflows
+   - Creates analysis directories
+
+3. ✅ Set up all necessary files
+   - Copies structure files (.pdb)
+   - Copies force field files (.xml)
+   - Creates job scripts with proper configurations
+   - Sets up lambda windows for thermodynamic integration
+   - Configures restraints (if needed)
+
+4. ❌ **STOPS before submitting jobs**
+   - Does NOT submit equilibration jobs (submit_equil)
+   - Does NOT submit thermodynamic integration jobs (submit_thermo)
+   - Does NOT submit BAR analysis jobs (submit_bar)
+
+**Full Workflow (Default Behavior)**:
+
+To run the full workflow including job submission:
+
+```bash
+python Workflow.py --guest_name Diflunisal --setup_only false
+```
+
+Or simply (since `false` is the default):
+
+```bash
+python Workflow.py --guest_name Diflunisal
+```
+
+**Additional Options**:
+
+You can combine `--setup_only` with other flags:
+
+```bash
+python Workflow.py --guest_name Diflunisal --setup_only true --alchemical_atoms 1-30 --restraint_atoms1 "1,2,3" --restraint_atoms2 "4,5,6"
+```
+
+**Use Cases**:
+
+Setup-only mode is useful when you want to:
+- Review the generated files before submitting jobs
+- Manually modify configuration files
+- Test the setup process without consuming computational resources
+- Prepare multiple molecule setups before batch submission
+- Debug workflow issues without waiting for job completion
+
+**Next Steps After Setup-Only**:
+
+After running in setup-only mode, you can:
+
+1. Review the generated files in:
+   - `workflow/<GuestName>/Guest_Workflow/`
+   - `workflow/<GuestName>/Host_Guest_Workflow/`
+
+2. Manually submit jobs if needed, or
+
+3. Continue the workflow from the equilibration step:
+   ```bash
+   python Workflow.py --guest_name Diflunisal --start_at submit_equil
+   ```
+
+**Example for Diflunisal**:
+
+```bash
+# Setup only - no jobs submitted
+python Workflow.py --guest_name Diflunisal --setup_only true
+
+# Check the generated files
+ls -la workflow/Diflunisal/Guest_Workflow/
+ls -la workflow/Diflunisal/Host_Guest_Workflow/
+
+# If everything looks good, continue from equilibration
+python Workflow.py --guest_name Diflunisal --start_at submit_equil
 ```
 
 ### Preparation Scripts
@@ -282,7 +378,7 @@ python Energy.py --pdb_file <pdb> --forcefield_file <xml> --vdw_lambda <value> -
 
 **Usage**:
 ```bash
-python freefix.py <ri> <fi> <ro> <fo> <temp>
+python Freefix.py <ri> <fi> <ro> <fo> <temp>
 ```
 
 **Arguments**:
@@ -388,7 +484,7 @@ python BAR.py --traj_i <dcd_i> --traj_ip1 <dcd_ip1> --pdb_file <pdb> --forcefiel
 
 **e. Apply restraint corrections**:
 ```bash
-python freefix.py <ri> <fi> <ro> <fo> <temp>
+python Freefix.py <ri> <fi> <ro> <fo> <temp>
 ```
 
 ### Lambda Schedule

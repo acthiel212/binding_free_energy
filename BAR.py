@@ -12,6 +12,7 @@ from utils import Parser_Utils
 
 def compute_work(traj_file1, traj_file2, context, pdb_file, vdw_lambda_1, vdw_lambda_2, elec_lambda_1, elec_lambda_2,
                  vdwForce, multipoleForce, alchemical_atoms, default_elec_params):
+    """Compute forward and reverse work values for BAR analysis between two lambda states."""
     traji = load_dcd(traj_file1, pdb_file)
     trajip1 = load_dcd(traj_file2, pdb_file)
 

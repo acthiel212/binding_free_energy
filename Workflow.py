@@ -43,18 +43,21 @@ RESTRAINT_ATOMS_1 = ""
 RESTRAINT_ATOMS_2 = ""
 START_AT = ""
 RUN_EQ = True
+SETUP_ONLY = False
 
 def parse_arguments():
-    global NAME, ALCHEMICAL_ATOMS, RESTRAINT_ATOMS_1, RESTRAINT_ATOMS_2, START_AT, RUN_EQ, \
+    """Parse command-line arguments and initialize global workflow directories."""
+    global NAME, ALCHEMICAL_ATOMS, RESTRAINT_ATOMS_1, RESTRAINT_ATOMS_2, START_AT, RUN_EQ, SETUP_ONLY, \
         TEMPLATE_GUEST_DIR, TEMPLATE_HOST_GUEST_DIR, WORKING_GUEST_DIR, WORKING_HOST_GUEST_DIR, \
         ANALYSIS_GUEST_DIR, ANALYSIS_HOST_GUEST_DIR
-
 
     parser = argparse.ArgumentParser(description="Script options for the workflow.")
 
     # Define command-line arguments
     parser.add_argument("--guest_name", type=str, default="", required=True, help="Name of guest molecule. (Should match the name of the XYZ file.)")
     parser.add_argument("--start_at", type=str, default="", help="Start the script at the specified method. Available methods: setup_directories, submit_equil, submit_thermo, submit_bar, collect_energy.")
+    parser.add_argument("--setup_only", type=str, choices=["true", "false"], default="false",
+                        help="Whether to only setup directories and files without submitting jobs. Defaults to false.")
     parser.add_argument("--run_equilibration", type=str, choices=["true", "false"], default="true",
                         help="Whether to run equilibration. Defaults to true.")
     parser.add_argument("--alchemical_atoms", type=str, default="", help="Comma-separated list of alchemical atoms (required). "
@@ -68,6 +71,7 @@ def parse_arguments():
     # Assign values from the parsed arguments
     NAME = args.guest_name
     START_AT = args.start_at
+    SETUP_ONLY = args.setup_only.lower() == "true"
     RUN_EQ = args.run_equilibration.lower() == "true"
     if args.alchemical_atoms == "":
         guest_dir = os.path.join(BINDING_FREE_ENERGY_DIR, "Guests")
@@ -112,7 +116,7 @@ def replace_in_file(file_path, replacements):
         f.write(content)
 
 def run_prepare():
-
+    """Execute Prepare.py to set up guest and host-guest structure files."""
     # ----------------------------
     # Prepare Step
     # ----------------------------
@@ -174,6 +178,7 @@ def setup_directories(target_dir, structure_file, forcefield_file, alchemical_at
     os.makedirs(target_dir, exist_ok=True)
 
     def safe_copy(src, dest):
+        """Copy file from src to dest if src exists."""
         if os.path.exists(src):
             print(f"Source exists: {src}")  # Debugging line
             shutil.copy(src, dest)
@@ -483,6 +488,7 @@ def submit_bar(target_dir, analysis_type, thermo_job_ids):
     return bar_job_ids
 
 def collect_energy(target_dir):
+    """Collect and sum free energy values from log files in the target directory."""
     target_dir = Path(target_dir)
     log_files = target_dir.glob("*.log")
     free_energy = 0.0
@@ -505,7 +511,7 @@ def collect_energy(target_dir):
 
 # Define the workflow execution function
 def execute_workflow(start_method):
-
+    """Execute the binding free energy workflow starting from the specified method."""
     methods_order = [
         "setup_directories",
         "submit_equil",
@@ -551,6 +557,11 @@ def execute_workflow(start_method):
                 RESTRAINT_ATOMS_1,
                 RESTRAINT_ATOMS_2,
                 "Host_Guest")
+            
+            # If setup_only mode is enabled, stop after setup_directories
+            if SETUP_ONLY:
+                print("Setup only mode enabled. Directories and files created. No jobs submitted.")
+                break
 
         elif method == "submit_equil":
             equil_job_ids = {}
