@@ -7,14 +7,6 @@ AVOGADRO = 6.02214076e23  # molecules/mol
 STD_CONVERSION = 1.0e27 / AVOGADRO  # Ang^3/molecule at 1 mole/L
 
 
-def initial():
-    pass  # Placeholder for initial setup function
-
-
-def final():
-    pass  # Placeholder for finalization function
-
-
 def get_next_arg(string_list):
     if string_list:
         return string_list.pop(0), True
@@ -22,21 +14,8 @@ def get_next_arg(string_list):
 
 
 def hfix(args):
-    # Initialize variables
-    fi, ri, fo, ro, temp = 0.0, 0.0, 15, 4, 298.0
-
-    # Process arguments
-    for arg in args:
-        if ri == 0.0:
-            ri = float(arg)
-        elif fi == 0.0:
-            fi = float(arg)
-        elif ro == 0.0:
-            ro = float(arg)
-        elif fo == 1.0:
-            fo = float(arg)
-        else:
-            temp = float(arg)
+    # Initialize variables ri fi ro fo temp
+    ri,fi,ro,fo,temp = [float(arg) for arg in args]
 
     if fi == 0.0:
         fi = 1.0
@@ -143,21 +122,14 @@ def compute_volume_integrals(ri, fi, ro, fo, temp):
 
 
 def freefix(args):
-    initial()
     method = 'HARMONIC'
-
-    if args:
-        answer = args.pop(0).upper()
-        if answer == 'B':
-            method = 'BORESCH'
 
     # Call corresponding method based on the method type
     if method == 'HARMONIC':
+        print("Calculating energy of HARMONIC restraints. BORESCH restraints not implemented yet.")
         hfix(args)
     elif method == 'BORESCH':
         print("BORESCH method not implemented yet.")
-
-    final()
 
 
 # Example of how to run the code
