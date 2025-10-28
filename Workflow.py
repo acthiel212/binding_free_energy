@@ -44,10 +44,11 @@ RESTRAINT_ATOMS_2 = ""
 START_AT = ""
 RUN_EQ = True
 SETUP_ONLY = False
+SUB_TYPE = ""
 
 def parse_arguments():
     """Parse command-line arguments and initialize global workflow directories."""
-    global NAME, ALCHEMICAL_ATOMS, RESTRAINT_ATOMS_1, RESTRAINT_ATOMS_2, START_AT, RUN_EQ, SETUP_ONLY, \
+    global NAME, ALCHEMICAL_ATOMS, RESTRAINT_ATOMS_1, RESTRAINT_ATOMS_2, START_AT, RUN_EQ, SETUP_ONLY, SUB_TYPE,\
         TEMPLATE_GUEST_DIR, TEMPLATE_HOST_GUEST_DIR, WORKING_GUEST_DIR, WORKING_HOST_GUEST_DIR, \
         ANALYSIS_GUEST_DIR, ANALYSIS_HOST_GUEST_DIR
 
@@ -64,7 +65,7 @@ def parse_arguments():
                                                                             "If not set, automatically determines set from guest atoms.")
     parser.add_argument("--restraint_atoms1", type=str, default="", help="Comma-separated list of restraint atoms 1 (optional). If not set, automatically choose restraints.")
     parser.add_argument("--restraint_atoms2", type=str, default="", help="Comma-separated list of restraint atoms 2 (optional). If not set, automatically choose restraints.")
-
+    parser.add_argument("--submission_system",type=str,default="SGE",help="Submission system to submit jobs to. Modifying this only affects the search for job files that that selected submission system would expect. Only SGE and SLURM are currently supported.")
     # Parse the arguments
     args = parser.parse_args()
 
@@ -73,6 +74,7 @@ def parse_arguments():
     START_AT = args.start_at
     SETUP_ONLY = args.setup_only.lower() == "true"
     RUN_EQ = args.run_equilibration.lower() == "true"
+    SUB_TYPE = args.submission_system.upper()
     if args.alchemical_atoms == "":
         guest_dir = os.path.join(BINDING_FREE_ENERGY_DIR, "Guests")
         with open(f"{guest_dir}/{NAME}.xyz", 'r') as f:
@@ -128,7 +130,8 @@ def run_prepare():
         "--prm_file", f"{NAME}.prm",
         "--host_file_dir", os.path.join(BINDING_FREE_ENERGY_DIR, "HP-BCD"),
         "--target_dir", os.path.join(BINDING_FREE_ENERGY_DIR, "workflow"),
-        "--docked_file", os.path.join(BINDING_FREE_ENERGY_DIR, "DockedStructures", f"HPBCD_1_{NAME}.results.xyz")
+        "--docked_file", os.path.join(BINDING_FREE_ENERGY_DIR, "DockedStructures", f"HPBCD_1_{NAME}.results.xyz"),
+        "--job_file_dir", os.path.join(BINDING_FREE_ENERGY_DIR, f"JobFiles/{SUB_TYPE}")
     ]
 
     subprocess.run(prepare_command, check=True)
@@ -302,12 +305,15 @@ def submit_equil(target_dir, job_prefix):
     # Submit the job
     print("Submitting equilibration job...")
     os.chdir(target_dir)
-    try:
-        equil_job_id = subprocess.check_output(["qsub", "-terse", "equil.job"]).decode().strip()
-        print(f"Submitted equilibration job {equil_job_id} for {target_dir}")
-    finally:
-        os.chdir("..")  # Ensure the working directory is reset
-    return equil_job_id
+    if SUB_TYPE == "SGE":
+        try:
+            equil_job_id = subprocess.check_output(["qsub", "-terse", "equil.job"]).decode().strip()
+            print(f"Submitted equilibration job {equil_job_id} for {target_dir}")
+        finally:
+            os.chdir("..")  # Ensure the working directory is reset
+        return equil_job_id
+    return None
+
 
 thermo_job_ids_guest = []
 thermo_job_ids_host_guest = []
@@ -354,31 +360,32 @@ def submit_thermo(target_dir, job_prefix, equil_job_id):
         )
 
         # Submit job
-        if equil_job_id:
-            command = ["qsub", "-terse", "-hold_jid", equil_job_id, target_job_path]
-        else:
-            command = ["qsub", "-terse", target_job_path]
+        if SUB_TYPE == "SGE":
+            if equil_job_id:
+                command = ["qsub", "-terse", "-hold_jid", equil_job_id, target_job_path]
+            else:
+                command = ["qsub", "-terse", target_job_path]
 
-        result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+            result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
 
+            # Check for submission errors
+            if result.returncode != 0 or not result.stdout.strip():
+                print(f"Failed to submit thermo job for {lambda_dir}", file=sys.stderr)
+                exit(1)
 
-        # Check for submission errors
-        if result.returncode != 0 or not result.stdout.strip():
-            print(f"Failed to submit thermo job for {lambda_dir}", file=sys.stderr)
-            exit(1)
+            thermo_job_id = result.stdout.strip()
 
-        thermo_job_id = result.stdout.strip()
+            # Navigate back to the target directory
+            os.chdir(target_dir)
 
-        # Navigate back to the target directory
-        os.chdir(target_dir)
+            # Store thermo job ID in the appropriate list
+            if job_prefix == "OMM_Guest_LAM":
+                thermo_job_ids_guest.append(thermo_job_id)
+            else:
+                thermo_job_ids_host_guest.append(thermo_job_id)
 
-        # Store thermo job ID in the appropriate list
-        if job_prefix == "OMM_Guest_LAM":
-            thermo_job_ids_guest.append(thermo_job_id)
-        else:
-            thermo_job_ids_host_guest.append(thermo_job_id)
+            print(thermo_job_id, file=sys.stderr)
 
-        print(thermo_job_id, file=sys.stderr)
 
 def safe_symlink(target, link_name):
     """Create a symlink, replacing any existing file or symlink with the same name."""
@@ -450,41 +457,44 @@ def submit_bar(target_dir, analysis_type, thermo_job_ids):
             file.write(job_content)
 
         # Submit job based on START_AT and analysis type
-        try:
-            os.chdir(f"{target_dir}/analysis")
-            if START_AT == "submit_bar" or not thermo_job_ids:
-                result = subprocess.run(
-                    ['qsub', '-terse', bar_job_file],
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    check=True,
-                    universal_newlines=True
-                )
-                bar_job_id = result.stdout.strip()
-                print(f"Submitted BAR job {bar_job_id} for lambda pair {i} and {i + 1} in {analysis_type} analysis without dependencies")
-            else:
-                # Check that thermo_job_ids has sufficient entries for i and i + 1
-                if i < len(thermo_job_ids) - 1:
+        if SUB_TYPE == "SGE":
+            try:
+                os.chdir(f"{target_dir}/analysis")
+                if START_AT == "submit_bar" or not thermo_job_ids:
                     result = subprocess.run(
-                        ['qsub', '-terse', '-hold_jid', f"{thermo_job_ids[i]},{thermo_job_ids[i + 1]}", bar_job_file],
+                        ['qsub', '-terse', bar_job_file],
                         stdout=subprocess.PIPE,
                         stderr=subprocess.PIPE,
                         check=True,
                         universal_newlines=True
                     )
                     bar_job_id = result.stdout.strip()
-                    print(f"Submitted BAR job {bar_job_id} for lambda pair {i} and {i + 1} in {analysis_type} analysis with dependencies")
+                    print(
+                        f"Submitted BAR job {bar_job_id} for lambda pair {i} and {i + 1} in {analysis_type} analysis without dependencies")
                 else:
-                    print(f"Skipping BAR job for lambda pair {i} and {i + 1} due to insufficient thermo_job_ids.")
-                    continue
+                    # Check that thermo_job_ids has sufficient entries for i and i + 1
+                    if i < len(thermo_job_ids) - 1:
+                        result = subprocess.run(
+                            ['qsub', '-terse', '-hold_jid', f"{thermo_job_ids[i]},{thermo_job_ids[i + 1]}",
+                             bar_job_file],
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                            check=True,
+                            universal_newlines=True
+                        )
+                        bar_job_id = result.stdout.strip()
+                        print(
+                            f"Submitted BAR job {bar_job_id} for lambda pair {i} and {i + 1} in {analysis_type} analysis with dependencies")
+                    else:
+                        print(f"Skipping BAR job for lambda pair {i} and {i + 1} due to insufficient thermo_job_ids.")
+                        continue
 
-            bar_job_ids.append(bar_job_id)
-        except subprocess.CalledProcessError as e:
-            print(f"Failed to submit BAR job for lambda pair {i} and {i + 1}: {e.stderr}")
-            continue
-        finally:
-            os.chdir('..')
-
+                bar_job_ids.append(bar_job_id)
+            except subprocess.CalledProcessError as e:
+                print(f"Failed to submit BAR job for lambda pair {i} and {i + 1}: {e.stderr}")
+                continue
+            finally:
+                os.chdir('..')
     return bar_job_ids
 
 def collect_energy(target_dir):

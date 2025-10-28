@@ -1,0 +1,13 @@
+#!/bin/bash
+
+#SBATCH --job-name="BAR-AMOEBA"
+#SBATCH --partition=48h
+#SBATCH --gpus=1
+#SBATCH --cpus-per-task=4
+#SBATCH --ntasks=1
+#SBATCH --mem=4G
+#SBATCH -t 24:00:00
+
+
+conda activate binding_free_energy
+python <Production.py> --pdb_file <pdb_file>  --forcefield_file <forcefield_field> hp-bcd.xml --nonbonded_method "PME" --num_steps 15000000 --step_size 2 --nonbonded_cutoff 1.0 --vdw_lambda <vdw_lambda_value> --elec_lambda <elec_lambda_value> --alchemical_atoms <alchemical_atoms> --restraint_atoms_1 <restraint_atoms_1> --restraint_atoms_2 <restraint_atoms_2> --restraint_constant 15 --restraint_lower_distance 0.0 --restraint_upper_distance 10.0 --use_restraints true
