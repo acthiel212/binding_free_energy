@@ -152,9 +152,6 @@ def setup_directories(target_dir, structure_file, forcefield_file, alchemical_at
         workflow_type (str): Workflow type, either 'Guest' or 'Host_Guest'.
     """
 
-
-
-
     # Determine the template directory based on workflow type
     if workflow_type == "Guest":
         template_dir = TEMPLATE_GUEST_DIR

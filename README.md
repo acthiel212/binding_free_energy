@@ -6,21 +6,40 @@ This repository provides a complete pipeline for calculating the binding free en
 
 ## Overview
 
-The pipeline implements a double decoupling method to calculate binding free energies:
-1. **Guest in solution**: Decouple the guest molecule in a solvated environment
-2. **Host-guest complex**: Decouple the guest molecule from the host-guest complex
+The pipeline implements an annihilation method to calculate binding free energies:
+1. **Guest in solution**: Annihilate the guest's interactions in a solvated environment
+2. **Host-guest complex**: Annihilate the guest's interactions within the host-guest complex
 3. **Binding free energy**: Calculate the difference between these two processes
 
-The workflow uses OpenMM for MD simulations with alchemical transformations, applying a lambda schedule for van der Waals and electrostatic coupling/decoupling. Free energy differences are calculated using the Bennett Acceptance Ratio (BAR) method via pymbar.
+The workflow uses OpenMM for MD simulations with alchemical transformations, applying a lambda schedule to annihilate (turn off) van der Waals and electrostatic interactions. Free energy differences are calculated using the Bennett Acceptance Ratio (BAR) method via pymbar.
 
 ---
+
+## Host Assumption and Limitations
+
+This project currently assumes the host is hydroxypropyl beta cyclodextrin (HP-BCD).
+
+- The repository includes host files in `HP-BCD/` and the workflow explicitly loads `hp-bcd.pdb` and `hp-bcd.xml`.
+- Defaults and templates are tailored to HP-BCD, for example:
+  - `Workflow.py` uses `hp-bcd.xml` during solvation/setup and sets Host restraint Group 1 to `1-217` by default.
+  - `Prepare.py` copies `hp-bcd.pdb`, `hp-bcd.xml`, and related files into template directories.
+  - Docked complex examples and paths use HP-BCD naming conventions.
+
+Using a different host requires programmatic changes to this codebase (not just swapping files). At minimum you will need to:
+- Replace HP-BCD-specific file paths and filenames in `Workflow.py` and `Prepare.py`.
+- Update default restraint atom selections (e.g., the `1-217` host index range) and any host-size assumptions.
+- Provide the correct host PDB/XML/PRM files and adjust directory names and job templates as needed.
+
+If you plan to generalize beyond HP-BCD, consider adding configuration options for host files, host index ranges for restraints, and template selection, and then updating the documentation accordingly.
 
 ## Requirements
 
 ### System Requirements
 - Linux/Unix environment (tested on cluster systems)
 - Python 3.x
-- CUDA-capable GPU (for CUDA platform in simulations)
+- GPU with OpenCL or CUDA support (OpenMM platform)
+  - Default scripts use the OpenCL platform; CUDA can be used if available
+  - CPU platform may work for small tests but is not recommended for production
 
 ### Software Dependencies
 
@@ -120,6 +139,8 @@ The workflow requires prepared input files for both the guest molecule and host-
 - **`hp-bcd.xml`**: Host force field parameters
 - **Docked structure**: XYZ file with docked host-guest coordinates
 
+Note: The current workflow is tailored to HP-BCD as the host; using a different host requires code changes (see "Host Assumption and Limitations").
+
 ---
 
 ## Scripts and Entry Points
@@ -144,6 +165,7 @@ python Workflow.py --guest_name <name> [options]
 - `--alchemical_atoms <list>`: Comma-separated atom indices for alchemical transformation (auto-detected from guest if not specified)
 - `--restraint_atoms1 <list>`: Comma-separated indices for restraint group 1
 - `--restraint_atoms2 <list>`: Comma-separated indices for restraint group 2
+- `--submission_system <SGE|SLURM>`: Job scheduler to target for job scripts and submission (default: `SGE`)
 
 **Environment Variables** (optional):
 - `NAME`: Override guest name
@@ -153,6 +175,18 @@ python Workflow.py --guest_name <name> [options]
 ```bash
 python Workflow.py --guest_name g3-15 --alchemical_atoms "1-20" --run_equilibration true
 ```
+
+#### Scheduler Selection and Job Templates
+- Use `--submission_system` to select the scheduler targeted by job scripts and templates.
+  - `SGE` (default): templates are loaded from `JobFiles/SGE`
+  - `SLURM`: templates are loaded from `JobFiles/SLURM`
+- The workflow copies the appropriate `equil.job`, `thermo.job`, and `bar.job` from the selected template folder into your working directories.
+
+#### Automatic Selections and Defaults
+- If `--alchemical_atoms` is not provided, the workflow auto-detects the alchemical atom range from the first line of `Guests/<NAME>.xyz` and sets it to `1-<N>`.
+- For the Host_Guest leg, if restraint atoms are not provided:
+  - Group 1 defaults to `1-217` (host indices)
+  - Group 2 is auto-selected using Force Field X within a 5.0 Å cutoff around the guest. The indices are reported to the console.
 
 ### Setup-Only Mode
 
@@ -419,6 +453,9 @@ binding_free_energy/
 ├── Guests/                       # Guest molecule input files (.xyz)
 ├── HP-BCD/                       # Host molecule files
 ├── DockedStructures/             # Docked complex structures
+├── JobFiles/                     # Job script templates
+│   ├── SGE/                      # Sun Grid Engine templates
+│   └── SLURM/                    # SLURM templates
 └── workflow/                     # Generated workflow directories (created by Workflow.py)
     └── <guest_name>/
         ├── Template/
@@ -490,7 +527,7 @@ python Freefix.py <ri> <fi> <ro> <fo> <temp>
 ### Lambda Schedule
 The default lambda schedule is defined in `Workflow.py`:
 - **VDW lambdas**: 0.0 → 1.0 (23 windows with dense sampling near endpoints)
-- **Electrostatic lambdas**: 0.0 → 1.0 (11 windows after VDW decoupling)
+- **Electrostatic lambdas**: 0.0 → 1.0 (11 windows after VDW annihilation)
 
 Total: 34 lambda windows per leg of the thermodynamic cycle.
 
@@ -539,9 +576,11 @@ Future work should include:
 
 ### Common Issues
 
-1. **CUDA Platform Not Found**
-   - Ensure CUDA-compatible GPU is available
-   - Check OpenMM CUDA platform installation: `python -c "import openmm; print(openmm.Platform.getPlatformByName('CUDA'))"`
+1. **OpenMM Platform Issues (OpenCL/CUDA)**
+   - Default scripts use OpenCL. Verify platforms:
+     - `python - <<'PY'\nimport openmm\nprint([openmm.Platform.getPlatform(i).getName() for i in range(openmm.Platform.getNumPlatforms())])\nPY`
+   - To force CUDA (if installed): set `OPENMM_DEFAULT_PLATFORM=CUDA` or modify the script to use CUDA.
+   - If CUDA not found, ensure CUDA toolkit and OpenMM CUDA package are correctly installed.
 
 2. **Restraint Warnings**
    - If you see "WARNING! Restraints triggered" messages, the system may have drifted outside restraint boundaries
@@ -596,9 +635,9 @@ This workflow uses the following software packages:
 **TODO**: Add relevant literature references for:
 - Alchemical free energy methods
 - Bennett Acceptance Ratio method
-- Double decoupling approach
+- Annihilation approach
 - Force field parameterization
 
 ---
 
-**Last Updated**: 2025-10-03
+**Last Updated**: 2025-10-29
