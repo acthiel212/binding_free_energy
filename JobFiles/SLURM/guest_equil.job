@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name="BAR-AMOEBA"
+#SBATCH --job-name="Equil-Guest-AMOEBA"
 #SBATCH --partition=48h
 #SBATCH --gpus=1
 #SBATCH --cpus-per-task=4
@@ -10,6 +10,6 @@
 
 
 conda activate binding_free_energy
-python <Equil.py> --pdb_file <pdb_file>  --forcefield_file <forcefield_file>  "hp-bcd.xml" --nonbonded_method "PME" --num_steps 15000000 --step_size 2 --nonbonded_cutoff 1.0
+python <Equil.py> --pdb_file <pdb_file>  --forcefield_file <forcefield_file>  hp-bcd.xml --nonbonded_method "PME" --num_steps 15000000 --step_size 2 --nonbonded_cutoff 1.0
 
 mv output.pdb <pdb_file>

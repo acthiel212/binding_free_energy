@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name="BAR-AMOEBA"
+#SBATCH --job-name="BAR-HostGuest-AMOEBA"
 #SBATCH --partition=48h
 #SBATCH --gpus=1
 #SBATCH --cpus-per-task=4
