@@ -215,12 +215,12 @@ When `--setup_only true` is specified, the workflow will:
    - Copies structure files (.pdb)
    - Copies force field files (.xml)
    - Creates job scripts with proper configurations
-   - Sets up lambda windows for thermodynamic integration
+   - Sets up lambda windows for BAR
    - Configures restraints (if needed)
 
 4. ❌ **STOPS before submitting jobs**
    - Does NOT submit equilibration jobs (submit_equil)
-   - Does NOT submit thermodynamic integration jobs (submit_thermo)
+   - Does NOT submit production jobs (submit_thermo)
    - Does NOT submit BAR analysis jobs (submit_bar)
 
 **Full Workflow (Default Behavior)**:
