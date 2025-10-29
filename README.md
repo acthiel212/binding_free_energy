@@ -167,15 +167,6 @@ python Workflow.py --guest_name <name> [options]
 - `--restraint_atoms2 <list>`: Comma-separated indices for restraint group 2
 - `--submission_system <SGE|SLURM>`: Job scheduler to target for job scripts and submission (default: `SGE`)
 
-**Environment Variables** (optional):
-- `NAME`: Override guest name
-- `USE_RESTRAINTS`: Enable/disable restraints (`true`/`false`)
-
-**Example**:
-```bash
-python Workflow.py --guest_name g3-15 --alchemical_atoms "1-20" --run_equilibration true
-```
-
 #### Scheduler Selection and Job Templates
 - Use `--submission_system` to select the scheduler targeted by job scripts and templates.
   - `SGE` (default): templates are loaded from `JobFiles/SGE`
@@ -188,40 +179,7 @@ python Workflow.py --guest_name g3-15 --alchemical_atoms "1-20" --run_equilibrat
   - Group 1 defaults to `1-217` (host indices)
   - Group 2 is auto-selected using Force Field X within a 5.0 Å cutoff around the guest. The indices are reported to the console.
 
-### Setup-Only Mode
-
-The workflow supports a `--setup_only` flag that allows you to run the workflow to only set up directories and files without submitting any jobs or scripts.
-
 #### Usage
-
-**Basic Command**:
-```bash
-python Workflow.py --guest_name Diflunisal --setup_only true
-```
-
-**What Happens in Setup-Only Mode**:
-
-When `--setup_only true` is specified, the workflow will:
-
-1. ✅ Run the preparation step (Prepare.py)
-   - Processes the guest molecule structure
-   - Creates template files for Guest and Host_Guest workflows
-
-2. ✅ Set up directory structure
-   - Creates working directories for Guest and Host_Guest workflows
-   - Creates analysis directories
-
-3. ✅ Set up all necessary files
-   - Copies structure files (.pdb)
-   - Copies force field files (.xml)
-   - Creates job scripts with proper configurations
-   - Sets up lambda windows for BAR
-   - Configures restraints (if needed)
-
-4. ❌ **STOPS before submitting jobs**
-   - Does NOT submit equilibration jobs (submit_equil)
-   - Does NOT submit production jobs (submit_thermo)
-   - Does NOT submit BAR analysis jobs (submit_bar)
 
 **Full Workflow (Default Behavior)**:
 
@@ -237,15 +195,13 @@ Or simply (since `false` is the default):
 python Workflow.py --guest_name Diflunisal
 ```
 
-**Additional Options**:
+**Setup Only:**:
 
-You can combine `--setup_only` with other flags:
-
+The workflow supports a `--setup_only` flag that allows you to run the workflow to only set up directories and files without submitting any jobs or scripts.
 ```bash
-python Workflow.py --guest_name Diflunisal --setup_only true --alchemical_atoms 1-30 --restraint_atoms1 "1,2,3" --restraint_atoms2 "4,5,6"
+python Workflow.py --guest_name Diflunisal --setup_only true
 ```
-
-**Use Cases**:
+***Use Cases***:
 
 Setup-only mode is useful when you want to:
 - Review the generated files before submitting jobs
@@ -282,6 +238,8 @@ ls -la workflow/Diflunisal/Host_Guest_Workflow/
 # If everything looks good, continue from equilibration
 python Workflow.py --guest_name Diflunisal --start_at submit_equil
 ```
+---
+### *The following scripts are utilized with in Workflow.py*
 
 ### Preparation Scripts
 
@@ -465,85 +423,8 @@ binding_free_energy/
         └── Host_Guest_Workflow/ # Host-guest simulation outputs
 ```
 
----
-
-## Workflow Steps
-
-The complete workflow consists of the following steps:
-
-### 1. Preparation
-Prepare input files from PolType output:
-```bash
-python Prepare.py --guest_file Guests/<guest>.xyz --prm_file <guest>.prm --host_file_dir HP-BCD --target_dir workflow/<guest> --docked_file DockedStructures/<docked>.xyz
-```
-
-### 2. Solvation (if needed)
-Add explicit solvent to structures:
-```bash
-python Solvate.py --pdb_file guest.pdb --forcefield_file guest.xml
-```
-
-### 3. Run Complete Workflow
-Execute the automated workflow:
-```bash
-python Workflow.py --guest_name <guest> --alchemical_atoms "<indices>"
-```
-
-This will:
-- Set up directory structure and template files
-- Submit equilibration jobs (if enabled)
-- Submit production MD jobs across lambda windows
-- Submit BAR analysis jobs for free energy calculation
-- Collect final energy results
-
-### 4. Manual Step-by-Step Execution (Alternative)
-You can also run individual steps:
-
-**a. Setup directories**:
-```bash
-python Workflow.py --guest_name <guest> --start_at setup_directories
-```
-
-**b. Run equilibration**:
-```bash
-python Equil.py --pdb_file <pdb> --forcefield_file <xml> [options]
-```
-
-**c. Run production MD at each lambda**:
-```bash
-python Production.py --pdb_file <pdb> --forcefield_file <xml> --vdw_lambda <value> --elec_lambda <value> --alchemical_atoms "<indices>" [options]
-```
-
-**d. Calculate free energy differences**:
-```bash
-python BAR.py --traj_i <dcd_i> --traj_ip1 <dcd_ip1> --pdb_file <pdb> --forcefield_file <xml> --vdw_lambda_i <value> --vdw_lambda_ip1 <value> --elec_lambda_i <value> --elec_lambda_ip1 <value> --alchemical_atoms "<indices>"
-```
-
-**e. Apply restraint corrections**:
-```bash
-python Freefix.py <ri> <fi> <ro> <fo> <temp>
-```
-
-### Lambda Schedule
-The default lambda schedule is defined in `Workflow.py`:
-- **VDW lambdas**: 0.0 → 1.0 (23 windows with dense sampling near endpoints)
-- **Electrostatic lambdas**: 0.0 → 1.0 (11 windows after VDW annihilation)
-
-Total: 34 lambda windows per leg of the thermodynamic cycle.
 
 ---
-
-## Environment Variables
-
-The following environment variables can be used (primarily for cluster job submission):
-
-- `NAME`: Override the guest molecule name
-- `USE_RESTRAINTS`: Enable (`true`) or disable (`false`) harmonic restraints in simulations
-
-**Note**: Most configuration is done via command-line arguments rather than environment variables.
-
----
-
 ## Testing
 
 **TODO**: No automated test suite is currently available. Testing is performed manually by:
