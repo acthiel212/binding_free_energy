@@ -13,5 +13,5 @@
 
 module purge
 source /Dedicated/schnieders/andthiel/miniconda.sh
-
+hostname
 /Dedicated/schnieders/andthiel/miniconda3/bin/python <BAR.py> --pdb_file <pdb_file>  --forcefield_file <forcefield_file> hp-bcd.xml --traj_i "<traj_i>" --traj_ip1 "<traj_ip1>" --nonbonded_method "PME" --vdw_lambda_i <vdw_lambda_value_i> --elec_lambda_i <elec_lambda_value_i> --vdw_lambda_ip1 <vdw_lambda_value_ip1> --elec_lambda_ip1 <elec_lambda_value_ip1>  --alchemical_atoms <alchemical_atoms> --restraint_atoms_1 <restraint_atoms_1> --restraint_atoms_2 <restraint_atoms_2> --restraint_constant 15 --restraint_lower_distance 0.0 --restraint_upper_distance 10.0 --use_restraints true

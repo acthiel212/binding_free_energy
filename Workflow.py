@@ -326,15 +326,15 @@ def submit_thermo(target_dir, job_prefix, equil_job_id):
         thermo_job_path = os.path.join(target_dir, "thermo.job")
         target_job_path = os.path.join(lambda_dir, "thermo.job")
         with open(thermo_job_path, "r") as f:
-            job_script = f.read()
+            job_content = f.read()
         
-        job_script = job_script.replace("<vdw_lambda_value>", str(vdw_lambda))
-        job_script = job_script.replace("<elec_lambda_value>", str(ELEC_LAMBDAS[i]))
-        job_script = job_script.replace("<Production.py>", str(os.path.join(BINDING_FREE_ENERGY_DIR, "Production.py")))
-        job_script = job_script.replace("_LAM", f"_LAM{i}")
+        job_content = job_content.replace("<vdw_lambda_value>", str(vdw_lambda))
+        job_content = job_content.replace("<elec_lambda_value>", str(ELEC_LAMBDAS[i]))
+        job_content = job_content.replace("<Production.py>", str(os.path.join(BINDING_FREE_ENERGY_DIR, "Production.py")))
+        job_content = job_content.replace("_LAM", f"_LAM{i}")
 
         with open(target_job_path, "w") as f:
-            f.write(job_script)
+            f.write(job_content)
 
         # Submit job
         if SUB_TYPE == "SGE" and not SETUP_ONLY:
@@ -436,6 +436,7 @@ def submit_bar(target_dir, analysis_type, thermo_job_ids):
         job_content = job_content.replace('<vdw_lambda_value_ip1>', str(vdw_lambda_ip1))
         job_content = job_content.replace('<elec_lambda_value_i>', str(elec_lambda))
         job_content = job_content.replace('<elec_lambda_value_ip1>', str(elec_lambda_ip1))
+        job_content = job_content.replace("<BAR.py>", str(os.path.join(BINDING_FREE_ENERGY_DIR, "Production.py")))
         job_content = job_content.replace('$LAMBDA_I', str(i))
         job_content = job_content.replace('$LAMBDA_NEXT', str(i + 1))
 
