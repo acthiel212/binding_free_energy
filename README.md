@@ -239,7 +239,7 @@ ls -la workflow/Diflunisal/Host_Guest_Workflow/
 python Workflow.py --guest_name Diflunisal --start_at submit_equil
 ```
 ---
-### *The following scripts are utilized with in Workflow.py*
+### *The following scripts are utilized within Workflow.py*
 
 ### Preparation Scripts
 
