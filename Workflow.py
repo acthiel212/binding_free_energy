@@ -436,7 +436,7 @@ def submit_bar(target_dir, analysis_type, thermo_job_ids):
         job_content = job_content.replace('<vdw_lambda_value_ip1>', str(vdw_lambda_ip1))
         job_content = job_content.replace('<elec_lambda_value_i>', str(elec_lambda))
         job_content = job_content.replace('<elec_lambda_value_ip1>', str(elec_lambda_ip1))
-        job_content = job_content.replace("<BAR.py>", str(os.path.join(BINDING_FREE_ENERGY_DIR, "Production.py")))
+        job_content = job_content.replace("<BAR.py>", str(os.path.join(BINDING_FREE_ENERGY_DIR, "BAR.py")))
         job_content = job_content.replace('$LAMBDA_I', str(i))
         job_content = job_content.replace('$LAMBDA_NEXT', str(i + 1))
 
