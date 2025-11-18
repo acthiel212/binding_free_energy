@@ -1,0 +1,16 @@
+#!/bin/bash
+
+#SBATCH --job-name="BAR-Guest-AMOEBA"
+#SBATCH --partition=48h
+#SBATCH --gpus=1
+#SBATCH --cpus-per-task=4
+#SBATCH --ntasks=1
+#SBATCH --mem=4G
+#SBATCH -t 24:00:00
+
+
+conda activate binding_free_energy
+
+python <BAR.py> --pdb_file <pdb_file>  --forcefield_file <forcefield_file> hp-bcd.xml --traj_i "<traj_i>" --traj_ip1 "<traj_ip1>" --nonbonded_method "PME" --vdw_lambda_i <vdw_lambda_value_i> --elec_lambda_i <elec_lambda_value_i> --vdw_lambda_ip1 <vdw_lambda_value_ip1> --elec_lambda_ip1 <elec_lambda_value_ip1> --alchemical_atoms <alchemical_atoms>
+
+exit

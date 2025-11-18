@@ -44,10 +44,11 @@ RESTRAINT_ATOMS_2 = ""
 START_AT = ""
 RUN_EQ = True
 SETUP_ONLY = False
+SUB_TYPE = ""
 
 def parse_arguments():
     """Parse command-line arguments and initialize global workflow directories."""
-    global NAME, ALCHEMICAL_ATOMS, RESTRAINT_ATOMS_1, RESTRAINT_ATOMS_2, START_AT, RUN_EQ, SETUP_ONLY, \
+    global NAME, ALCHEMICAL_ATOMS, RESTRAINT_ATOMS_1, RESTRAINT_ATOMS_2, START_AT, RUN_EQ, SETUP_ONLY, SUB_TYPE,\
         TEMPLATE_GUEST_DIR, TEMPLATE_HOST_GUEST_DIR, WORKING_GUEST_DIR, WORKING_HOST_GUEST_DIR, \
         ANALYSIS_GUEST_DIR, ANALYSIS_HOST_GUEST_DIR
 
@@ -64,7 +65,7 @@ def parse_arguments():
                                                                             "If not set, automatically determines set from guest atoms.")
     parser.add_argument("--restraint_atoms1", type=str, default="", help="Comma-separated list of restraint atoms 1 (optional). If not set, automatically choose restraints.")
     parser.add_argument("--restraint_atoms2", type=str, default="", help="Comma-separated list of restraint atoms 2 (optional). If not set, automatically choose restraints.")
-
+    parser.add_argument("--submission_system",type=str,default="SGE",help="Submission system to submit jobs to. Modifying this only affects the search for job files that that selected submission system would expect. Only SGE and SLURM are currently supported.")
     # Parse the arguments
     args = parser.parse_args()
 
@@ -73,6 +74,7 @@ def parse_arguments():
     START_AT = args.start_at
     SETUP_ONLY = args.setup_only.lower() == "true"
     RUN_EQ = args.run_equilibration.lower() == "true"
+    SUB_TYPE = args.submission_system.upper()
     if args.alchemical_atoms == "":
         guest_dir = os.path.join(BINDING_FREE_ENERGY_DIR, "Guests")
         with open(f"{guest_dir}/{NAME}.xyz", 'r') as f:
@@ -128,7 +130,8 @@ def run_prepare():
         "--prm_file", f"{NAME}.prm",
         "--host_file_dir", os.path.join(BINDING_FREE_ENERGY_DIR, "HP-BCD"),
         "--target_dir", os.path.join(BINDING_FREE_ENERGY_DIR, "workflow"),
-        "--docked_file", os.path.join(BINDING_FREE_ENERGY_DIR, "DockedStructures", f"HPBCD_1_{NAME}.results.xyz")
+        "--docked_file", os.path.join(BINDING_FREE_ENERGY_DIR, "DockedStructures", f"HPBCD_1_{NAME}.results.xyz"),
+        "--job_file_dir", os.path.join(BINDING_FREE_ENERGY_DIR, f"JobFiles/{SUB_TYPE}")
     ]
 
     subprocess.run(prepare_command, check=True)
@@ -136,7 +139,6 @@ def run_prepare():
 
 def setup_directories(target_dir, structure_file, forcefield_file, alchemical_atoms,
                       restraint_atoms_1, restraint_atoms_2, workflow_type):
-    global RESTRAINT_ATOMS_2
     """
     Sets up the directory and job files for the specified workflow type.
 
@@ -150,25 +152,41 @@ def setup_directories(target_dir, structure_file, forcefield_file, alchemical_at
         workflow_type (str): Workflow type, either 'Guest' or 'Host_Guest'.
     """
 
+    # Determine the template directory based on workflow type
+    if workflow_type == "Guest":
+        template_dir = TEMPLATE_GUEST_DIR
+    elif workflow_type == "Host_Guest":
+        template_dir = TEMPLATE_HOST_GUEST_DIR
+        if restraint_atoms_1 == "":
+            restraint_atoms_1 = "1-217"
+        if restraint_atoms_2 == "":
+            current_directory = os.getcwd()
+            os.chdir(TEMPLATE_HOST_GUEST_DIR)
+            restraint_atoms_2 = calculate_restraint_subsection(f"{TEMPLATE_HOST_GUEST_DIR}/{structure_file}", 5.0)
+            os.chdir(current_directory)
+    else:
+        raise ValueError("Invalid workflow type. Must be 'Guest' or 'Host_Guest'.")
 
-    if RESTRAINT_ATOMS_2 =="":
-        RESTRAINT_ATOMS_2 = calculate_restraint_subsection(f"{TEMPLATE_HOST_GUEST_DIR}/{structure_file}", 2.5)
+    if not template_dir:
+        raise ValueError(f"Template directory for workflow type '{workflow_type}' is not defined.")
+
+    # Ensure the template directory exists
+    if not os.path.isdir(template_dir):
+        raise FileNotFoundError(f"Template directory does not exist: {template_dir}")
 
     # ----------------------------
     # Solvate Step
     # ----------------------------
     print("Running Solvate.py...")
-    for directory in [TEMPLATE_GUEST_DIR, TEMPLATE_HOST_GUEST_DIR]:
-        os.chdir(directory)
-        mol_name = f"hp-bcd_{NAME}" if directory == TEMPLATE_HOST_GUEST_DIR else NAME
-        solvate_command = [
-            "python", os.path.join(BINDING_FREE_ENERGY_DIR, "Solvate.py"),
-            "--pdb_file", f"{mol_name}.pdb",
-            "--forcefield_file", f"{NAME}.xml", "hp-bcd.xml",
-            "--nonbonded_method", "PME"
-        ]
-        subprocess.run(solvate_command, check=True)
-        os.chdir(CWD)
+    os.chdir(template_dir)
+    solvate_command = [
+        "python", os.path.join(BINDING_FREE_ENERGY_DIR, "Solvate.py"),
+        "--pdb_file", structure_file,
+        "--forcefield_file", f"{NAME}.xml", "hp-bcd.xml",
+        "--nonbonded_method", "PME"
+    ]
+    subprocess.run(solvate_command, check=True)
+    os.chdir(CWD)
 
     print("Solvate step completed.")
 
@@ -187,28 +205,16 @@ def setup_directories(target_dir, structure_file, forcefield_file, alchemical_at
             print(f"File not found: {src}. Skipping copy.")
 
 
-    # Determine the template directory based on workflow type
-    if workflow_type == "Guest":
-        template_dir = TEMPLATE_GUEST_DIR
-    elif workflow_type == "Host_Guest":
-        template_dir = TEMPLATE_HOST_GUEST_DIR
-    else:
-        raise ValueError("Invalid workflow type. Must be 'Guest' or 'Host_Guest'.")
-
-    if not template_dir:
-        raise ValueError(f"Template directory for workflow type '{workflow_type}' is not defined.")
-
-    # Ensure the template directory exists
-    if not os.path.isdir(template_dir):
-        raise FileNotFoundError(f"Template directory does not exist: {template_dir}")
-
     # List of files to copy
+    if template_dir == TEMPLATE_HOST_GUEST_DIR:
+        solv_min_struct = f"hp-bcd_{NAME}_solv_min.pdb"
+    else:
+        solv_min_struct = f"{NAME}_solv_min.pdb"
     file_list = [
         "thermo.job",
         "bar.job",
         "equil.job",
-        structure_file,
-        forcefield_file,
+        solv_min_struct,
     ]
 
     # Create the analysis subdirectory
@@ -228,11 +234,11 @@ def setup_directories(target_dir, structure_file, forcefield_file, alchemical_at
         if not os.path.exists(job_path):
             continue
         replacements = {
-            "<pdb_file>": f"{template_dir}/{structure_file}",
+            "<pdb_file>": f"{target_dir}/{solv_min_struct}",
             "<forcefield_file>": f"{template_dir}/{forcefield_file}",
             "<alchemical_atoms>": alchemical_atoms,
-            "Name": os.getenv("NAME", ""),
-            "hp-bcd.xml": f"{template_dir}/hp-bcd.xml"   #parameter file for host 
+            "Name": NAME,
+            "hp-bcd.xml": f"{template_dir}/hp-bcd.xml"   #parameter file for host
             }
 
         if workflow_type == "Host_Guest":
@@ -242,23 +248,6 @@ def setup_directories(target_dir, structure_file, forcefield_file, alchemical_at
             })
 
         replace_in_file(job_path, replacements)
-
-        if "thermo.job" in job_file:
-            replacements.update({
-                "<Production.py>": f"{BINDING_FREE_ENERGY_DIR}/Production.py",
-                "--pdb_file <placeholder>": f"--pdb_file \"{structure_file}\"",
-                "--forcefield_file <placeholder>": f"--forcefield_file \"{forcefield_file}\"",
-                "--nonbonded_method <placeholder>": "PME",
-                "--num_steps <placeholder>": "15000000",
-                "--step_size <placeholder>": "2",
-                "--nonbonded_cutoff <placeholder>": "1.0",
-                "--alchemical_atoms <placeholder>": f"--alchemical_atoms \"{alchemical_atoms}\"",
-            })
-
-            if os.getenv("USE_RESTRAINTS", "false").lower() == "true":
-                replacements["--restraint_atoms_1 <placeholder>"] = f"--restraint_atoms_1 \"{restraint_atoms_1}\""
-                replacements["--restraint_atoms_2 <placeholder>"] = f"--restraint_atoms_2 \"{restraint_atoms_2}\""
-            replace_in_file(job_path, replacements)
     
     print(f"Alchemical atoms: {alchemical_atoms}")
     print(f"Restraint atoms 1: {restraint_atoms_1}")
@@ -302,12 +291,14 @@ def submit_equil(target_dir, job_prefix):
     # Submit the job
     print("Submitting equilibration job...")
     os.chdir(target_dir)
-    try:
-        equil_job_id = subprocess.check_output(["qsub", "-terse", "equil.job"]).decode().strip()
-        print(f"Submitted equilibration job {equil_job_id} for {target_dir}")
-    finally:
-        os.chdir("..")  # Ensure the working directory is reset
-    return equil_job_id
+    if SUB_TYPE == "SGE" and not SETUP_ONLY :
+        try:
+            equil_job_id = subprocess.check_output(["qsub", "-terse", "equil.job"]).decode().strip()
+            print(f"Submitted equilibration job {equil_job_id} for {target_dir}")
+        finally:
+            os.chdir("..")  # Ensure the working directory is reset
+        return equil_job_id
+
 
 thermo_job_ids_guest = []
 thermo_job_ids_host_guest = []
@@ -325,7 +316,7 @@ def submit_thermo(target_dir, job_prefix, equil_job_id):
     # Assuming VDW_LAMBDAS and ELEC_LAMBDAS are defined globally
     num_lambdas = len(VDW_LAMBDAS)
 
-    print(f"Setting up lambda directories and submitting thermo jobs for {target_dir}", file=sys.stderr)
+    print(f"Setting up lambda directories{target_dir}", file=sys.stderr)
 
     for i, vdw_lambda in enumerate(VDW_LAMBDAS):
         lambda_dir = os.path.join(target_dir, str(i))
@@ -335,50 +326,52 @@ def submit_thermo(target_dir, job_prefix, equil_job_id):
         thermo_job_path = os.path.join(target_dir, "thermo.job")
         target_job_path = os.path.join(lambda_dir, "thermo.job")
         with open(thermo_job_path, "r") as f:
-            job_script = f.read()
+            job_content = f.read()
         
-        job_script = job_script.replace("<vdw_lambda_value>", str(vdw_lambda))
-        job_script = job_script.replace("<elec_lambda_value>", str(ELEC_LAMBDAS[i]))
-        job_script = job_script.replace("$JOB_NAME", f"$JOB_NAME{i}")
+        job_content = job_content.replace("<vdw_lambda_value>", str(vdw_lambda))
+        job_content = job_content.replace("<elec_lambda_value>", str(ELEC_LAMBDAS[i]))
+        job_content = job_content.replace("<Production.py>", str(os.path.join(BINDING_FREE_ENERGY_DIR, "Production.py")))
+        job_content = job_content.replace("_LAM", f"_LAM{i}")
 
         with open(target_job_path, "w") as f:
-            f.write(job_script)
-
-        # Change directory to lambda_dir for job submission
-        os.chdir(lambda_dir)
-
-        print(
-            f"Submitting thermo job for lambda directory {lambda_dir} "
-            f"with vdw_lambda={vdw_lambda}, elec_lambda={ELEC_LAMBDAS[i]}",
-            file=sys.stderr
-        )
+            f.write(job_content)
 
         # Submit job
-        if equil_job_id:
-            command = ["qsub", "-terse", "-hold_jid", equil_job_id, target_job_path]
-        else:
-            command = ["qsub", "-terse", target_job_path]
+        if SUB_TYPE == "SGE" and not SETUP_ONLY:
+            # Change directory to lambda_dir for job submission
+            os.chdir(lambda_dir)
 
-        result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+            print(
+                f"Submitting thermo job for lambda directory {lambda_dir} "
+                f"with vdw_lambda={vdw_lambda}, elec_lambda={ELEC_LAMBDAS[i]}",
+                file=sys.stderr
+            )
 
+            if equil_job_id:
+                command = ["qsub", "-terse", "-hold_jid", equil_job_id, target_job_path]
+            else:
+                command = ["qsub", "-terse", target_job_path]
 
-        # Check for submission errors
-        if result.returncode != 0 or not result.stdout.strip():
-            print(f"Failed to submit thermo job for {lambda_dir}", file=sys.stderr)
-            exit(1)
+            result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
 
-        thermo_job_id = result.stdout.strip()
+            # Check for submission errors
+            if result.returncode != 0 or not result.stdout.strip():
+                print(f"Failed to submit thermo job for {lambda_dir}", file=sys.stderr)
+                exit(1)
 
-        # Navigate back to the target directory
-        os.chdir(target_dir)
+            thermo_job_id = result.stdout.strip()
 
-        # Store thermo job ID in the appropriate list
-        if job_prefix == "OMM_Guest_LAM":
-            thermo_job_ids_guest.append(thermo_job_id)
-        else:
-            thermo_job_ids_host_guest.append(thermo_job_id)
+            # Navigate back to the target directory
+            os.chdir(target_dir)
 
-        print(thermo_job_id, file=sys.stderr)
+            # Store thermo job ID in the appropriate list
+            if job_prefix == "OMM_Guest_LAM":
+                thermo_job_ids_guest.append(thermo_job_id)
+            else:
+                thermo_job_ids_host_guest.append(thermo_job_id)
+
+            print(thermo_job_id, file=sys.stderr)
+
 
 def safe_symlink(target, link_name):
     """Create a symlink, replacing any existing file or symlink with the same name."""
@@ -443,6 +436,7 @@ def submit_bar(target_dir, analysis_type, thermo_job_ids):
         job_content = job_content.replace('<vdw_lambda_value_ip1>', str(vdw_lambda_ip1))
         job_content = job_content.replace('<elec_lambda_value_i>', str(elec_lambda))
         job_content = job_content.replace('<elec_lambda_value_ip1>', str(elec_lambda_ip1))
+        job_content = job_content.replace("<BAR.py>", str(os.path.join(BINDING_FREE_ENERGY_DIR, "Production.py")))
         job_content = job_content.replace('$LAMBDA_I', str(i))
         job_content = job_content.replace('$LAMBDA_NEXT', str(i + 1))
 
@@ -450,41 +444,44 @@ def submit_bar(target_dir, analysis_type, thermo_job_ids):
             file.write(job_content)
 
         # Submit job based on START_AT and analysis type
-        try:
-            os.chdir(f"{target_dir}/analysis")
-            if START_AT == "submit_bar" or not thermo_job_ids:
-                result = subprocess.run(
-                    ['qsub', '-terse', bar_job_file],
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    check=True,
-                    universal_newlines=True
-                )
-                bar_job_id = result.stdout.strip()
-                print(f"Submitted BAR job {bar_job_id} for lambda pair {i} and {i + 1} in {analysis_type} analysis without dependencies")
-            else:
-                # Check that thermo_job_ids has sufficient entries for i and i + 1
-                if i < len(thermo_job_ids) - 1:
+        if SUB_TYPE == "SGE" and not SETUP_ONLY:
+            try:
+                os.chdir(f"{target_dir}/analysis")
+                if START_AT == "submit_bar" or not thermo_job_ids:
                     result = subprocess.run(
-                        ['qsub', '-terse', '-hold_jid', f"{thermo_job_ids[i]},{thermo_job_ids[i + 1]}", bar_job_file],
+                        ['qsub', '-terse', bar_job_file],
                         stdout=subprocess.PIPE,
                         stderr=subprocess.PIPE,
                         check=True,
                         universal_newlines=True
                     )
                     bar_job_id = result.stdout.strip()
-                    print(f"Submitted BAR job {bar_job_id} for lambda pair {i} and {i + 1} in {analysis_type} analysis with dependencies")
+                    print(
+                        f"Submitted BAR job {bar_job_id} for lambda pair {i} and {i + 1} in {analysis_type} analysis without dependencies")
                 else:
-                    print(f"Skipping BAR job for lambda pair {i} and {i + 1} due to insufficient thermo_job_ids.")
-                    continue
+                    # Check that thermo_job_ids has sufficient entries for i and i + 1
+                    if i < len(thermo_job_ids) - 1:
+                        result = subprocess.run(
+                            ['qsub', '-terse', '-hold_jid', f"{thermo_job_ids[i]},{thermo_job_ids[i + 1]}",
+                             bar_job_file],
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                            check=True,
+                            universal_newlines=True
+                        )
+                        bar_job_id = result.stdout.strip()
+                        print(
+                            f"Submitted BAR job {bar_job_id} for lambda pair {i} and {i + 1} in {analysis_type} analysis with dependencies")
+                    else:
+                        print(f"Skipping BAR job for lambda pair {i} and {i + 1} due to insufficient thermo_job_ids.")
+                        continue
 
-            bar_job_ids.append(bar_job_id)
-        except subprocess.CalledProcessError as e:
-            print(f"Failed to submit BAR job for lambda pair {i} and {i + 1}: {e.stderr}")
-            continue
-        finally:
-            os.chdir('..')
-
+                bar_job_ids.append(bar_job_id)
+            except subprocess.CalledProcessError as e:
+                print(f"Failed to submit BAR job for lambda pair {i} and {i + 1}: {e.stderr}")
+                continue
+            finally:
+                os.chdir('..')
     return bar_job_ids
 
 def collect_energy(target_dir):
@@ -545,8 +542,8 @@ def execute_workflow(start_method):
 
             # Adjust alchemical atom indices for host-guest
             start, end = map(int, ALCHEMICAL_ATOMS.split("-"))
-            alch_start_host_guest = start + 196
-            alch_end_host_guest = end + 196
+            alch_start_host_guest = start + 217
+            alch_end_host_guest = end + 217
             alchemical_atoms_host_guest = f"{alch_start_host_guest}-{alch_end_host_guest}"
 
             setup_directories(
@@ -557,11 +554,6 @@ def execute_workflow(start_method):
                 RESTRAINT_ATOMS_1,
                 RESTRAINT_ATOMS_2,
                 "Host_Guest")
-            
-            # If setup_only mode is enabled, stop after setup_directories
-            if SETUP_ONLY:
-                print("Setup only mode enabled. Directories and files created. No jobs submitted.")
-                break
 
         elif method == "submit_equil":
             equil_job_ids = {}
