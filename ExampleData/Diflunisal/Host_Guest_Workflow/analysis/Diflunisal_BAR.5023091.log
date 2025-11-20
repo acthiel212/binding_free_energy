@@ -1,0 +1,142 @@
+ Evaluating /Dedicated/schnieders/programs/stack-2021.1.sh
+  Loading Modules
+   Stack 2021.1
+   GCC 9.3.0
+   CMake 3.20.0
+   Eigen 3.3.9
+   Cuda 11.1.1
+   Cuda: /usr/share/apps/2021.1/arch/gcc-9.3.0/cuda-11.1.1
+   CudaNN 7.6.5.32-10.2
+  Loading software from /Dedicated/schnieders/programs
+   Ant: /Dedicated/schnieders/programs/apache-ant-1.10.11
+   FFX: ~/programs/forcefieldx
+   GDMA: /Dedicated/schnieders/programs/gdma-2.3
+   Groovy: /Dedicated/schnieders/programs/groovy-4.0.1
+   Java: /Dedicated/schnieders/programs/jdk-21
+   Maven: /Dedicated/schnieders/programs/apache-maven-3.9.5
+   OpenMM CUDA Compiler: /usr/share/apps/2021.1/arch/gcc-9.3.0/cuda-11.1.1/bin/nvcc
+Warning on use of the timeseries module: If the inherent timescales of the system are long compared to those being analyzed, this statistical inefficiency may be an underestimate.  The estimate presumes the use of many statistically independent samples.  Tests should be performed to assess whether this condition is satisfied.   Be cautious in the interpretation of the data.
+
+****** PyMBAR will use 64-bit JAX! *******
+* JAX is currently set to 32-bit bitsize *
+* which is its default.                  *
+*                                        *
+* PyMBAR requires 64-bit mode and WILL   *
+* enable JAX's 64-bit mode when called.  *
+*                                        *
+* This MAY cause problems with other     *
+* Uses of JAX in the same code.          *
+******************************************
+
+
+******* JAX 64-bit mode is now on! *******
+*     JAX is now set to 64-bit mode!     *
+*   This MAY cause problems with other   *
+*      uses of JAX in the same code.     *
+******************************************
+
+An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+Failed to reach a solution to within tolerance with hybr: trying next method
+Adding Restraint with parameters:  [(0, 1), (6275.999999999999, 0.0, 1.0)]
+Using PBC Conditions on Restraint?  True
+Force dictionary: {'AmoebaBond': 0, 'PeriodicTorsionForce': 1, 'AmoebaVdwForce': 2, 'AmoebaMultipoleForce': 3, 'HarmonicBondForce': 4, 'CMMotionRemover': 5, 'AmoebaOutOfPlaneBend': 6, 'AmoebaAngle': 7, 'AmoebaInPlaneAngle': 8, 'AmoebaStretchBend': 9, 'CustomCentroidBondForce': 10}
+Evaluating Free Energy using BAR between (vdw, elec): (1.0, 0.3) and (1.0, 0.4)
+WARNING! Restraints triggered with energy of 0.0036679685581475496 kJ/mol at at frame 607 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.0031553320586681366 kJ/mol at at frame 612 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.5393509864807129 kJ/mol at at frame 4669 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.5677491426467896 kJ/mol at at frame 4670 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.03532972186803818 kJ/mol at at frame 5249 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.2224513292312622 kJ/mol at at frame 5251 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.053442955017089844 kJ/mol at at frame 5253 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.4752011001110077 kJ/mol at at frame 5255 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.4339516758918762 kJ/mol at at frame 5256 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.6765649914741516 kJ/mol at at frame 5294 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.18312548100948334 kJ/mol at at frame 5297 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.40264782309532166 kJ/mol at at frame 5326 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.16799741983413696 kJ/mol at at frame 5332 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 4.984820365905762 kJ/mol at at frame 5336 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.09085467457771301 kJ/mol at at frame 5346 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.00022774911485612392 kJ/mol at at frame 5351 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.014876198954880238 kJ/mol at at frame 5353 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.9788190722465515 kJ/mol at at frame 5355 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.5017322301864624 kJ/mol at at frame 5447 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.9284325838088989 kJ/mol at at frame 5508 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.1123729944229126 kJ/mol at at frame 5522 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.0002308953698957339 kJ/mol at at frame 5523 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 1.1930798292160034 kJ/mol at at frame 5527 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 1.9400132894515991 kJ/mol at at frame 5528 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.9277594089508057 kJ/mol at at frame 5533 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.06814133375883102 kJ/mol at at frame 5534 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 3.7396185398101807 kJ/mol at at frame 5544 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 3.224273204803467 kJ/mol at at frame 5564 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 9.535516437608749e-05 kJ/mol at at frame 5583 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.0004883541259914637 kJ/mol at at frame 5674 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.6124735474586487 kJ/mol at at frame 5675 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 1.4643518924713135 kJ/mol at at frame 5678 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.006532022729516029 kJ/mol at at frame 5683 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 1.3723840713500977 kJ/mol at at frame 5694 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 2.0148568153381348 kJ/mol at at frame 5697 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 2.11442494392395 kJ/mol at at frame 5719 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 7.147468090057373 kJ/mol at at frame 5723 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.1996898055076599 kJ/mol at at frame 5735 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.052361246198415756 kJ/mol at at frame 5736 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.22760312259197235 kJ/mol at at frame 5738 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.03766036406159401 kJ/mol at at frame 5751 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 1.6137568950653076 kJ/mol at at frame 5753 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.29148024320602417 kJ/mol at at frame 5760 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.17278440296649933 kJ/mol at at frame 5770 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 2.3690946102142334 kJ/mol at at frame 5771 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 1.5207451581954956 kJ/mol at at frame 5772 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 4.214540958404541 kJ/mol at at frame 5775 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.4513300359249115 kJ/mol at at frame 5777 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.008734187111258507 kJ/mol at at frame 5784 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 2.3453736305236816 kJ/mol at at frame 5790 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.11175335198640823 kJ/mol at at frame 5814 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.39653480052948 kJ/mol at at frame 5818 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 1.1131988763809204 kJ/mol at at frame 6118 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.3592971861362457 kJ/mol at at frame 6313 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 1.1086002588272095 kJ/mol at at frame 6332 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 1.9847815036773682 kJ/mol at at frame 6340 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.21139439940452576 kJ/mol at at frame 6345 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.47183486819267273 kJ/mol at at frame 6347 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.7433238625526428 kJ/mol at at frame 6348 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.2105528861284256 kJ/mol at at frame 6349 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 2.254262685775757 kJ/mol at at frame 6351 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.5909080505371094 kJ/mol at at frame 6352 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.12045961618423462 kJ/mol at at frame 6355 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.08772801607847214 kJ/mol at at frame 6356 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 4.508769512176514 kJ/mol at at frame 6357 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.5260482430458069 kJ/mol at at frame 6360 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.2184959203004837 kJ/mol at at frame 6363 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.9507133960723877 kJ/mol at at frame 7281 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.09459292143583298 kJ/mol at at frame 7318 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 3.077136278152466 kJ/mol at at frame 7322 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.16391175985336304 kJ/mol at at frame 7323 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 3.707108736038208 kJ/mol at at frame 7324 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.896838903427124 kJ/mol at at frame 7329 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 1.380538821220398 kJ/mol at at frame 7335 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.493471622467041 kJ/mol at at frame 7339 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.7488218545913696 kJ/mol at at frame 7402 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 3.3405134677886963 kJ/mol at at frame 7403 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.2780456840991974 kJ/mol at at frame 7407 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 4.213920593261719 kJ/mol at at frame 7412 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 1.8355439901351929 kJ/mol at at frame 7417 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.3361669182777405 kJ/mol at at frame 7418 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.110381118953228 kJ/mol at at frame 7504 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 3.1474099159240723 kJ/mol at at frame 7616 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 4.078202724456787 kJ/mol at at frame 7617 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.003922763746231794 kJ/mol at at frame 7622 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 2.4807069301605225 kJ/mol at at frame 7623 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.22174812853336334 kJ/mol at at frame 7631 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.16964265704154968 kJ/mol at at frame 7632 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 1.1475774049758911 kJ/mol at at frame 7634 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.9538467526435852 kJ/mol at at frame 12509 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.02165456861257553 kJ/mol at at frame 12512 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.021039189770817757 kJ/mol at at frame 12515 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 1.228389024734497 kJ/mol at at frame 12516 at lambda (1.0, 0.3)
+WARNING! Restraints triggered with energy of 0.0008709699613973498 kJ/mol at at frame 12530 at lambda (1.0, 0.3)
+Forward Free energy difference: -12.920659545494818 ± 0.02337783209376071 kJ/mol
+Reverse Free energy difference: 11.808504856882106 ± 0.017606550194861063 kJ/mol
+BAR Free energy difference from first half of samples: -12.315496146816505 ± 0.010032696716035985 kJ/mol
+BAR Free energy difference from second half of samples: -12.321594619894297 ± 0.009882700563982535 kJ/mol
+Total BAR Free energy difference: -12.344846906401973 ± 0.021481359511864136 kJ/mol with estimated overlap of 0.7135935171249079

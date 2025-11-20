@@ -1,0 +1,46 @@
+ Evaluating /Dedicated/schnieders/programs/stack-2021.1.sh
+  Loading Modules
+   Stack 2021.1
+   GCC 9.3.0
+   CMake 3.20.0
+   Eigen 3.3.9
+   Cuda 11.1.1
+   Cuda: /usr/share/apps/2021.1/arch/gcc-9.3.0/cuda-11.1.1
+   CudaNN 7.6.5.32-10.2
+  Loading software from /Dedicated/schnieders/programs
+   Ant: /Dedicated/schnieders/programs/apache-ant-1.10.11
+   FFX: ~/programs/forcefieldx
+   GDMA: /Dedicated/schnieders/programs/gdma-2.3
+   Groovy: /Dedicated/schnieders/programs/groovy-4.0.1
+   Java: /Dedicated/schnieders/programs/jdk-21
+   Maven: /Dedicated/schnieders/programs/apache-maven-3.9.5
+   OpenMM CUDA Compiler: /usr/share/apps/2021.1/arch/gcc-9.3.0/cuda-11.1.1/bin/nvcc
+Warning on use of the timeseries module: If the inherent timescales of the system are long compared to those being analyzed, this statistical inefficiency may be an underestimate.  The estimate presumes the use of many statistically independent samples.  Tests should be performed to assess whether this condition is satisfied.   Be cautious in the interpretation of the data.
+
+****** PyMBAR will use 64-bit JAX! *******
+* JAX is currently set to 32-bit bitsize *
+* which is its default.                  *
+*                                        *
+* PyMBAR requires 64-bit mode and WILL   *
+* enable JAX's 64-bit mode when called.  *
+*                                        *
+* This MAY cause problems with other     *
+* Uses of JAX in the same code.          *
+******************************************
+
+
+******* JAX 64-bit mode is now on! *******
+*     JAX is now set to 64-bit mode!     *
+*   This MAY cause problems with other   *
+*      uses of JAX in the same code.     *
+******************************************
+
+An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+Failed to reach a solution to within tolerance with hybr: trying next method
+Force dictionary: {'AmoebaBond': 0, 'PeriodicTorsionForce': 1, 'AmoebaVdwForce': 2, 'AmoebaMultipoleForce': 3, 'HarmonicBondForce': 4, 'CMMotionRemover': 5, 'AmoebaOutOfPlaneBend': 6, 'AmoebaAngle': 7, 'AmoebaInPlaneAngle': 8, 'AmoebaStretchBend': 9}
+Evaluating Free Energy using BAR between (vdw, elec): (1.0, 0.5) and (1.0, 0.6)
+Forward Free energy difference: -21.34833792510518 ± 0.07362653679362464 kJ/mol
+Reverse Free energy difference: 19.0684263388379 ± 0.031722824804617654 kJ/mol
+BAR Free energy difference from first half of samples: -20.089531583687215 ± 0.011823216014675302 kJ/mol
+BAR Free energy difference from second half of samples: -20.061052587030396 ± 0.011868781076914081 kJ/mol
+Total BAR Free energy difference: -20.092294933589397 ± 0.01579151484977836 kJ/mol with estimated overlap of 0.6261194746055373

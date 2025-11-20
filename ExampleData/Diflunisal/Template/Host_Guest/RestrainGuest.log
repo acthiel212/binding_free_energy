@@ -1,0 +1,139 @@
+ _________________________________________________________________________
+
+        FORCE FIELD X - Polyglot Software for Molecular Biophysics 
+
+        Version 1.0.0-6673  December 2024 
+        Git Revision  0f356f24a4b8e09937a9858a7cbcc93f7bba1df3 
+ 
+        Please cite the following reference when using Force Field X:
+
+        RA Gogal, AJ Nessler, AC Thiel, HV Bernabe, RA Corrigan Grove,
+        LM Cousineau, JM Litman, JM Miller, G Qi, MJ Speranza,
+        MR Tollefson, TD Fenn, JJ Michaelson, O Okada, JP Piquemal,
+        JW Ponder, J Shen, RJH Smith, W Yang, P Ren and MJ Schnieders,
+        2024, Journal of Chemical Physics, 161 (1).
+
+        Copyright (c)  Michael J. Schnieders  2001-2024
+        All Rights Reserved
+
+        Force Field X is distributed under the GPL v. 3 license
+        with linking exception and is hosted by the Schnieders Lab
+        at The University of Iowa.
+
+        User Manual:   https://ffx.biochem.uiowa.edu/manual.html
+        Publications:  https://ffx.biochem.uiowa.edu/publications.html
+        License:       https://ffx.biochem.uiowa.edu/licenses.html
+
+ _________________________________________________________________________
+
+ Wed Oct 29 20:32:12 CDT 2025
+ Process ID 122753 on argon-itf-login-4.hpc.
+
+ Command line arguments:
+ [test.FindRestraints, --distanceCutoff, 5.0, /Dedicated/schnieders/maemmad/binding_free_energy/workflow/Diflunisal/Template/Host_Guest/hp-bcd_Diflunisal.pdb]
+
+ Starting up the command line interface.
+
+ Executing internal script: ffx.algorithms.groovy.test.FindRestraints
+
+ Parsing: Internal force field (amoeba-bio-2018).
+ Parsing: Structure properties from (/Dedicated/schnieders/maemmad/binding_free_energy/workflow/Diflunisal/Template/Host_Guest/hp-bcd_Diflunisal.key).
+ Parsing: JVM system properties (i.e. command line -Dkey=value pairs).
+
+ Attempting to read force field patch from Diflunisal.prm.
+
+ Renumbering Patch: TRUE
+ Attempting to read force field patch from hp-bcd.prm.
+
+ Renumbering Patch: TRUE
+ Reading hp-bcd_Diflunisal.pdb
+ Attempting to patch BCD
+ Patch for BCD succeeded.
+ Attempting to patch LIG
+ Patch for LIG succeeded.
+ Constructing Force Field AMOEBA-BIO-2018
+
+ SMP threads:                                 1
+ The system will be treated as aperiodic (max separation =   19.3 A).
+
+ Bonded Terms
+  Bonds:                                    251
+  Angles:                                   461
+  Stretch-Bends:                            461
+  Out-of-Plane Bends:                        39
+  Torsions:                                 690
+
+ Non-Bonded Terms
+
+  Van der Waals
+   Cut-Off:                                NONE
+   Long-Range Correction:                 FALSE
+
+
+ Electrostatics
+   Polarization:                         MUTUAL
+    SCF Convergence Criteria:         1.000e-06
+    SCF Predictor:                         NONE
+    SCF Algorithm:                           CG
+    CG Preconditioner Cut-Off:            4.500
+    CG Preconditioner Ewald Coeff.:       0.000
+    CG Preconditioner Scale:              2.000
+    CG Preconditioner Mode:     FLETCHER_REEVES
+    Electrostatics Cut-Off:                NONE
+
+
+  Overall system charge:                  0.000
+
+ Opened hp-bcd_Diflunisal.pdb in 1.785 sec.
+
+ System Resources
+  Total CPU time:          12.33 (sec)
+  System load average:      5.36
+  Open file handles:         145 of   4096 allowed
+  System memory:            6139 MB free out of   8192 MB
+  System swap space:           1 MB free out of   4095 MB
+  JVM memory:               3917 MB free out of   3959 MB
+Molecule name: BCD-1 A
+Center of mass of host molecule: [15.902353274340603, 2.0921732344197053, 1.3435428481908072]
+Atom:      11-C4 BCD 1 (  12.38,   4.17,   4.19) A
+Atom:      16-C5 BCD 1 (  10.96,   3.83,   3.74) A
+Atom:      17-C6 BCD 1 (  12.15,   2.85,   6.17) A
+Atom:      20-C7 BCD 1 (  10.56,   2.46,   4.27) A
+Atom:      23-C8 BCD 1 (  10.74,   2.41,   5.78) A
+Atom:      26-C9 BCD 1 (  14.14,   1.51,   6.58) A
+Atom:      31-C10 BCD 1 (  15.50,   1.91,   5.99) A
+Atom:      32-C11 BCD 1 (  14.06,  -0.01,   6.74) A
+Atom:      39-C13 BCD 1 (  15.24,  -0.51,   7.55) A
+Atom:      40-C14 BCD 1 (  16.56,  -0.01,   6.96) A
+Atom:      51-C16 BCD 1 (  17.99,  -1.19,   5.37) A
+Atom:      63-C19 BCD 1 (  18.74,  -0.35,   4.33) A
+Atom:      64-C20 BCD 1 (  17.68,  -2.56,   4.78) A
+Atom:      70-C22 BCD 1 (  18.95,  -3.22,   4.27) A
+Atom:      71-C23 BCD 1 (  19.71,  -2.28,   3.32) A
+Atom:      82-C25 BCD 1 (  19.62,  -2.21,   0.88) A
+Atom:      94-C28 BCD 1 (  19.70,  -0.84,   0.21) A
+Atom:      95-C29 BCD 1 (  18.79,  -3.17,   0.04) A
+Atom:     101-C31 BCD 1 (  19.34,  -3.23,  -1.38) A
+Atom:     102-C32 BCD 1 (  19.45,  -1.83,  -1.98) A
+Atom:     113-C34 BCD 1 (  17.83,  -0.68,  -3.39) A
+Atom:     125-C37 BCD 1 (  17.63,   0.82,  -3.21) A
+Atom:     126-C38 BCD 1 (  16.53,  -1.32,  -3.87) A
+Atom:     132-C40 BCD 1 (  16.06,  -0.63,  -5.14) A
+Atom:     133-C41 BCD 1 (  15.97,   0.89,  -4.93) A
+Atom:     144-C43 BCD 1 (  13.97,   2.17,  -4.35) A
+Atom:     156-C46 BCD 1 (  14.15,   3.39,  -3.45) A
+Atom:     157-C47 BCD 1 (  12.60,   1.55,  -4.12) A
+Atom:     163-C49 BCD 1 (  11.51,   2.60,  -4.28) A
+Atom:     164-C50 BCD 1 (  11.80,   3.81,  -3.39) A
+Atom:     175-C52 BCD 1 (  11.01,   4.27,  -1.13) A
+Atom:     187-C55 BCD 1 (   9.95,   3.40,  -0.46) A
+Atom:     188-C56 BCD 1 (  11.95,   4.84,  -0.06) A
+Atom:     191-C57 BCD 1 (   9.23,   4.17,   0.63) A
+Atom:     198-C59 BCD 1 (  10.24,   4.78,   1.61) A
+Center of mass of subsection host atoms: [14.932999999999987, 0.908257142857142, 1.0932857142857133]
+Distance between COMs: 1.550461774893545
+Molecule name: LIG-2 A
+Number of atoms to restrain: 2
+Restrain list indices: [220, 230]
+
+ Script wall clock time:  5.401 (sec)

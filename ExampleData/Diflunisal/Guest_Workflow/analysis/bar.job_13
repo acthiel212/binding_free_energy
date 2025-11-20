@@ -1,0 +1,17 @@
+#$ -r y                      # Restartable
+#$ -ckpt user                # Restart under user; do not change (do not replace with your username)
+#$ -V                        # Inherit current environment
+#$ -cwd                      # Start job in submission directory
+#$ -N Diflunisal_BAR           # Job Diflunisal
+#$ -j y                      # Combine stderr and stdout
+#$ -q MS,COE-GPU,UI-GPU,CCOM-GPU               # Queue
+#$ -l ngpus=1
+#$ -pe smp 10              # Request 12 tasks/node, 12 total
+#$ -o $JOB_NAME.$JOB_ID.log  # Diflunisal of output file
+#$ -l h_rt=500:00:00         # Run Time
+#$ -S /bin/bash              # Shell to use
+
+module purge
+source /Dedicated/schnieders/andthiel/miniconda.sh
+
+/Dedicated/schnieders/andthiel/miniconda3/bin/python /Dedicated/schnieders/andthiel/Pfizer/binding_free_energy/BAR.py --pdb_file /Dedicated/schnieders/maemmad/binding_free_energy/workflow/Diflunisal/Guest_Workflow/Diflunisal_solv_min.pdb  --forcefield_file /Dedicated/schnieders/maemmad/binding_free_energy/workflow/Diflunisal/Template/Guest/Diflunisal.xml /Dedicated/schnieders/maemmad/binding_free_energy/workflow/Diflunisal/Template/Guest/hp-bcd.xml --traj_i "/Dedicated/schnieders/andthiel/Pfizer/binding_free_energy/workflow/Diflunisal/Guest_Workflow/analysis/output_13.dcd" --traj_ip1 "/Dedicated/schnieders/andthiel/Pfizer/binding_free_energy/workflow/Diflunisal/Guest_Workflow/analysis/output_14.dcd" --nonbonded_method "PME" --vdw_lambda_i 0.675 --elec_lambda_i 0.0 --vdw_lambda_ip1 0.7 --elec_lambda_ip1 0.0 --alchemical_atoms 1-26

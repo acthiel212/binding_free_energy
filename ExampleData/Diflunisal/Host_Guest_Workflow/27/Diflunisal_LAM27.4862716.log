@@ -1,0 +1,35 @@
+ Evaluating /Dedicated/schnieders/programs/stack-2021.1.sh
+  Loading Modules
+   Stack 2021.1
+   GCC 9.3.0
+   CMake 3.20.0
+   Eigen 3.3.9
+   Cuda 11.1.1
+   Cuda: /usr/share/apps/2021.1/arch/gcc-9.3.0/cuda-11.1.1
+   CudaNN 8.0.5.39-11.1
+   Swig 4.0.2_gcc-9.3.0
+  Loading software from /Dedicated/schnieders/programs/local
+   Ant: /Dedicated/schnieders/programs/apache-ant-1.10.11
+   FFX: /Dedicated/schnieders/programs/ffx-builds/forcefieldx-2025-10-14
+   GDMA: /Dedicated/schnieders/programs/gdma-2.3
+   Groovy: /Dedicated/schnieders/programs/groovy-4.0.1
+   Java: /Dedicated/schnieders/programs/jdk-24
+   Maven: /Dedicated/schnieders/programs/apache-maven-3.9.5
+   VMD: /Dedicated/schnieders/programs/vmd
+   NAMD: /Dedicated/schnieders/programs/NAMD_3.0alpha7_Linux-x86_64-multicore-CUDA
+   OpenEye: /Dedicated/schnieders/programs/OpenEye
+   Tinker: /Dedicated/schnieders/programs/tinker-tools
+Adding Restraint with parameters:  [(0, 1), (6275.999999999999, 0.0, 1.0)]
+Using PBC Conditions on Restraint?  True
+Force dictionary: {'AmoebaBond': 0, 'PeriodicTorsionForce': 1, 'AmoebaVdwForce': 2, 'AmoebaMultipoleForce': 3, 'HarmonicBondForce': 4, 'CMMotionRemover': 5, 'AmoebaOutOfPlaneBend': 6, 'AmoebaAngle': 7, 'AmoebaInPlaneAngle': 8, 'AmoebaStretchBend': 9, 'CustomCentroidBondForce': 10}
+Traceback (most recent call last):
+  File "/Dedicated/schnieders/maemmad/binding_free_energy/Production.py", line 53, in <module>
+    simulation = Simulation(pdb.topology, system, integrator, platform)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Dedicated/schnieders/andthiel/miniconda3/lib/python3.12/site-packages/openmm/app/simulation.py", line 104, in __init__
+    self.context = mm.Context(self.system, self.integrator, platform)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Dedicated/schnieders/andthiel/miniconda3/lib/python3.12/site-packages/openmm/openmm.py", line 8037, in __init__
+    _openmm.Context_swiginit(self, _openmm.new_Context(*args))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+openmm.OpenMMException: Error initializing CUDA: CUDA_ERROR_NOT_INITIALIZED (3) at /home/conda/feedstock_root/build_artifacts/openmm_1721257909416/work/platforms/cuda/src/CudaContext.cpp:91
