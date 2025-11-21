@@ -83,7 +83,10 @@ This project requires the following packages, managed via conda and pip:
 
 #### Bundled Software
 - **Force Field X (FFX)**: Version 1.0.0 is bundled in the `ffx-1.0.0/` directory. Used for force field parameterization and file conversions. If a new version is needed, download from the [official Force Field X website](http://ffx.biochem.uiowa.edu/).
-
+- A minimum Java version of 21 is required to run this bundled tool:
+```bash
+conda install -c conda-forge openjdk=21
+```
 ---
 
 ## Installation
