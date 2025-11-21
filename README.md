@@ -54,27 +54,19 @@ This project requires the following packages, managed via conda and pip:
 
 2. **pymbar** (version < 4)  
    Free energy calculations and BAR analysis
-   ```bash
-   conda install -c conda-forge "pymbar<4"
-   ```
+   https://pymbar.readthedocs.io/en/stable/
 
 3. **MDTraj**  
    Trajectory analysis and manipulation
-   ```bash
-   conda install -c conda-forge mdtraj
-   ```
+   https://www.mdtraj.org/1.9.8.dev0/index.html
 
 4. **PDBFixer**  
    PDB file preparation and solvation
-   ```bash
-   conda install -c conda-forge pdbfixer
-   ```
+   https://github.com/openmm/pdbfixer
 
 5. **intspan**  
    Interval handling utilities
-   ```bash
-   pip install intspan
-   ```
+   https://pypi.org/project/intspan/
 
 6. **Standard scientific Python stack**  
    - numpy
@@ -84,9 +76,7 @@ This project requires the following packages, managed via conda and pip:
 #### Bundled Software
 - **Force Field X (FFX)**: Version 1.0.0 is bundled in the `ffx-1.0.0/` directory. Used for force field parameterization and file conversions. If a new version is needed, download from the [official Force Field X website](http://ffx.biochem.uiowa.edu/).
 - A minimum Java version of 21 is required to run this bundled tool:
-```bash
-conda install -c conda-forge openjdk=21
-```
+
 ---
 
 ## Installation
@@ -117,6 +107,9 @@ conda install -c conda-forge pdbfixer
 
 # Install intspan
 pip install intspan
+
+# Install JDK 21
+conda install -c conda-forge openjdk=21
 ```
 
 ### Step 4: Clone Repository
