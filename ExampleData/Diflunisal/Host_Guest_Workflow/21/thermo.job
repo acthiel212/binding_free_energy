@@ -1,0 +1,18 @@
+#$ -r y                      # Restartable
+#$ -ckpt user                # Restart under user; do not change (do not replace with your username)
+#$ -V                        # Inherit current environment
+#$ -cwd                      # Start job in submission directory
+#$ -N Diflunisal_LAM21           # Job Diflunisal
+#$ -j y                      # Combine stderr and stdout
+#$ -q MS,UI-GPU,COE-GPU,all.q               # Queue
+#$ -l ngpus=1
+#$ -l gpu_p100=false
+#$ -pe smp 10              # Request 12 tasks/node, 12 total
+#$ -o $JOB_NAME.$JOB_ID.log  # Diflunisal of output file
+#$ -l h_rt=500:00:00         # Run Time
+#$ -S /bin/bash              # Shell to use
+
+module purge
+source /Dedicated/schnieders/andthiel/miniconda.sh
+
+/Dedicated/schnieders/andthiel/miniconda3/bin/python /Dedicated/schnieders/maemmad/binding_free_energy/Production.py --pdb_file /Dedicated/schnieders/maemmad/binding_free_energy/workflow/Diflunisal/Host_Guest_Workflow/hp-bcd_Diflunisal_solv_min.pdb  --forcefield_file /Dedicated/schnieders/maemmad/binding_free_energy/workflow/Diflunisal/Template/Host_Guest/Diflunisal.xml /Dedicated/schnieders/maemmad/binding_free_energy/workflow/Diflunisal/Template/Host_Guest/hp-bcd.xml --nonbonded_method "PME" --num_steps 15000000 --step_size 2 --nonbonded_cutoff 1.0 --vdw_lambda 0.95 --elec_lambda 0.0 --alchemical_atoms 218-243 --restraint_atoms_1 1-217 --restraint_atoms_2 220,230 --restraint_constant 15 --restraint_lower_distance 0.0 --restraint_upper_distance 10.0 --use_restraints true

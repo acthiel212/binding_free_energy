@@ -37,7 +37,7 @@ def calculate_restraint_subsection(host_guest_file_path, cutoff):
                 #Grab just the list indices
                 indexString = line.split(':')[1]
                 # Remove brackets and whitespace
-                indices = indexString.replace('[', '').replace(']', '').replace(' ','')
+                indices = indexString.replace('[', '').replace(']', '').replace(' ','').strip('\n')
     print(f"Atom indices of guest within specified cutoff of {cutoff} Angstroms that will be restrained: {indices}")
 
     return indices

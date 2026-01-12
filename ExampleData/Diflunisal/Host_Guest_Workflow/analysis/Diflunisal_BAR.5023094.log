@@ -1,0 +1,81 @@
+ Evaluating /Dedicated/schnieders/programs/stack-2021.1.sh
+  Loading Modules
+   Stack 2021.1
+   GCC 9.3.0
+   CMake 3.20.0
+   Eigen 3.3.9
+   Cuda 11.1.1
+   Cuda: /usr/share/apps/2021.1/arch/gcc-9.3.0/cuda-11.1.1
+   CudaNN 7.6.5.32-10.2
+  Loading software from /Dedicated/schnieders/programs
+   Ant: /Dedicated/schnieders/programs/apache-ant-1.10.11
+   FFX: ~/programs/forcefieldx
+   GDMA: /Dedicated/schnieders/programs/gdma-2.3
+   Groovy: /Dedicated/schnieders/programs/groovy-4.0.1
+   Java: /Dedicated/schnieders/programs/jdk-21
+   Maven: /Dedicated/schnieders/programs/apache-maven-3.9.5
+   OpenMM CUDA Compiler: /usr/share/apps/2021.1/arch/gcc-9.3.0/cuda-11.1.1/bin/nvcc
+Warning on use of the timeseries module: If the inherent timescales of the system are long compared to those being analyzed, this statistical inefficiency may be an underestimate.  The estimate presumes the use of many statistically independent samples.  Tests should be performed to assess whether this condition is satisfied.   Be cautious in the interpretation of the data.
+
+****** PyMBAR will use 64-bit JAX! *******
+* JAX is currently set to 32-bit bitsize *
+* which is its default.                  *
+*                                        *
+* PyMBAR requires 64-bit mode and WILL   *
+* enable JAX's 64-bit mode when called.  *
+*                                        *
+* This MAY cause problems with other     *
+* Uses of JAX in the same code.          *
+******************************************
+
+
+******* JAX 64-bit mode is now on! *******
+*     JAX is now set to 64-bit mode!     *
+*   This MAY cause problems with other   *
+*      uses of JAX in the same code.     *
+******************************************
+
+An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+Failed to reach a solution to within tolerance with hybr: trying next method
+Adding Restraint with parameters:  [(0, 1), (6275.999999999999, 0.0, 1.0)]
+Using PBC Conditions on Restraint?  True
+Force dictionary: {'AmoebaBond': 0, 'PeriodicTorsionForce': 1, 'AmoebaVdwForce': 2, 'AmoebaMultipoleForce': 3, 'HarmonicBondForce': 4, 'CMMotionRemover': 5, 'AmoebaOutOfPlaneBend': 6, 'AmoebaAngle': 7, 'AmoebaInPlaneAngle': 8, 'AmoebaStretchBend': 9, 'CustomCentroidBondForce': 10}
+Evaluating Free Energy using BAR between (vdw, elec): (1.0, 0.5) and (1.0, 0.6)
+WARNING! Restraints triggered with energy of 1.4107509851455688 kJ/mol at at frame 2095 at lambda (1.0, 0.5)
+WARNING! Restraints triggered with energy of 0.058769892901182175 kJ/mol at at frame 2103 at lambda (1.0, 0.5)
+WARNING! Restraints triggered with energy of 0.15497538447380066 kJ/mol at at frame 2108 at lambda (1.0, 0.5)
+WARNING! Restraints triggered with energy of 0.36778128147125244 kJ/mol at at frame 2118 at lambda (1.0, 0.5)
+WARNING! Restraints triggered with energy of 0.04953495413064957 kJ/mol at at frame 2119 at lambda (1.0, 0.5)
+WARNING! Restraints triggered with energy of 0.7736554741859436 kJ/mol at at frame 2132 at lambda (1.0, 0.5)
+WARNING! Restraints triggered with energy of 0.40849366784095764 kJ/mol at at frame 2207 at lambda (1.0, 0.5)
+WARNING! Restraints triggered with energy of 0.7003698348999023 kJ/mol at at frame 2208 at lambda (1.0, 0.5)
+WARNING! Restraints triggered with energy of 0.0052920375019311905 kJ/mol at at frame 2209 at lambda (1.0, 0.5)
+WARNING! Restraints triggered with energy of 0.00022236548829823732 kJ/mol at at frame 2211 at lambda (1.0, 0.5)
+WARNING! Restraints triggered with energy of 0.10025785118341446 kJ/mol at at frame 2212 at lambda (1.0, 0.5)
+WARNING! Restraints triggered with energy of 0.2073841542005539 kJ/mol at at frame 2216 at lambda (1.0, 0.5)
+WARNING! Restraints triggered with energy of 2.3217718601226807 kJ/mol at at frame 2217 at lambda (1.0, 0.5)
+WARNING! Restraints triggered with energy of 5.151369571685791 kJ/mol at at frame 2224 at lambda (1.0, 0.5)
+WARNING! Restraints triggered with energy of 0.18858911097049713 kJ/mol at at frame 2226 at lambda (1.0, 0.5)
+WARNING! Restraints triggered with energy of 1.4317821264266968 kJ/mol at at frame 2227 at lambda (1.0, 0.5)
+WARNING! Restraints triggered with energy of 0.5965695381164551 kJ/mol at at frame 2230 at lambda (1.0, 0.5)
+WARNING! Restraints triggered with energy of 0.04163821414113045 kJ/mol at at frame 2237 at lambda (1.0, 0.5)
+WARNING! Restraints triggered with energy of 0.542532205581665 kJ/mol at at frame 2282 at lambda (1.0, 0.5)
+WARNING! Restraints triggered with energy of 3.2448928356170654 kJ/mol at at frame 2285 at lambda (1.0, 0.5)
+WARNING! Restraints triggered with energy of 0.00238295691087842 kJ/mol at at frame 2298 at lambda (1.0, 0.5)
+WARNING! Restraints triggered with energy of 1.6720757484436035 kJ/mol at at frame 2308 at lambda (1.0, 0.5)
+WARNING! Restraints triggered with energy of 2.277148962020874 kJ/mol at at frame 2310 at lambda (1.0, 0.5)
+WARNING! Restraints triggered with energy of 0.5257743000984192 kJ/mol at at frame 2313 at lambda (1.0, 0.5)
+WARNING! Restraints triggered with energy of 3.8915798664093018 kJ/mol at at frame 2314 at lambda (1.0, 0.5)
+WARNING! Restraints triggered with energy of 0.022476600483059883 kJ/mol at at frame 6495 at lambda (1.0, 0.5)
+WARNING! Restraints triggered with energy of 0.1747054010629654 kJ/mol at at frame 6496 at lambda (1.0, 0.5)
+WARNING! Restraints triggered with energy of 2.956773519515991 kJ/mol at at frame 11132 at lambda (1.0, 0.5)
+WARNING! Restraints triggered with energy of 0.0951397716999054 kJ/mol at at frame 11142 at lambda (1.0, 0.5)
+WARNING! Restraints triggered with energy of 1.0915436744689941 kJ/mol at at frame 10058 at lambda (1.0, 0.6)
+WARNING! Restraints triggered with energy of 0.012827995233237743 kJ/mol at at frame 10067 at lambda (1.0, 0.6)
+WARNING! Restraints triggered with energy of 1.1302424669265747 kJ/mol at at frame 12155 at lambda (1.0, 0.6)
+WARNING! Restraints triggered with energy of 1.7272568941116333 kJ/mol at at frame 12156 at lambda (1.0, 0.6)
+Forward Free energy difference: -21.723024276435325 ± 0.19046296719221095 kJ/mol
+Reverse Free energy difference: 19.367575436747263 ± 0.033359497178815756 kJ/mol
+BAR Free energy difference from first half of samples: -20.409293848506206 ± 0.012492312646116745 kJ/mol
+BAR Free energy difference from second half of samples: -20.273626756209865 ± 0.012223542810211816 kJ/mol
+Total BAR Free energy difference: -20.457601502488046 ± 0.025485435656035206 kJ/mol with estimated overlap of 0.6087813841630294

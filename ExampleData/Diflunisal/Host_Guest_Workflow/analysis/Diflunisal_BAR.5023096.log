@@ -1,0 +1,72 @@
+ Evaluating /Dedicated/schnieders/programs/stack-2021.1.sh
+  Loading Modules
+   Stack 2021.1
+   GCC 9.3.0
+   CMake 3.20.0
+   Eigen 3.3.9
+   Cuda 11.1.1
+   Cuda: /usr/share/apps/2021.1/arch/gcc-9.3.0/cuda-11.1.1
+   CudaNN 7.6.5.32-10.2
+  Loading software from /Dedicated/schnieders/programs
+   Ant: /Dedicated/schnieders/programs/apache-ant-1.10.11
+   FFX: ~/programs/forcefieldx
+   GDMA: /Dedicated/schnieders/programs/gdma-2.3
+   Groovy: /Dedicated/schnieders/programs/groovy-4.0.1
+   Java: /Dedicated/schnieders/programs/jdk-21
+   Maven: /Dedicated/schnieders/programs/apache-maven-3.9.5
+   OpenMM CUDA Compiler: /usr/share/apps/2021.1/arch/gcc-9.3.0/cuda-11.1.1/bin/nvcc
+Warning on use of the timeseries module: If the inherent timescales of the system are long compared to those being analyzed, this statistical inefficiency may be an underestimate.  The estimate presumes the use of many statistically independent samples.  Tests should be performed to assess whether this condition is satisfied.   Be cautious in the interpretation of the data.
+
+****** PyMBAR will use 64-bit JAX! *******
+* JAX is currently set to 32-bit bitsize *
+* which is its default.                  *
+*                                        *
+* PyMBAR requires 64-bit mode and WILL   *
+* enable JAX's 64-bit mode when called.  *
+*                                        *
+* This MAY cause problems with other     *
+* Uses of JAX in the same code.          *
+******************************************
+
+
+******* JAX 64-bit mode is now on! *******
+*     JAX is now set to 64-bit mode!     *
+*   This MAY cause problems with other   *
+*      uses of JAX in the same code.     *
+******************************************
+
+An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+Failed to reach a solution to within tolerance with hybr: trying next method
+Adding Restraint with parameters:  [(0, 1), (6275.999999999999, 0.0, 1.0)]
+Using PBC Conditions on Restraint?  True
+Force dictionary: {'AmoebaBond': 0, 'PeriodicTorsionForce': 1, 'AmoebaVdwForce': 2, 'AmoebaMultipoleForce': 3, 'HarmonicBondForce': 4, 'CMMotionRemover': 5, 'AmoebaOutOfPlaneBend': 6, 'AmoebaAngle': 7, 'AmoebaInPlaneAngle': 8, 'AmoebaStretchBend': 9, 'CustomCentroidBondForce': 10}
+Evaluating Free Energy using BAR between (vdw, elec): (1.0, 0.6) and (1.0, 0.7)
+WARNING! Restraints triggered with energy of 1.0915436744689941 kJ/mol at at frame 10058 at lambda (1.0, 0.6)
+WARNING! Restraints triggered with energy of 0.012827995233237743 kJ/mol at at frame 10067 at lambda (1.0, 0.6)
+WARNING! Restraints triggered with energy of 1.1302424669265747 kJ/mol at at frame 12155 at lambda (1.0, 0.6)
+WARNING! Restraints triggered with energy of 1.7272568941116333 kJ/mol at at frame 12156 at lambda (1.0, 0.6)
+WARNING! Restraints triggered with energy of 0.08796874433755875 kJ/mol at at frame 7682 at lambda (1.0, 0.7)
+WARNING! Restraints triggered with energy of 2.874854803085327 kJ/mol at at frame 7683 at lambda (1.0, 0.7)
+WARNING! Restraints triggered with energy of 0.006554940715432167 kJ/mol at at frame 7684 at lambda (1.0, 0.7)
+WARNING! Restraints triggered with energy of 0.14123369753360748 kJ/mol at at frame 7685 at lambda (1.0, 0.7)
+WARNING! Restraints triggered with energy of 0.04539623484015465 kJ/mol at at frame 7688 at lambda (1.0, 0.7)
+WARNING! Restraints triggered with energy of 1.1683900356292725 kJ/mol at at frame 7690 at lambda (1.0, 0.7)
+WARNING! Restraints triggered with energy of 1.1813287734985352 kJ/mol at at frame 7692 at lambda (1.0, 0.7)
+WARNING! Restraints triggered with energy of 1.4821419715881348 kJ/mol at at frame 7698 at lambda (1.0, 0.7)
+WARNING! Restraints triggered with energy of 2.228022813796997 kJ/mol at at frame 7709 at lambda (1.0, 0.7)
+WARNING! Restraints triggered with energy of 2.2800002098083496 kJ/mol at at frame 7713 at lambda (1.0, 0.7)
+WARNING! Restraints triggered with energy of 0.016825208440423012 kJ/mol at at frame 7718 at lambda (1.0, 0.7)
+WARNING! Restraints triggered with energy of 6.23326632194221e-05 kJ/mol at at frame 7737 at lambda (1.0, 0.7)
+WARNING! Restraints triggered with energy of 0.17109271883964539 kJ/mol at at frame 7739 at lambda (1.0, 0.7)
+WARNING! Restraints triggered with energy of 0.4731071889400482 kJ/mol at at frame 7742 at lambda (1.0, 0.7)
+WARNING! Restraints triggered with energy of 0.12763002514839172 kJ/mol at at frame 7747 at lambda (1.0, 0.7)
+WARNING! Restraints triggered with energy of 0.2503381669521332 kJ/mol at at frame 7761 at lambda (1.0, 0.7)
+WARNING! Restraints triggered with energy of 0.04178093746304512 kJ/mol at at frame 7782 at lambda (1.0, 0.7)
+WARNING! Restraints triggered with energy of 2.04691481590271 kJ/mol at at frame 7786 at lambda (1.0, 0.7)
+WARNING! Restraints triggered with energy of 1.3559490442276 kJ/mol at at frame 7793 at lambda (1.0, 0.7)
+WARNING! Restraints triggered with energy of 0.04154961556196213 kJ/mol at at frame 14565 at lambda (1.0, 0.7)
+Forward Free energy difference: -27.973317903513596 ± 0.5026984735036613 kJ/mol
+Reverse Free energy difference: 23.807419446052933 ± 0.03940389309912941 kJ/mol
+BAR Free energy difference from first half of samples: -25.194878180517215 ± 0.013413622235848785 kJ/mol
+BAR Free energy difference from second half of samples: -24.959191679838707 ± 0.01337958757075199 kJ/mol
+Total BAR Free energy difference: -25.512069581812124 ± 0.041929516323492046 kJ/mol with estimated overlap of 0.6021208938544571

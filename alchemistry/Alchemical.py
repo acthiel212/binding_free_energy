@@ -1,8 +1,8 @@
 from intspan import intspan
 
 
-# Apply lambda to alchemical forces that were setup in below method.
 def apply_lambdas(context, alchemical_atoms, vdwForce, vdw_lambda, multipoleForce, elec_lambda):
+    """Apply lambda scaling to alchemical VdW and electrostatic forces."""
     # Parse alchemical_atoms input
     alchemical_atoms = list(intspan(alchemical_atoms))
     # OpenMM atom index starts at zero while FFX starts at 1. This allows the flags between FFX and OpenMM to match
@@ -33,8 +33,8 @@ def apply_lambdas(context, alchemical_atoms, vdwForce, vdw_lambda, multipoleForc
     context.reinitialize(preserveState=True)
 
 
-# Save Default Electrostatic params when applying lambda more than once.
 def save_default_elec_params(multipoleForce, alchemical_atoms):
+    """Save default electrostatic parameters for alchemical atoms."""
     # Parse alchemical_atoms input
     alchemical_atoms = list(intspan(alchemical_atoms))
     # OpenMM atom index starts at zero while FFX starts at 1. This allows the flags between FFX and OpenMM to match
@@ -47,6 +47,7 @@ def save_default_elec_params(multipoleForce, alchemical_atoms):
 
 
 def setup_alchemical_forces(system):
+    """Extract and configure VdW and multipole forces for alchemical transformations."""
     # Setup simulation context
     numForces = system.getNumForces()
     forceDict = {}
@@ -68,9 +69,9 @@ def setup_alchemical_forces(system):
     return vdwForce, multipoleForce
 
 
-# Helper function to set lambda values and update forces in the context
 def update_lambda_values(context, vdw_lambda, elec_lambda, vdwForce, multipoleForce, alchemical_atoms,
                          default_elec_params):
+    """Update lambda values and force parameters using saved default electrostatic parameters."""
     # Parse alchemical_atoms input
     alchemical_atoms = list(intspan(alchemical_atoms))
     # OpenMM atom index starts at zero while FFX starts at 1. This allows the flags between FFX and OpenMM to match

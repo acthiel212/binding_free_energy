@@ -10,10 +10,12 @@ parser.add_argument('--prm_file', required=True, type=str, help='PRM file for th
 parser.add_argument('--host_file_dir', required=True, type=str, help='Directory that contains the PDB and XML already prepared for the host')
 parser.add_argument('--target_dir', required=True, type=str, help='Directory to put prepared files into')
 parser.add_argument('--docked_file', required=True, type=str, help='Directory to grab docked XYZ coordinates from')
+parser.add_argument('--job_file_dir', required=True, type=str, help='Directory to pull job files from')
 
 args = parser.parse_args()
 target_dir = args.target_dir
 HP_dir = args.host_file_dir
+job_dir = args.job_file_dir
 CWD = os.getcwd()
 
 # Extract filename without extension
@@ -35,6 +37,9 @@ guest_dir = f"{target_dir}/{filename}/Template/Guest"
 os.makedirs(guest_dir, exist_ok=True)
 
 # Copy XML file from HP_dir
+shutil.copy(f"{job_dir}/guest_bar.job", f"{guest_dir}/bar.job")
+shutil.copy(f"{job_dir}/guest_equil.job", f"{guest_dir}/equil.job")
+shutil.copy(f"{job_dir}/guest_thermo.job", f"{guest_dir}/thermo.job")
 shutil.copy(f"{HP_dir}/hp-bcd.xml", guest_dir)
 shutil.copy(f"{HP_dir}/hp-bcd.pdb", guest_dir)
 
@@ -58,6 +63,9 @@ host_guest_dir = f"{target_dir}/{filename}/Template/Host_Guest"
 os.makedirs(host_guest_dir, exist_ok=True)
 
 # Copy over needed files from guest dir
+shutil.copy(f"{job_dir}/host_guest_bar.job", f"{host_guest_dir}/bar.job")
+shutil.copy(f"{job_dir}/host_guest_equil.job", f"{host_guest_dir}/equil.job")
+shutil.copy(f"{job_dir}/host_guest_thermo.job", f"{host_guest_dir}/thermo.job")
 shutil.copy(f"{guest_dir}/{filename}.pdb", f"{host_guest_dir}/{filename}.pdb")
 shutil.copy(f"{guest_dir}/{filename}.prm", f"{host_guest_dir}/{filename}.prm")
 shutil.copy(f"{HP_dir}/hp-bcd.pdb", f"{host_guest_dir}/hp-bcd.pdb")

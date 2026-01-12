@@ -1,0 +1,62 @@
+ Evaluating /Dedicated/schnieders/programs/stack-2021.1.sh
+  Loading Modules
+   Stack 2021.1
+   GCC 9.3.0
+   CMake 3.20.0
+   Eigen 3.3.9
+   Cuda 11.1.1
+   Cuda: /usr/share/apps/2021.1/arch/gcc-9.3.0/cuda-11.1.1
+   CudaNN 7.6.5.32-10.2
+  Loading software from /Dedicated/schnieders/programs
+   Ant: /Dedicated/schnieders/programs/apache-ant-1.10.11
+   FFX: ~/programs/forcefieldx
+   GDMA: /Dedicated/schnieders/programs/gdma-2.3
+   Groovy: /Dedicated/schnieders/programs/groovy-4.0.1
+   Java: /Dedicated/schnieders/programs/jdk-21
+   Maven: /Dedicated/schnieders/programs/apache-maven-3.9.5
+   OpenMM CUDA Compiler: /usr/share/apps/2021.1/arch/gcc-9.3.0/cuda-11.1.1/bin/nvcc
+Warning on use of the timeseries module: If the inherent timescales of the system are long compared to those being analyzed, this statistical inefficiency may be an underestimate.  The estimate presumes the use of many statistically independent samples.  Tests should be performed to assess whether this condition is satisfied.   Be cautious in the interpretation of the data.
+
+****** PyMBAR will use 64-bit JAX! *******
+* JAX is currently set to 32-bit bitsize *
+* which is its default.                  *
+*                                        *
+* PyMBAR requires 64-bit mode and WILL   *
+* enable JAX's 64-bit mode when called.  *
+*                                        *
+* This MAY cause problems with other     *
+* Uses of JAX in the same code.          *
+******************************************
+
+
+******* JAX 64-bit mode is now on! *******
+*     JAX is now set to 64-bit mode!     *
+*   This MAY cause problems with other   *
+*      uses of JAX in the same code.     *
+******************************************
+
+An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+Failed to reach a solution to within tolerance with hybr: trying next method
+WARNING: Did not converge to within specified tolerance.
+max_delta = 0.000000e+00, tol = 1.000000e-12, maximum_iterations = 10000, iterations completed = 9999
+Failed to reach a solution to within tolerance with adaptive: trying next method
+No solution found to within tolerance.
+The solution with the smallest gradient 2.081308e-02 norm is adaptive
+Please exercise caution with this solution and consider alternative methods or a different tolerance.
+Adding Restraint with parameters:  [(0, 1), (6275.999999999999, 0.0, 1.0)]
+Using PBC Conditions on Restraint?  True
+Force dictionary: {'AmoebaBond': 0, 'PeriodicTorsionForce': 1, 'AmoebaVdwForce': 2, 'AmoebaMultipoleForce': 3, 'HarmonicBondForce': 4, 'CMMotionRemover': 5, 'AmoebaOutOfPlaneBend': 6, 'AmoebaAngle': 7, 'AmoebaInPlaneAngle': 8, 'AmoebaStretchBend': 9, 'CustomCentroidBondForce': 10}
+Evaluating Free Energy using BAR between (vdw, elec): (1.0, 0.8) and (1.0, 0.9)
+WARNING! Restraints triggered with energy of 0.24601927399635315 kJ/mol at at frame 1058 at lambda (1.0, 0.8)
+WARNING! Restraints triggered with energy of 0.8990941643714905 kJ/mol at at frame 1059 at lambda (1.0, 0.8)
+WARNING! Restraints triggered with energy of 0.8903220295906067 kJ/mol at at frame 1060 at lambda (1.0, 0.8)
+WARNING! Restraints triggered with energy of 4.010628700256348 kJ/mol at at frame 1062 at lambda (1.0, 0.8)
+WARNING! Restraints triggered with energy of 0.39487141370773315 kJ/mol at at frame 1063 at lambda (1.0, 0.8)
+WARNING! Restraints triggered with energy of 4.00801944732666 kJ/mol at at frame 1065 at lambda (1.0, 0.8)
+Traceback (most recent call last):
+  File "/Dedicated/schnieders/andthiel/Pfizer/binding_free_energy/BAR.py", line 155, in <module>
+    bar_overlap = other_estimators.bar_overlap(forward_work_dec, reverse_work_dec)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Dedicated/schnieders/andthiel/miniconda3/lib/python3.12/site-packages/pymbar/other_estimators.py", line 565, in bar_overlap
+    assert np.isclose(
+AssertionError: BAR: -38.956509043517556 +- 0.22333539189918966 | MBAR: -38.955542473507975
