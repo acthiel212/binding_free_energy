@@ -17,11 +17,18 @@ BINDING_FREE_ENERGY_DIR = SCRIPT_DIR # Assuming workflow.py exists in binding_fr
 
 VDW_LAMBDAS = [
     0, 0.4, 0.5, 0.525, 0.55, 0.575, 0.5875, 0.6, 0.6125, 0.625, 0.6375, 0.65, 0.6625, 0.675, 0.7,
-    0.725, 0.75, 0.775, 0.8, 0.85, 0.9, 0.95, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0
+    0.725, 0.75, 0.775, 0.8, 0.85, 0.9, 0.95, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0
 ]
 ELEC_LAMBDAS = [
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 1.0
+    0.0, 0.0, 0.0, 0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 1.0,
+    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0
+]
+RESTRAINT_LAMBDAS = [
+    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+    1.0000, 0.4217, 0.1778, 0.0750, 0.0316, 0.0133, 0.0056, 0.0024, 0.0010, 0.0000
 ]
 
 # ----------------------------
@@ -316,9 +323,11 @@ def submit_thermo(target_dir, job_prefix, equil_job_id):
     # Assuming VDW_LAMBDAS and ELEC_LAMBDAS are defined globally
     num_lambdas = len(VDW_LAMBDAS)
 
+    vdw_lambdas = VDW_LAMBDAS
     print(f"Setting up lambda directories{target_dir}", file=sys.stderr)
-
-    for i, vdw_lambda in enumerate(VDW_LAMBDAS):
+    if job_prefix == "OMM_Guest_LAM":
+        vdw_lambdas = VDW_LAMBDAS[:-10]
+    for i, vdw_lambda in enumerate(vdw_lambdas):
         lambda_dir = os.path.join(target_dir, str(i))
         os.makedirs(lambda_dir, exist_ok=True)
 
@@ -330,6 +339,8 @@ def submit_thermo(target_dir, job_prefix, equil_job_id):
         
         job_content = job_content.replace("<vdw_lambda_value>", str(vdw_lambda))
         job_content = job_content.replace("<elec_lambda_value>", str(ELEC_LAMBDAS[i]))
+        if job_prefix != "OMM_Guest_LAM":
+            job_content = job_content.replace("<restraint_lambda_value>", str(RESTRAINT_LAMBDAS[i]))
         job_content = job_content.replace("<Production.py>", str(os.path.join(BINDING_FREE_ENERGY_DIR, "Production.py")))
         job_content = job_content.replace("_LAM", f"_LAM{i}")
 
@@ -425,6 +436,8 @@ def submit_bar(target_dir, analysis_type, thermo_job_ids):
         vdw_lambda_ip1 = VDW_LAMBDAS[i + 1]
         elec_lambda = ELEC_LAMBDAS[i]
         elec_lambda_ip1 = ELEC_LAMBDAS[i + 1]
+        restraint_lambda = RESTRAINT_LAMBDAS[i]
+        restraint_lambda_ip1 = RESTRAINT_LAMBDAS[i + 1]
 
         # Replace placeholders in the bar.job file
         with open(bar_job_file, 'r') as file:
@@ -436,6 +449,9 @@ def submit_bar(target_dir, analysis_type, thermo_job_ids):
         job_content = job_content.replace('<vdw_lambda_value_ip1>', str(vdw_lambda_ip1))
         job_content = job_content.replace('<elec_lambda_value_i>', str(elec_lambda))
         job_content = job_content.replace('<elec_lambda_value_ip1>', str(elec_lambda_ip1))
+        if analysis_type != "guest":
+            job_content = job_content.replace('<restraint_lambda_value_i>', str(restraint_lambda))
+            job_content = job_content.replace('<restraint_lambda_value_ip1>', str(restraint_lambda_ip1))
         job_content = job_content.replace("<BAR.py>", str(os.path.join(BINDING_FREE_ENERGY_DIR, "BAR.py")))
         job_content = job_content.replace('$LAMBDA_I', str(i))
         job_content = job_content.replace('$LAMBDA_NEXT', str(i + 1))

@@ -35,12 +35,22 @@ system = forcefield.createSystem(pdb.topology, nonbondedMethod=nonbonded_method,
 
 # Create the restraint force
 if args.use_restraints:
-    restraint = Harmonic_Restraint.create_restraint(args.restraint_atoms_1, args.restraint_atoms_2, args.restraint_constant,
+    harmonicforce, angleforce, torsionforce = Harmonic_Restraint.create_restraint(args.restraint_atoms_1, args.restraint_atoms_2, args.restraint_constant,
                                                     args.restraint_lower_distance, args.restraint_upper_distance)
-    system.addForce(restraint)
-    print("Adding Restraint with parameters: ", restraint.getBondParameters(0))
-    restraint.setUsesPeriodicBoundaryConditions(True)
-    print("Using PBC Conditions on Restraint? ", restraint.usesPeriodicBoundaryConditions())
+ 
+    system.addForce(harmonicforce) 
+    system.addForce(angleforce) 
+    system.addForce(torsionforce) 
+    print("Adding Bond Restraint with parameters: ", harmonicforce.getBondParameters(0))
+    print("Adding Angle Restraint with parameters: ", angleforce.getAngleParameters(0))
+    print("Adding Angle Restraint with parameters: ", angleforce.getAngleParameters(1))
+    print("Adding Torsion Restraint with parameters: ", torsionforce.getTorsionParameters(0))
+    print("Adding Torsion Restraint with parameters: ", torsionforce.getTorsionParameters(1))
+    print("Adding Torsion Restraint with parameters: ", torsionforce.getTorsionParameters(2))
+    harmonicforce.setUsesPeriodicBoundaryConditions(True)
+    angleforce.setUsesPeriodicBoundaryConditions(True)
+    torsionforce.setUsesPeriodicBoundaryConditions(True)
+    print("Using PBC Conditions on Restraint? ", harmonicforce.usesPeriodicBoundaryConditions())
 
 vdwForce, multipoleForce = Alchemical.setup_alchemical_forces(system)
 
@@ -72,6 +82,8 @@ else:
 
 
 state = simulation.context.getState(getEnergy=True, getPositions=True)
+if args.use_restraints:
+    simulation.context.setParameter("lambda_restraints", args.restraint_lambda)
 print(f"AmoebaVdwLambda: {simulation.context.getParameter('AmoebaVdwLambda')}")
 print(f"AmoebaElecCharge: {multipoleForce.getMultipoleParameters(0)[0]}")
 print(f"Potential Energy after reinitialization: {state.getPotentialEnergy()}") #{state.getPotentialEnergy().in_units_of(kilocalories_per_mole)}

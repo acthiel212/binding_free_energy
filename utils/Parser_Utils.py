@@ -37,6 +37,8 @@ def add_restraint_parser(parser):
                         help='Restraint lower distance (default: 0.0)', default=0.0)
     parser.add_argument('--restraint_upper_distance', required=False, type=float,
                         help='Restraint upper distance (default: 1.0)', default=1.0)
+    parser.add_argument('--restraint_lambda', required=False, type=float,
+                        help='Global parameter lambda to scale Boresch Restraint', default=1.0)
     return parser
 
 def add_alchemical_parser(parser):
@@ -45,7 +47,8 @@ def add_alchemical_parser(parser):
                         help='Value for van der Waals lambda (default: 1.0)', default=1.0)
     parser.add_argument('--elec_lambda', required=False, type=float,
                         help='Value for electrostatic lambda (default: 0.0)', default=0.0)
-    parser.add_argument('--alchemical_atoms', required=True, type=str, help='Range of alchemical atoms (e.g., "0,2")')
+    parser.add_argument('--alchemical_atoms', required=True, type=str,
+                        help='Range of alchemical atoms (e.g., "0,2")')
     return parser
 
 def add_BAR_parser(parser):
@@ -56,6 +59,8 @@ def add_BAR_parser(parser):
     parser.add_argument('--elec_lambda_i', required=True, type=float, help='Lambda for electrostatics at state i')
     parser.add_argument('--vdw_lambda_ip1', required=True, type=float, help='Lambda for van der Waals at state i+1')
     parser.add_argument('--elec_lambda_ip1', required=True, type=float, help='Lambda for electrostatics at state i+1')
+    parser.add_argument('--restraint_lambda_i',required=False, type=float, default=1.0, help='Lambda for restraints at state i')
+    parser.add_argument('--restraint_lambda_ip1', required=False, type=float, default=1.0, help='Lambda for restraints at state i+1')
     # New flags for traversing the DCD file
     parser.add_argument('--step_size', type=int, required=False, help='Step size to traverse the DCD file', default=1)
     parser.add_argument('--start', type=int, required=False, help='Start frame for DCD traversal', default=0)
