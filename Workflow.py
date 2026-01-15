@@ -129,7 +129,7 @@ def run_prepare():
     # ----------------------------
     # Prepare Step
     # ----------------------------
-    print("Running Prepare.py...")
+    #print("Running Prepare.py...")
     os.chdir(os.path.join(BINDING_FREE_ENERGY_DIR, "Guests"))
     prepare_command = [
         "python", os.path.join(BINDING_FREE_ENERGY_DIR, "Prepare.py"),
@@ -137,12 +137,12 @@ def run_prepare():
         "--prm_file", f"{NAME}.prm",
         "--host_file_dir", os.path.join(BINDING_FREE_ENERGY_DIR, "HP-BCD"),
         "--target_dir", os.path.join(BINDING_FREE_ENERGY_DIR, "workflow"),
-        "--docked_file", os.path.join(BINDING_FREE_ENERGY_DIR, "DockedStructures", f"HPBCD_1_{NAME}.results.xyz"),
+        "--docked_file", os.path.join(BINDING_FREE_ENERGY_DIR, "DockedStructures/Zing", f"ZING_best_{NAME}.sdf"),
         "--job_file_dir", os.path.join(BINDING_FREE_ENERGY_DIR, f"JobFiles/{SUB_TYPE}")
     ]
 
     subprocess.run(prepare_command, check=True)
-    print("Prepare step completed.")
+    #print("Prepare step completed.")
 
 def setup_directories(target_dir, structure_file, forcefield_file, alchemical_atoms,
                       restraint_atoms_1, restraint_atoms_2, workflow_type):
@@ -184,7 +184,7 @@ def setup_directories(target_dir, structure_file, forcefield_file, alchemical_at
     # ----------------------------
     # Solvate Step
     # ----------------------------
-    print("Running Solvate.py...")
+    #print("Running Solvate.py...")
     os.chdir(template_dir)
     solvate_command = [
         "python", os.path.join(BINDING_FREE_ENERGY_DIR, "Solvate.py"),
@@ -195,9 +195,9 @@ def setup_directories(target_dir, structure_file, forcefield_file, alchemical_at
     subprocess.run(solvate_command, check=True)
     os.chdir(CWD)
 
-    print("Solvate step completed.")
+    #print("Solvate step completed.")
 
-    print(f"Setting up production directories: {target_dir}")
+    #print(f"Setting up production directories: {target_dir}")
 
     # Create target directory
     os.makedirs(target_dir, exist_ok=True)
@@ -205,9 +205,9 @@ def setup_directories(target_dir, structure_file, forcefield_file, alchemical_at
     def safe_copy(src, dest):
         """Copy file from src to dest if src exists."""
         if os.path.exists(src):
-            print(f"Source exists: {src}")  # Debugging line
+            #print(f"Source exists: {src}")  # Debugging line
             shutil.copy(src, dest)
-            print(f"Copied {src} to {dest}")
+            #print(f"Copied {src} to {dest}")
         else:
             print(f"File not found: {src}. Skipping copy.")
 
@@ -231,7 +231,7 @@ def setup_directories(target_dir, structure_file, forcefield_file, alchemical_at
     # Copy files from the template directory to the target and analysis directories
     for file in file_list:
         src_path = os.path.join(template_dir, file)
-        print(f"Checking file: {src_path}")
+        #print(f"Checking file: {src_path}")
         safe_copy(src_path, target_dir)
         safe_copy(src_path, analysis_dir)
 
@@ -256,12 +256,12 @@ def setup_directories(target_dir, structure_file, forcefield_file, alchemical_at
 
         replace_in_file(job_path, replacements)
     
-    print(f"Alchemical atoms: {alchemical_atoms}")
-    print(f"Restraint atoms 1: {restraint_atoms_1}")
-    print(f"Restraint atoms 2: {restraint_atoms_2}")
-    print(f"Force field file: {forcefield_file}")
+    print(f"Alchemical atoms for {workflow_type}: {alchemical_atoms}")
+    print(f"Restraint atoms 1 for {workflow_type}: {restraint_atoms_1}")
+    print(f"Restraint atoms 2 for {workflow_type}: {restraint_atoms_2}\n")
+    #print(f"Force field file: {forcefield_file}")
 	
-    print(f"Directory and files set up for {target_dir}")
+    #print(f"Directory and files set up for {target_dir}")
 
 def submit_equil(target_dir, job_prefix):
     """
@@ -274,7 +274,7 @@ def submit_equil(target_dir, job_prefix):
     Returns:
         str: Job ID of the submitted equilibration job.
     """
-    print(f"Inside submit_equil function\nTarget directory: {target_dir}\nJob prefix: {job_prefix}")
+    #print(f"Inside submit_equil function\nTarget directory: {target_dir}\nJob prefix: {job_prefix}")
 
     equil_job_path = os.path.join(target_dir, "equil.job")
     if not os.path.exists(equil_job_path):
@@ -296,7 +296,7 @@ def submit_equil(target_dir, job_prefix):
     })
 
     # Submit the job
-    print("Submitting equilibration job...")
+    #print("Submitting equilibration job...")
     os.chdir(target_dir)
     if SUB_TYPE == "SGE" and not SETUP_ONLY :
         try:
@@ -324,7 +324,7 @@ def submit_thermo(target_dir, job_prefix, equil_job_id):
     num_lambdas = len(VDW_LAMBDAS)
 
     vdw_lambdas = VDW_LAMBDAS
-    print(f"Setting up lambda directories{target_dir}", file=sys.stderr)
+    #print(f"Setting up lambda directories{target_dir}", file=sys.stderr)
     if job_prefix == "OMM_Guest_LAM":
         vdw_lambdas = VDW_LAMBDAS[:-10]
     for i, vdw_lambda in enumerate(vdw_lambdas):
@@ -407,8 +407,8 @@ def submit_bar(target_dir, analysis_type, thermo_job_ids):
     bar_job_ids = []
 
     os.makedirs(f"{target_dir}/analysis", exist_ok=True)
-    print(f"Setting up BAR jobs for {target_dir} with thermo job IDs: {thermo_job_ids} and analysis type: {analysis_type}")
-    print(f"Number of lambdas: {num_lambdas}")
+    #print(f"Setting up BAR jobs for {target_dir} with thermo job IDs: {thermo_job_ids} and analysis type: {analysis_type}")
+    #print(f"Number of lambdas: {num_lambdas}")
 
     for i in range(num_lambdas - 1):
         lambda_dir_i = os.path.join(target_dir, str(i))
@@ -506,7 +506,7 @@ def collect_energy(target_dir):
     log_files = target_dir.glob("*.log")
     free_energy = 0.0
 
-    print(f"Collecting free energy values from {target_dir}")
+    #print(f"Collecting free energy values from {target_dir}")
     for log_file in log_files:
         with log_file.open() as f:
             content = f.read()
@@ -539,7 +539,7 @@ def execute_workflow(start_method):
     thermo_job_ids_host_guest = []
 
     if "setup_directories" in methods_order and not start_found:
-        print("Running the prepare step before setting up directories...")
+        #print("Running the prepare step before setting up directories...")
         run_prepare()
 
     for method in methods_order:
@@ -549,7 +549,7 @@ def execute_workflow(start_method):
             else:
                 continue
 
-        print(f"Executing method: {method}")
+        #print(f"Executing method: {method}")
 
 
 

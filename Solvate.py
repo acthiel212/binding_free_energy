@@ -19,6 +19,7 @@ if (len(args.forcefield_file) > 1):
 
 # Add solvent
 # Manual for PDBFixer (https://htmlpreview.github.io/?https://github.com/openmm/pdbfixer/blob/master/Manual.html)
+print(f'Solvating {filename}...')
 fixer = PDBFixer(args.pdb_file)
 fixer.addSolvent(Vec3(5, 5, 5)*nanometer)
 
@@ -30,7 +31,7 @@ transfer_CONECT_records(args.pdb_file, f"{filename}_solv.pdb")
 pdb_solv = PDBFile(f"{filename}_solv.pdb")
 
 #Display Forces, minimize system, and write minimized structure
-print('Minimizing...')
+#print('Minimizing...')
 system = forcefield.createSystem(pdb_solv.topology, nonbondedMethod=PME)
 numForces = system.getNumForces()
 forceDict = {}
@@ -46,7 +47,7 @@ print(f"Initial Potential Energy: {state.getPotentialEnergy().in_units_of(kiloca
 simulation.minimizeEnergy(tolerance=10, maxIterations=0)
 state = simulation.context.getState(getEnergy=True)
 print(f"Minimized Potential Energy: {state.getPotentialEnergy().in_units_of(kilocalories_per_mole)}")
-print('Saving...')
+#print('Saving...')
 positions = simulation.context.getState(getPositions=True).getPositions()
 PDBFile.writeFile(simulation.topology, positions, open(f"{filename}_solv_min.pdb", 'w'))
 print('Done')

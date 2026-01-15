@@ -58,6 +58,10 @@ os.remove("SaveAsPDB.log")
 os.remove("biotype.log")
 shutil.move(f"{filename}.pdb", f"{guest_dir}/{filename}.pdb")
 
+# Copy over coordinates from SDF of docked guest into PDB. Note that the host pose is static during
+# docking and already matches the PDB file.
+copy_XYZ_coords(f"{guest_dir}/{filename}.pdb", f"{args.docked_file}")
+
 # Create another directory and copy necessary files for Host_Guest
 host_guest_dir = f"{target_dir}/{filename}/Template/Host_Guest"
 os.makedirs(host_guest_dir, exist_ok=True)
@@ -76,7 +80,7 @@ shutil.copy(f"{guest_dir}/{filename}.xml", host_guest_dir)
 # Combine guest and hp-bcd files
 os.chdir(host_guest_dir)
 merge_host_guest_files(f"{host_guest_dir}/{filename}.pdb", f"{host_guest_dir}/hp-bcd.pdb")
-copy_XYZ_coords(f"{host_guest_dir}/hp-bcd_{filename}.pdb", f"{args.docked_file}")
 #os.remove(f"{filename}.prm"), os.remove("hp-bcd.prm")
 os.chdir(CWD)
+print(f"Preparation complete.\n")
 

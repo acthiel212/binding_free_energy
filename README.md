@@ -43,14 +43,11 @@ If you plan to generalize beyond HP-BCD, consider adding configuration options f
 
 ### Software Dependencies
 
-This project requires the following packages, managed via conda and pip:
+This project uses a pinned conda environment defined in `environment.yml` (with a small `pip` section). The following packages are included:
 
 #### Required Packages
 1. **OpenMM** (with OpenMM-Setup)  
    Molecular dynamics simulation engine
-   ```bash
-   conda install -c conda-forge openmm-setup
-   ```
 
 2. **pymbar** (version < 4)  
    Free energy calculations and BAR analysis
@@ -64,11 +61,15 @@ This project requires the following packages, managed via conda and pip:
    PDB file preparation and solvation
    https://github.com/openmm/pdbfixer
 
-5. **intspan**  
+5. **Open Babel** (Python bindings)  
+   Used to read SDF and write XYZ for docked guest coordinates  
+   https://open-babel.readthedocs.io/
+
+6. **intspan**  
    Interval handling utilities
    https://pypi.org/project/intspan/
 
-6. **Standard scientific Python stack**  
+7. **Standard scientific Python stack**  
    - numpy
    - scipy
    - (typically included with conda environment)
@@ -84,39 +85,27 @@ This project requires the following packages, managed via conda and pip:
 ### Step 1: Install Miniconda
 If not already installed, follow the [official Miniconda installation guide](https://docs.anaconda.com/miniconda/install/).
 
-### Step 2: Create and Activate Environment
-```bash
-# Create a new conda environment
-conda create -n binding_free_energy python=3.9
-conda activate binding_free_energy
-```
-
-### Step 3: Install Dependencies
-```bash
-# Install OpenMM
-conda install -c conda-forge openmm-setup
-
-# Install pymbar (version < 4)
-conda install -c conda-forge "pymbar<4"
-
-# Install MDTraj
-conda install -c conda-forge mdtraj
-
-# Install PDBFixer
-conda install -c conda-forge pdbfixer
-
-# Install intspan
-pip install intspan
-
-# Install JDK 21
-conda install -c conda-forge openjdk=21
-```
-
-### Step 4: Clone Repository
+### Step 2: Clone Repository
 ```bash
 git clone <repository_url>
 cd binding_free_energy
 ```
+
+### Step 3: Create Conda Environment from environment.yml
+```bash
+conda env create -f environment.yml
+```
+This will create a conda environment named `binding_free_energy` (as defined in the file) with pinned versions for Python, OpenMM, MDTraj, PDBFixer, and other dependencies. A small set of packages is installed via `pip` as specified under the `pip:` section.
+
+### Step 4: Activate the Environment
+```bash
+conda activate binding_free_energy
+```
+
+Notes:
+- To update an existing environment to match the file: `conda env update -f environment.yml --prune`
+- OpenMM platforms: the environment includes OpenCL libraries (`ocl-icd`) and a CUDA toolkit. Select your platform at runtime (OpenCL by default in these scripts; CUDA if available and compatible with your drivers).
+- Java requirement for FFX: Force Field X tools require Java 21. If Java 21 is not available on your system, install it (e.g., `conda install -c conda-forge openjdk=21`) or use a system-wide JDK 21.
 
 ---
 
@@ -133,7 +122,7 @@ The workflow requires prepared input files for both the guest molecule and host-
 ### Host-Guest Complex
 - **`hp-bcd.pdb`**: Host molecule structure
 - **`hp-bcd.xml`**: Host force field parameters
-- **Docked structure**: XYZ file with docked host-guest coordinates
+- **Docked structure**: SDF file containing docked guest coordinates (host pose from `hp-bcd.pdb` is used as-is)
 
 Note: The current workflow is tailored to HP-BCD as the host; using a different host requires code changes (see "Host Assumption and Limitations").
 
@@ -173,19 +162,13 @@ python Workflow.py --guest_name <name> [options]
 - If `--alchemical_atoms` is not provided, the workflow auto-detects the alchemical atom range from the first line of `Guests/<NAME>.xyz` and sets it to `1-<N>`.
 - For the Host_Guest leg, if restraint atoms are not provided:
   - Group 1 defaults to `1-217` (host indices)
-  - Group 2 is auto-selected using Force Field X within a 5.0 Å cutoff around the guest. The indices are reported to the console.
+  - Group 2 is auto-selected using the built-in `calculate_restraint_subsection` function with a 5.0 Å cutoff around the guest. The indices are reported to the console.
 
 #### Usage
 
 **Full Workflow (Default Behavior)**:
 
 To run the full workflow including job submission:
-
-```bash
-python Workflow.py --guest_name Diflunisal --setup_only false
-```
-
-Or simply (since `false` is the default):
 
 ```bash
 python Workflow.py --guest_name Diflunisal
@@ -197,15 +180,6 @@ The workflow supports a `--setup_only` flag that allows you to run the workflow 
 ```bash
 python Workflow.py --guest_name Diflunisal --setup_only true
 ```
-***Use Cases***:
-
-Setup-only mode is useful when you want to:
-- Review the generated files before submitting jobs
-- Manually modify configuration files
-- Test the setup process without consuming computational resources
-- Prepare multiple molecule setups before batch submission
-- Debug workflow issues without waiting for job completion
-
 **Next Steps After Setup-Only**:
 
 After running in setup-only mode, you can:
@@ -220,21 +194,21 @@ After running in setup-only mode, you can:
    ```bash
    python Workflow.py --guest_name Diflunisal --start_at submit_equil
    ```
-
-**Example for Diflunisal**:
-
-```bash
-# Setup only - no jobs submitted
-python Workflow.py --guest_name Diflunisal --setup_only true
-
-# Check the generated files
-ls -la workflow/Diflunisal/Guest_Workflow/
-ls -la workflow/Diflunisal/Host_Guest_Workflow/
-
-# If everything looks good, continue from equilibration
-python Workflow.py --guest_name Diflunisal --start_at submit_equil
-```
 ---
+## Output Files
+
+### Simulation Outputs
+- **`output*.dcd`**: Trajectory files in DCD format
+- **`output*.xml`**: Simulation state files for restart
+- **`output*.log`**: Simulation log files
+- **`*_solv.pdb`**: Solvated structures
+
+### Analysis Outputs
+- BAR free energy differences printed to stdout
+- **TODO**: Add file-based output for BAR results and final binding free energies
+
+---
+
 ### *The following scripts are utilized within Workflow.py*
 
 ### Preparation Scripts
@@ -244,7 +218,7 @@ python Workflow.py --guest_name Diflunisal --start_at submit_equil
 
 **Usage**:
 ```bash
-python Prepare.py --guest_file <xyz> --prm_file <prm> --host_file_dir <dir> --target_dir <dir> --docked_file <xyz>
+python Prepare.py --guest_file <xyz> --prm_file <prm> --host_file_dir <dir> --target_dir <dir> --docked_file <sdf>
 ```
 
 **Required Arguments**:
@@ -252,12 +226,12 @@ python Prepare.py --guest_file <xyz> --prm_file <prm> --host_file_dir <dir> --ta
 - `--prm_file`: PRM parameter file from PolType
 - `--host_file_dir`: Directory containing host PDB and XML files
 - `--target_dir`: Output directory for prepared files
-- `--docked_file`: XYZ file with docked coordinates
+- `--docked_file`: SDF file containing the docked guest coordinates (only guest coordinates are used; host pose from `hp-bcd.pdb` is unchanged)
 
-**Example**:
-```bash
-python Prepare.py --guest_file Guests/g3-15.xyz --prm_file g3-15.prm --host_file_dir HP-BCD --target_dir workflow/g3-15 --docked_file DockedStructures/g3-15_docked.xyz
-```
+Note on coordinate handling:
+- The docked SDF should contain the guest conformer pose from docking. Only the guest coordinates are taken from this file.
+- `Prepare.py` replaces the guest PDB coordinates with those from the SDF before creating the host-guest complex. The host pose from `hp-bcd.pdb` remains unchanged.
+- After merging host and guest, no additional post-merge coordinate copying is performed.
 
 #### `Solvate.py`
 **Purpose**: Add explicit solvent to a molecular system using PDBFixer and perform energy minimization.
@@ -272,11 +246,6 @@ python Solvate.py --pdb_file <pdb> --forcefield_file <xml> [<xml> ...]
 - `--forcefield_file`: One or more OpenMM XML force field files
 
 **Output**: Creates `<filename>_solv.pdb` with solvated and minimized structure.
-
-**Example**:
-```bash
-python Solvate.py --pdb_file guest.pdb --forcefield_file guest.xml
-```
 
 ### Simulation Scripts
 
@@ -313,11 +282,6 @@ python Production.py --pdb_file <pdb> --forcefield_file <xml> --vdw_lambda <valu
 - `--elec_lambda`: Electrostatic lambda value (0.0 to 1.0)
 - `--alchemical_atoms`: Comma-separated atom indices to transform
 
-**Example**:
-```bash
-python Production.py --pdb_file system.pdb --forcefield_file host.xml guest.xml --vdw_lambda 0.5 --elec_lambda 0.0 --alchemical_atoms "197-216" --num_steps 500000 --step_size 2 --nonbonded_method PME
-```
-
 ### Analysis Scripts
 
 #### `BAR.py`
@@ -346,11 +310,6 @@ python BAR.py --traj_i <dcd> --traj_ip1 <dcd> --pdb_file <pdb> --forcefield_file
 
 **Output**: Prints forward/reverse FEP and BAR free energy differences with uncertainties.
 
-**Example**:
-```bash
-python BAR.py --traj_i output0.dcd --traj_ip1 output1.dcd --pdb_file system.pdb --forcefield_file host.xml guest.xml --vdw_lambda_i 0.0 --vdw_lambda_ip1 0.4 --elec_lambda_i 0.0 --elec_lambda_ip1 0.0 --alchemical_atoms "197-216" --nonbonded_method PME
-```
-
 #### `Energy.py`
 **Purpose**: Calculate potential energy of a system at specific alchemical lambda values.
 
@@ -376,76 +335,7 @@ python Freefix.py <ri> <fi> <ro> <fo> <temp>
 - `fo`: Outer force constant (kcal/mol/Å²)
 - `temp`: Temperature (K)
 
-**Note**: Currently implements HARMONIC method; BORESCH method not yet implemented.
-
----
-
-## Project Structure
-
-```
-binding_free_energy/
-├── README.md                     # This file
-├── Workflow.py                   # Main workflow orchestrator
-├── Prepare.py                    # File preparation script
-├── Solvate.py                    # Solvation script
-├── Equil.py                      # Equilibration MD script
-├── Production.py                 # Production MD with alchemical transformations
-├── BAR.py                        # BAR free energy analysis
-├── Energy.py                     # Energy calculation utility
-├── freefix.py                    # Restraint correction calculations
-├── alchemistry/                  # Alchemical transformation modules
-│   ├── Alchemical.py            # Alchemical force setup and lambda control
-│   └── Harmonic_Restraint.py    # Harmonic restraint implementation
-├── utils/                        # Utility modules
-│   ├── Parser_Utils.py          # Common argument parsers
-│   ├── File_Conversion_Utils.py # File format conversion utilities
-│   └── Restart_Utils.py         # Simulation restart utilities
-├── ffx-1.0.0/                   # Bundled Force Field X distribution
-│   ├── bin/                     # FFX executables
-│   ├── lib/                     # FFX libraries
-│   └── ...
-├── Guests/                       # Guest molecule input files (.xyz)
-├── HP-BCD/                       # Host molecule files
-├── DockedStructures/             # Docked complex structures
-├── JobFiles/                     # Job script templates
-│   ├── SGE/                      # Sun Grid Engine templates
-│   └── SLURM/                    # SLURM templates
-└── workflow/                     # Generated workflow directories (created by Workflow.py)
-    └── <guest_name>/
-        ├── Template/
-        │   ├── Guest/           # Guest-only templates
-        │   └── Host_Guest/      # Host-guest templates
-        ├── Guest_Workflow/      # Guest simulation outputs
-        └── Host_Guest_Workflow/ # Host-guest simulation outputs
-```
-
-
----
-## Testing
-
-**TODO**: No automated test suite is currently available. Testing is performed manually by:
-1. Running the workflow on known host-guest systems
-2. Comparing BAR results with published values
-3. Checking overlap statistics for convergence
-
-Future work should include:
-- Unit tests for utility functions
-- Integration tests for simulation setup
-- Validation tests with benchmark systems
-
----
-
-## Output Files
-
-### Simulation Outputs
-- **`output*.dcd`**: Trajectory files in DCD format
-- **`output*.xml`**: Simulation state files for restart
-- **`output*.log`**: Simulation log files
-- **`*_solv.pdb`**: Solvated structures
-
-### Analysis Outputs
-- BAR free energy differences printed to stdout
-- **TODO**: Add file-based output for BAR results and final binding free energies
+**Note**: Currently implemented with HARMONIC method; BORESCH method not yet implemented.
 
 ---
 
