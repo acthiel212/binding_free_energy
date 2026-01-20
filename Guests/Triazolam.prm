@@ -65,29 +65,29 @@ Walker, B., Liu, C., Wait, E., Ren, P., J. Comput. Chem. 2022, 1. https://doi.or
 Wu, J.C.; Chattree, G.; Ren, P.Y.; Automation of AMOEBA polarizable force field
 parameterization for small molecules. Theor Chem Acc.
 
-atom          401    401    Cl    "Triazolam           "        17    35.453    1
-atom          402    402    Cl    "Triazolam           "        17    35.453    1
-atom          403    403    N     "Triazolam           "         7    14.007    3
+atom          401    401    C     "Triazolam           "         6    12.011    4
+atom          402    402    C     "Triazolam           "         6    12.011    3
+atom          403    403    N     "Triazolam           "         7    14.007    2
 atom          404    404    N     "Triazolam           "         7    14.007    2
-atom          405    405    N     "Triazolam           "         7    14.007    2
-atom          406    406    N     "Triazolam           "         7    14.007    2
-atom          407    407    C     "Triazolam           "         6    12.011    3
+atom          405    405    C     "Triazolam           "         6    12.011    3
+atom          406    406    C     "Triazolam           "         6    12.011    4
+atom          407    407    N     "Triazolam           "         7    14.007    2
 atom          408    408    C     "Triazolam           "         6    12.011    3
 atom          409    409    C     "Triazolam           "         6    12.011    3
 atom         410   410    C     "Triazolam           "         6    12.011    3
-atom         411   411    C     "Triazolam           "         6    12.011    4
+atom         411   411    C     "Triazolam           "         6    12.011    3
 atom         412   412    C     "Triazolam           "         6    12.011    3
 atom         413   413    C     "Triazolam           "         6    12.011    3
 atom         414   414    C     "Triazolam           "         6    12.011    3
-atom         415   415    C     "Triazolam           "         6    12.011    3
+atom         415   415    Cl    "Triazolam           "        17    35.453    1
 atom         416   416    C     "Triazolam           "         6    12.011    3
 atom         417   417    C     "Triazolam           "         6    12.011    3
-atom         418   418    C     "Triazolam           "         6    12.011    4
-atom         419   419    C     "Triazolam           "         6    12.011    3
+atom         418   418    C     "Triazolam           "         6    12.011    3
+atom         419   419    Cl    "Triazolam           "        17    35.453    1
 atom         420   420    C     "Triazolam           "         6    12.011    3
 atom         421   421    C     "Triazolam           "         6    12.011    3
 atom         422   422    C     "Triazolam           "         6    12.011    3
-atom         423   423    C     "Triazolam           "         6    12.011    3
+atom         423   423    N     "Triazolam           "         7    14.007    3
 atom         424   424    H     "Triazolam           "         1     1.008    1
 atom         425   425    H     "Triazolam           "         1     1.008    1
 atom         426   426    H     "Triazolam           "         1     1.008    1
@@ -100,719 +100,671 @@ atom         432   432    H     "Triazolam           "         1     1.008    1
 
 # Ring bond detected for missing torsion
 # Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [408, 415, 417, 401] = [[8], [15], [17], [1]]
-torsion 408 415 417 401 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene HC', 'Benzene C', 'Benzene C', 'Benzene C']
-# [426, 415, 417, 401] = [[27], [15], [17], [1]]
-torsion 426 415 417 401 0.55 0.0 1 6.187 180.0 2 -0.55 0.0 3
+# [422, 423, 402, 401] = [[22], [23], [2], [1]]
+torsion 422 423 402 401 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
 
 # Ring bond detected for missing torsion
 # Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [413, 416, 417, 401] = [[13], [16], [17], [1]]
-torsion 413 416 417 401 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene HC', 'Benzene C', 'Benzene C', 'Benzene C']
-# [427, 416, 417, 401] = [[28], [16], [17], [1]]
-torsion 427 416 417 401 0.55 0.0 1 6.187 180.0 2 -0.55 0.0 3
+# [404, 403, 402, 401] = [[4], [3], [2], [1]]
+torsion 404 403 402 401 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
 
 # Ring bond detected for missing torsion
 # Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [410, 414, 419, 402] = [[10], [14], [19], [2]]
-torsion 410 414 419 402 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
+# [416, 422, 423, 402] = [[16], [22], [23], [2]]
+torsion 416 422 423 402 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
 
 # Ring bond detected for missing torsion
 # Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [420, 414, 419, 402] = [[20], [14], [19], [2]]
-torsion 420 414 419 402 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
+# [421, 422, 423, 402] = [[21], [22], [23], [2]]
+torsion 421 422 423 402 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
 
 # Ring bond detected for missing torsion
 # Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [423, 421, 419, 402] = [[23], [21], [19], [2]]
-torsion 423 421 419 402 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene HC', 'Benzene C', 'Benzene C', 'Benzene C']
-# [430, 421, 419, 402] = [[33], [21], [19], [2]]
-torsion 430 421 419 402 0.55 0.0 1 6.187 180.0 2 -0.55 0.0 3
+# [405, 404, 403, 402] = [[5], [4], [3], [2]]
+torsion 405 404 403 402 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
 
 # Ring bond detected for missing torsion
 # Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [410, 408, 407, 403] = [[10], [8], [7], [3]]
-torsion 410 408 407 403 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
+# [422, 423, 402, 403] = [[22], [23], [2], [3]]
+torsion 422 423 402 403 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
 
 # Ring bond detected for missing torsion
 # Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [415, 408, 407, 403] = [[15], [8], [7], [3]]
-torsion 415 408 407 403 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
+# [423, 405, 404, 403] = [[23], [5], [4], [3]]
+torsion 423 405 404 403 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
 
 # Ring bond detected for missing torsion
 # Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [416, 413, 407, 403] = [[16], [13], [7], [3]]
-torsion 416 413 407 403 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene HC', 'Benzene C', 'Benzene C', 'Benzene C']
-# [425, 413, 407, 403] = [[26], [13], [7], [3]]
-torsion 425 413 407 403 0.55 0.0 1 6.187 180.0 2 -0.55 0.0 3
+# [406, 405, 404, 403] = [[6], [5], [4], [3]]
+torsion 406 405 404 403 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
 
 # Ring bond detected for missing torsion
 # Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [406, 405, 409, 403] = [[6], [5], [9], [3]]
-torsion 406 405 409 403 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
+# [423, 402, 403, 404] = [[23], [2], [3], [4]]
+torsion 423 402 403 404 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
+
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
+# [422, 423, 405, 404] = [[22], [23], [5], [4]]
+torsion 422 423 405 404 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
 
 # Ring bond detected for missing torsion
 # Transferring from ['Alkane -CH2-', 'Alkane -CH2-', 'Alkane -CH2-', 'Alkane -CH2-']
-# [404, 411, 409, 403] = [[4], [11], [9], [3]]
-torsion 404 411 409 403 0.854 0.0 1 -0.374 180.0 2 0.108 0.0 3
+# [407, 406, 405, 404] = [[7], [6], [5], [4]]
+torsion 407 406 405 404 0.854 0.0 1 -0.374 180.0 2 0.108 0.0 3
 
 # Ring bond detected for missing torsion
 # Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [405, 406, 412, 403] = [[5], [6], [12], [3]]
-torsion 405 406 412 403 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
+# [416, 422, 423, 405] = [[16], [22], [23], [5]]
+torsion 416 422 423 405 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
 
 # Ring bond detected for missing torsion
 # Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [407, 408, 410, 404] = [[7], [8], [10], [4]]
-torsion 407 408 410 404 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [415, 408, 410, 404] = [[15], [8], [10], [4]]
-torsion 415 408 410 404 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# Missing torsion parameters, will attempt to fit parameters
-# [419, 414, 410, 404] = [[19], [14], [10], [4]]
-# Fitted from Fragment  SMARTS [#17]-[#6]1:[#6](-[#6](=[#7]-[H])-[#6]2:[#6](:[#6](:[#6](:[#6](:[#6]:2-[H])-[H])-[H])-[H])-[H]):[#6](:[#6](:[#6](:[#6]:1-[H])-[H])-[H])-[H] torsion atom indexes = 3,1,2,10 with smarts torsion indices 5,4,3,2 from fragment 10_14_Index_0.mol
-# Torsion 404 410 414 419 RMSD(MM2,QM) 0.0759259856776072 RelativeRMSD(MM2,QM) 0.01304274695936815 Boltzmann Fit
-# torsion % [#17]-[#6]1:[#6](-[#6](=[#7]-[H])-[#6]2:[#6](:[#6](:[#6](:[#6](:[#6]:2-[H])-[H])-[H])-[H])-[H]):[#6](:[#6](:[#6](:[#6]:1-[H])-[H])-[H])-[H] % 5,4,3,2 % -0.366,0.325,-1.065
-torsion 404 410 414 419 -0.366 0.0 1 0.325 180.0 2 -1.065 0.0 3
-
-# Missing torsion parameters, will attempt to fit parameters
-# [420, 414, 410, 404] = [[20], [14], [10], [4]]
-# Fitted from Fragment  SMARTS [#17]-[#6]1:[#6](-[#6](=[#7]-[H])-[#6]2:[#6](:[#6](:[#6](:[#6](:[#6]:2-[H])-[H])-[H])-[H])-[H]):[#6](:[#6](:[#6](:[#6]:1-[H])-[H])-[H])-[H] torsion atom indexes = 3,1,2,11 with smarts torsion indices 5,4,3,18 from fragment 10_14_Index_0.mol
-# Torsion 404 410 414 420 RMSD(MM2,QM) 0.0759259856776072 RelativeRMSD(MM2,QM) 0.01304274695936815 Boltzmann Fit
-# torsion % [#17]-[#6]1:[#6](-[#6](=[#7]-[H])-[#6]2:[#6](:[#6](:[#6](:[#6](:[#6]:2-[H])-[H])-[H])-[H])-[H]):[#6](:[#6](:[#6](:[#6]:1-[H])-[H])-[H])-[H] % 5,4,3,18 % -1.198,0.042,-0.000
-torsion 404 410 414 420 -1.198 0.0 1 0.042 180.0 2 -0.000 0.0 3
+# [421, 422, 423, 405] = [[21], [22], [23], [5]]
+torsion 421 422 423 405 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
 
 # Ring bond detected for missing torsion
 # Transferring from ['Alkane -CH2-', 'Alkane -CH2-', 'Alkane -CH2-', 'Alkane -CH2-']
-# [405, 409, 411, 404] = [[5], [9], [11], [4]]
-torsion 405 409 411 404 0.854 0.0 1 -0.374 180.0 2 0.108 0.0 3
+# [408, 407, 406, 405] = [[8], [7], [6], [5]]
+torsion 408 407 406 405 0.854 0.0 1 -0.374 180.0 2 0.108 0.0 3
 
 # Ring bond detected for missing torsion
 # Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [418, 412, 406, 405] = [[18], [12], [6], [5]]
-torsion 418 412 406 405 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
+# [422, 423, 405, 406] = [[22], [23], [5], [6]]
+torsion 422 423 405 406 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
 
 # Ring bond detected for missing torsion
 # Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [407, 403, 409, 405] = [[7], [3], [9], [5]]
-torsion 407 403 409 405 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
+# [409, 408, 407, 406] = [[9], [8], [7], [6]]
+torsion 409 408 407 406 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
 
 # Ring bond detected for missing torsion
 # Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [411, 409, 405, 406] = [[11], [9], [5], [6]]
-torsion 411 409 405 406 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [407, 403, 412, 406] = [[7], [3], [12], [6]]
-torsion 407 403 412 406 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [411, 409, 403, 407] = [[11], [9], [3], [7]]
-torsion 411 409 403 407 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [418, 412, 403, 407] = [[18], [12], [3], [7]]
-torsion 418 412 403 407 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [414, 410, 408, 407] = [[14], [10], [8], [7]]
-torsion 414 410 408 407 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [409, 403, 407, 408] = [[9], [3], [7], [8]]
-torsion 409 403 407 408 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [412, 403, 407, 408] = [[12], [3], [7], [8]]
-torsion 412 403 407 408 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [411, 404, 410, 408] = [[11], [4], [10], [8]]
-torsion 411 404 410 408 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# Missing torsion parameters, will attempt to fit parameters
-# [419, 414, 410, 408] = [[19], [14], [10], [8]]
-# Fitted from Fragment  SMARTS [#17]-[#6]1:[#6](-[#6](=[#7]-[H])-[#6]2:[#6](:[#6](:[#6](:[#6](:[#6]:2-[H])-[H])-[H])-[H])-[H]):[#6](:[#6](:[#6](:[#6]:1-[H])-[H])-[H])-[H] torsion atom indexes = 5,1,2,10 with smarts torsion indices 7,4,3,2 from fragment 10_14_Index_0.mol
-# Torsion 408 410 414 419 RMSD(MM2,QM) 0.0759259856776072 RelativeRMSD(MM2,QM) 0.01304274695936815 Boltzmann Fit
-# torsion % [#17]-[#6]1:[#6](-[#6](=[#7]-[H])-[#6]2:[#6](:[#6](:[#6](:[#6](:[#6]:2-[H])-[H])-[H])-[H])-[H]):[#6](:[#6](:[#6](:[#6]:1-[H])-[H])-[H])-[H] % 7,4,3,2 % -1.841,0.884,-2.821
-torsion 408 410 414 419 -1.841 0.0 1 0.884 180.0 2 -2.821 0.0 3
-
-# Missing torsion parameters, will attempt to fit parameters
-# [420, 414, 410, 408] = [[20], [14], [10], [8]]
-# Fitted from Fragment  SMARTS [#17]-[#6]1:[#6](-[#6](=[#7]-[H])-[#6]2:[#6](:[#6](:[#6](:[#6](:[#6]:2-[H])-[H])-[H])-[H])-[H]):[#6](:[#6](:[#6](:[#6]:1-[H])-[H])-[H])-[H] torsion atom indexes = 5,1,2,11 with smarts torsion indices 7,4,3,18 from fragment 10_14_Index_0.mol
-# Torsion 408 410 414 420 RMSD(MM2,QM) 0.0759259856776072 RelativeRMSD(MM2,QM) 0.01304274695936815 Boltzmann Fit
-# torsion % [#17]-[#6]1:[#6](-[#6](=[#7]-[H])-[#6]2:[#6](:[#6](:[#6](:[#6](:[#6]:2-[H])-[H])-[H])-[H])-[H]):[#6](:[#6](:[#6](:[#6]:1-[H])-[H])-[H])-[H] % 7,4,3,18 % -0.000,0.884,0.040
-torsion 408 410 414 420 -0.000 0.0 1 0.884 180.0 2 0.040 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [413, 407, 403, 409] = [[13], [7], [3], [9]]
-torsion 413 407 403 409 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [412, 406, 405, 409] = [[12], [6], [5], [9]]
-torsion 412 406 405 409 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
+# [416, 408, 407, 406] = [[16], [8], [7], [6]]
+torsion 416 408 407 406 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
 
 # Ring bond detected for missing torsion
 # Transferring from ['Alkane -CH2-', 'Alkane -CH2-', 'Alkane -CH2-', 'Alkane -CH2-']
-# [410, 404, 411, 409] = [[10], [4], [11], [9]]
-torsion 410 404 411 409 0.854 0.0 1 -0.374 180.0 2 0.108 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Alkane -H2C-', 'Alkane -CH2-', 'Alkane -CH2-', 'Alkane -CH2-']
-# [424, 411, 404, 410] = [[25, 24], [11], [4], [10]]
-torsion 424 411 404 410 0 0.0 1 0 180.0 2 0.108 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [414, 410, 404, 411] = [[14], [10], [4], [11]]
-torsion 414 410 404 411 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [413, 407, 403, 412] = [[13], [7], [3], [12]]
-torsion 413 407 403 412 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [415, 408, 410, 414] = [[15], [8], [10], [14]]
-torsion 415 408 410 414 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Alkane -H2C-', 'Alkane -CH2-', 'Alkane -CH2-', 'Alkane -CH2-']
-# [403, 409, 411, 424] = [[3], [9], [11], [25, 24]]
-torsion 403 409 411 424 0 0.0 1 0 180.0 2 0.108 0.0 3
+# [423, 405, 406, 407] = [[23], [5], [6], [7]]
+torsion 423 405 406 407 0.854 0.0 1 -0.374 180.0 2 0.108 0.0 3
 
 # Missing torsion parameters, will attempt to fit parameters
-# [403, 412, 418, 428] = [[3], [12], [18], [29, 30, 31]]
-# Fitted from Fragment  SMARTS [#7]1(:[#6](-[#6](-[H])(-[H])-[H]):[#7]:[#7]:[#6]:1-[H])-[#6]1:[#6](:[#6](:[#6](:[#6](:[#6]:1-[H])-[H])-[H])-[H])-[H] torsion atom indexes = 0,1,2,16 with smarts torsion indices 1,2,3,5 from fragment 12_18_Index_0.mol
-# Torsion 403 412 418 428 RMSD(MM2,QM) 0.05116227178877542 RelativeRMSD(MM2,QM) 0.028116524024525493
-# torsion % [#7]1(:[#6](-[#6](-[H])(-[H])-[H]):[#7]:[#7]:[#6]:1-[H])-[#6]1:[#6](:[#6](:[#6](:[#6](:[#6]:1-[H])-[H])-[H])-[H])-[H] % 1,2,3,5 % 0.000,0.000,0.208
-torsion 403 412 418 428 0.000 0.0 1 0.000 180.0 2 0.208 0.0 3
+# [414, 409, 408, 407] = [[14], [9], [8], [7]]
+# Fitted from Fragment  SMARTS [#7](=[#6](/[#6]1:[#6](:[#6](:[#6](:[#6](:[#6]:1-[#17])-[H])-[H])-[H])-[H])-[#6]1:[#6](:[#6](:[#6](:[#6](:[#6]:1-[H])-[H])-[H])-[H])-[H])\[#6](-[H])(-[H])-[H] torsion atom indexes = 0,1,2,5 with smarts torsion indices 1,2,3,8 from fragment 8_9_Index_0.mol
+# Torsion 407 408 409 414 RMSD(MM2,QM) 0.1884891044621516 RelativeRMSD(MM2,QM) 0.08045625512278887 Boltzmann Fit
+# torsion % [#7](=[#6](/[#6]1:[#6](:[#6](:[#6](:[#6](:[#6]:1-[#17])-[H])-[H])-[H])-[H])-[#6]1:[#6](:[#6](:[#6](:[#6](:[#6]:1-[H])-[H])-[H])-[H])-[H])\[#6](-[H])(-[H])-[H] % 1,2,3,8 % -1.501,-4.885,-1.061
+torsion 407 408 409 414 -1.501 0.0 1 -4.885 180.0 2 -1.061 0.0 3
+
+# Missing torsion parameters, will attempt to fit parameters
+# [410, 409, 408, 407] = [[10], [9], [8], [7]]
+# Fitted from Fragment  SMARTS [#7](=[#6](/[#6]1:[#6](:[#6](:[#6](:[#6](:[#6]:1-[#17])-[H])-[H])-[H])-[H])-[#6]1:[#6](:[#6](:[#6](:[#6](:[#6]:1-[H])-[H])-[H])-[H])-[H])\[#6](-[H])(-[H])-[H] torsion atom indexes = 0,1,2,3 with smarts torsion indices 1,2,3,4 from fragment 8_9_Index_0.mol
+# Torsion 407 408 409 410 RMSD(MM2,QM) 0.1884891044621516 RelativeRMSD(MM2,QM) 0.08045625512278887 Boltzmann Fit
+# torsion % [#7](=[#6](/[#6]1:[#6](:[#6](:[#6](:[#6](:[#6]:1-[#17])-[H])-[H])-[H])-[H])-[#6]1:[#6](:[#6](:[#6](:[#6](:[#6]:1-[H])-[H])-[H])-[H])-[H])\[#6](-[H])(-[H])-[H] % 1,2,3,4 % 1.488,-11.552,-1.388
+torsion 407 408 409 410 1.488 0.0 1 -11.552 180.0 2 -1.388 0.0 3
+
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
+# [422, 416, 408, 407] = [[22], [16], [8], [7]]
+torsion 422 416 408 407 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
+
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
+# [417, 416, 408, 407] = [[17], [16], [8], [7]]
+torsion 417 416 408 407 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
 
 # Ring bond detected for missing torsion
 # Transferring from ['Alkane -H2C-', 'Alkane -CH2-', 'Alkane -CH2-', 'Alkane -CH2-']
-# [405, 409, 411, 424] = [[5], [9], [11], [25, 24]]
-torsion 405 409 411 424 0 0.0 1 0 180.0 2 0.108 0.0 3
+# [425, 406, 407, 408] = [[27, 28], [6], [7], [8]]
+torsion 425 406 407 408 0 0.0 1 0 180.0 2 0.108 0.0 3
+
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
+# [415, 414, 409, 408] = [[15], [14], [9], [8]]
+torsion 415 414 409 408 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
+
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
+# [423, 422, 416, 408] = [[23], [22], [16], [8]]
+torsion 423 422 416 408 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
+
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
+# [422, 416, 408, 409] = [[22], [16], [8], [9]]
+torsion 422 416 408 409 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
+
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
+# [417, 416, 408, 409] = [[17], [16], [8], [9]]
+torsion 417 416 408 409 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
 
 # Missing torsion parameters, will attempt to fit parameters
-# [406, 412, 418, 428] = [[6], [12], [18], [29, 30, 31]]
-# Fitted from Fragment  SMARTS [#7]1(:[#6](-[#6](-[H])(-[H])-[H]):[#7]:[#7]:[#6]:1-[H])-[#6]1:[#6](:[#6](:[#6](:[#6](:[#6]:1-[H])-[H])-[H])-[H])-[H] torsion atom indexes = 4,1,2,16 with smarts torsion indices 7,2,3,5 from fragment 12_18_Index_0.mol
-# Torsion 406 412 418 428 RMSD(MM2,QM) 0.05116227178877542 RelativeRMSD(MM2,QM) 0.028116524024525493
-# torsion % [#7]1(:[#6](-[#6](-[H])(-[H])-[H]):[#7]:[#7]:[#6]:1-[H])-[#6]1:[#6](:[#6](:[#6](:[#6](:[#6]:1-[H])-[H])-[H])-[H])-[H] % 7,2,3,5 % 0.000,0.000,0.000
-torsion 406 412 418 428 0.000 0.0 1 0.000 180.0 2 0.000 0.0 3
+# [416, 408, 409, 410] = [[16], [8], [9], [10]]
+# Fitted from Fragment  SMARTS [#7](=[#6](/[#6]1:[#6](:[#6](:[#6](:[#6](:[#6]:1-[#17])-[H])-[H])-[H])-[H])-[#6]1:[#6](:[#6](:[#6](:[#6](:[#6]:1-[H])-[H])-[H])-[H])-[H])\[#6](-[H])(-[H])-[H] torsion atom indexes = 4,1,2,3 with smarts torsion indices 14,2,3,4 from fragment 8_9_Index_0.mol
+# Torsion 416 408 409 410 RMSD(MM2,QM) 0.1884891044621516 RelativeRMSD(MM2,QM) 0.08045625512278887 Boltzmann Fit
+# torsion % [#7](=[#6](/[#6]1:[#6](:[#6](:[#6](:[#6](:[#6]:1-[#17])-[H])-[H])-[H])-[H])-[#6]1:[#6](:[#6](:[#6](:[#6](:[#6]:1-[H])-[H])-[H])-[H])-[H])\[#6](-[H])(-[H])-[H] % 14,2,3,4 % -0.972,7.455,-1.327
+torsion 416 408 409 410 -0.972 0.0 1 7.455 180.0 2 -1.327 0.0 3
 
 # Ring bond detected for missing torsion
 # Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [417, 415, 408, 407] = [[17], [15], [8], [7]]
-torsion 417 415 408 407 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
+# [415, 414, 409, 410] = [[15], [14], [9], [10]]
+torsion 415 414 409 410 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
 
 # Ring bond detected for missing torsion
 # Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [417, 416, 413, 407] = [[17], [16], [13], [7]]
-torsion 417 416 413 407 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
+# [415, 414, 413, 412] = [[15], [14], [13], [12]]
+torsion 415 414 413 412 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
 
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [416, 413, 407, 408] = [[16], [13], [7], [8]]
-torsion 416 413 407 408 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [416, 417, 415, 408] = [[16], [17], [15], [8]]
-torsion 416 417 415 408 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [415, 408, 407, 413] = [[15], [8], [7], [13]]
-torsion 415 408 407 413 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [415, 417, 416, 413] = [[15], [17], [16], [13]]
-torsion 415 417 416 413 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [423, 421, 419, 414] = [[23], [21], [19], [14]]
-torsion 423 421 419 414 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# [423, 422, 420, 414] = [[23], [22], [20], [14]]
-torsion 423 422 420 414 -0.670 0.0 1 6.287333333333333 180.0 2 0.000 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [422, 420, 414, 419] = [[22], [20], [14], [19]]
-torsion 422 420 414 419 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [422, 423, 421, 419] = [[22], [23], [21], [19]]
-torsion 422 423 421 419 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [421, 419, 414, 420] = [[21], [19], [14], [20]]
-torsion 421 419 414 420 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# [421, 423, 422, 420] = [[21], [23], [22], [20]]
-torsion 421 423 422 420 -0.670 0.0 1 6.287333333333333 180.0 2 0.000 0.0 3
+# Missing torsion parameters, will attempt to fit parameters
+# [416, 408, 409, 414] = [[16], [8], [9], [14]]
+# Fitted from Fragment  SMARTS [#7](=[#6](/[#6]1:[#6](:[#6](:[#6](:[#6](:[#6]:1-[#17])-[H])-[H])-[H])-[H])-[#6]1:[#6](:[#6](:[#6](:[#6](:[#6]:1-[H])-[H])-[H])-[H])-[H])\[#6](-[H])(-[H])-[H] torsion atom indexes = 4,1,2,5 with smarts torsion indices 14,2,3,8 from fragment 8_9_Index_0.mol
+# Torsion 416 408 409 414 RMSD(MM2,QM) 0.1884891044621516 RelativeRMSD(MM2,QM) 0.08045625512278887 Boltzmann Fit
+# torsion % [#7](=[#6](/[#6]1:[#6](:[#6](:[#6](:[#6](:[#6]:1-[#17])-[H])-[H])-[H])-[H])-[#6]1:[#6](:[#6](:[#6](:[#6](:[#6]:1-[H])-[H])-[H])-[H])-[H])\[#6](-[H])(-[H])-[H] % 14,2,3,8 % -2.622,14.111,-0.857
+torsion 416 408 409 414 -2.622 0.0 1 14.111 180.0 2 -0.857 0.0 3
 
 # Ring bond detected for missing torsion
 # Transferring from ['Benzene HC', 'Benzene C', 'Benzene C', 'Benzene C']
-# [426, 415, 408, 407] = [[27], [15], [8], [7]]
-torsion 426 415 408 407 0.55 0.0 1 6.187 180.0 2 -0.55 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene HC', 'Benzene C', 'Benzene C', 'Benzene C']
-# [427, 416, 413, 407] = [[28], [16], [13], [7]]
-torsion 427 416 413 407 0.55 0.0 1 6.187 180.0 2 -0.55 0.0 3
-
-# [431, 422, 420, 414] = [[34], [22], [20], [14]]
-torsion 431 422 420 414 0.550 0.0 1 6.817333333333333 180.0 2 -0.550 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene HC', 'Benzene C', 'Benzene C', 'Benzene C']
-# [427, 416, 417, 415] = [[28], [16], [17], [15]]
-torsion 427 416 417 415 0.55 0.0 1 6.187 180.0 2 -0.55 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene HC', 'Benzene C', 'Benzene C', 'Benzene C']
-# [426, 415, 417, 416] = [[27], [15], [17], [16]]
-torsion 426 415 417 416 0.55 0.0 1 6.187 180.0 2 -0.55 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene HC', 'Benzene C', 'Benzene C', 'Benzene C']
-# [425, 413, 416, 417] = [[26], [13], [16], [17]]
-torsion 425 413 416 417 0.55 0.0 1 6.187 180.0 2 -0.55 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene HC', 'Benzene C', 'Benzene C', 'Benzene C']
-# [429, 420, 414, 419] = [[32], [20], [14], [19]]
-torsion 429 420 414 419 0.55 0.0 1 6.187 180.0 2 -0.55 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene HC', 'Benzene C', 'Benzene C', 'Benzene C']
-# [432, 423, 421, 419] = [[35], [23], [21], [19]]
-torsion 432 423 421 419 0.55 0.0 1 6.187 180.0 2 -0.55 0.0 3
-
-# [432, 423, 422, 420] = [[35], [23], [22], [20]]
-torsion 432 423 422 420 0.550 0.0 1 6.817333333333333 180.0 2 -0.550 0.0 3
-
-# [431, 422, 423, 421] = [[34], [22], [23], [21]]
-torsion 431 422 423 421 0.550 0.0 1 11.384 180.0 2 -0.550 0.0 3
-
-# [430, 421, 423, 422] = [[33], [21], [23], [22]]
-torsion 430 421 423 422 0.550 0.0 1 11.384 180.0 2 -0.550 0.0 3
-
-# [429, 420, 422, 423] = [[32], [20], [22], [23]]
-torsion 429 420 422 423 0.550 0.0 1 11.384 180.0 2 -0.550 0.0 3
+# [429, 413, 414, 415] = [[32], [13], [14], [15]]
+torsion 429 413 414 415 0.55 0.0 1 6.187 180.0 2 -0.55 0.0 3
 
 # Ring bond detected for missing torsion
 # Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [410, 408, 407, 413] = [[10], [8], [7], [13]]
-torsion 410 408 407 413 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
+# [419, 418, 417, 416] = [[19], [18], [17], [16]]
+torsion 419 418 417 416 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
 
 # Ring bond detected for missing torsion
 # Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [410, 408, 415, 417] = [[10], [8], [15], [17]]
-torsion 410 408 415 417 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [410, 414, 419, 421] = [[10], [14], [19], [21]]
-torsion 410 414 419 421 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [410, 414, 420, 422] = [[10], [14], [20], [22]]
-torsion 410 414 420 422 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# [427, 416, 413, 425] = [[28], [16], [13], [26]]
-torsion 427 416 413 425 0.000 0.0 1 6.355333333333333 180.0 2 0.000 0.0 3
-
-# [431, 422, 420, 429] = [[34], [22], [20], [32]]
-torsion 431 422 420 429 0.000 0.0 1 6.355333333333333 180.0 2 0.000 0.0 3
-
-# [432, 423, 421, 430] = [[35], [23], [21], [33]]
-torsion 432 423 421 430 0.000 0.0 1 6.355333333333333 180.0 2 0.000 0.0 3
-
-# [432, 423, 422, 431] = [[35], [23], [22], [34]]
-torsion 432 423 422 431 0.000 0.0 1 6.355333333333333 180.0 2 0.000 0.0 3
+# [423, 422, 416, 417] = [[23], [22], [16], [17]]
+torsion 423 422 416 417 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
 
 # Ring bond detected for missing torsion
 # Transferring from ['Benzene HC', 'Benzene C', 'Benzene C', 'Benzene C']
-# [410, 408, 415, 426] = [[10], [8], [15], [27]]
-torsion 410 408 415 426 0.55 0.0 1 6.187 180.0 2 -0.55 0.0 3
+# [430, 417, 418, 419] = [[33], [17], [18], [19]]
+torsion 430 417 418 419 0.55 0.0 1 6.187 180.0 2 -0.55 0.0 3
+
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
+# [421, 420, 418, 419] = [[21], [20], [18], [19]]
+torsion 421 420 418 419 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
 
 # Ring bond detected for missing torsion
 # Transferring from ['Benzene HC', 'Benzene C', 'Benzene C', 'Benzene C']
-# [410, 414, 420, 429] = [[10], [14], [20], [32]]
-torsion 410 414 420 429 0.55 0.0 1 6.187 180.0 2 -0.55 0.0 3
+# [431, 420, 418, 419] = [[34], [20], [18], [19]]
+torsion 431 420 418 419 0.55 0.0 1 6.187 180.0 2 -0.55 0.0 3
 
 # Ring bond detected for missing torsion
 # Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [409, 403, 412, 418] = [[9], [3], [12], [18]]
-torsion 409 403 412 418 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [412, 403, 409, 411] = [[12], [3], [9], [11]]
-torsion 412 403 409 411 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [412, 403, 409, 405] = [[12], [3], [9], [5]]
-torsion 412 403 409 405 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
-
-# Ring bond detected for missing torsion
-# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
-# [409, 403, 412, 406] = [[9], [3], [12], [6]]
-torsion 409 403 412 406 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
+# [423, 422, 421, 420] = [[23], [22], [21], [20]]
+torsion 423 422 421 420 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
 
 # Ring bond detected for missing torsion
 # Transferring from ['Benzene HC', 'Benzene C', 'Benzene C', 'Benzene C']
-# [408, 407, 413, 425] = [[8], [7], [13], [26]]
-torsion 408 407 413 425 0.55 0.0 1 6.187 180.0 2 -0.55 0.0 3
+# [432, 421, 422, 423] = [[35], [21], [22], [23]]
+torsion 432 421 422 423 0.55 0.0 1 6.187 180.0 2 -0.55 0.0 3
+
+# Missing torsion parameters, will attempt to fit parameters
+# [403, 402, 401, 424] = [[3], [2], [1], [25, 26, 24]]
+# Fitted from Fragment  SMARTS [#7]1:[#6](-[#6](-[H])(-[H])-[H]):[#7](:[#6](:[#7]:1)-[H])-[H] torsion atom indexes = 7,1,2,0 with smarts torsion indices 5,3,2,1 from fragment 1_2_Index_0.mol
+# Torsion 424 401 402 403 RMSD(MM2,QM) 0.020520994535763126 RelativeRMSD(MM2,QM) 0.01601872298337993
+# torsion % [#7]1:[#6](-[#6](-[H])(-[H])-[H]):[#7](:[#6](:[#7]:1)-[H])-[H] % 5,3,2,1 % -0.000,0.000,-0.008
+torsion 424 401 402 403 -0.000 0.0 1 0.000 180.0 2 -0.008 0.0 3
+
+# Ring bond detected for missing torsion
+# Transferring from ['Alkane -H2C-', 'Alkane -CH2-', 'Alkane -CH2-', 'Alkane -CH2-']
+# [404, 405, 406, 425] = [[4], [5], [6], [27, 28]]
+torsion 404 405 406 425 0 0.0 1 0 180.0 2 0.108 0.0 3
+
+# Missing torsion parameters, will attempt to fit parameters
+# [423, 402, 401, 424] = [[23], [2], [1], [25, 26, 24]]
+# Fitted from Fragment  SMARTS [#7]1:[#6](-[#6](-[H])(-[H])-[H]):[#7](:[#6](:[#7]:1)-[H])-[H] torsion atom indexes = 7,1,2,5 with smarts torsion indices 5,3,2,7 from fragment 1_2_Index_0.mol
+# Torsion 424 401 402 423 RMSD(MM2,QM) 0.020520994535763126 RelativeRMSD(MM2,QM) 0.01601872298337993
+# torsion % [#7]1:[#6](-[#6](-[H])(-[H])-[H]):[#7](:[#6](:[#7]:1)-[H])-[H] % 5,3,2,7 % 0.000,0.000,0.148
+torsion 424 401 402 423 0.000 0.0 1 0.000 180.0 2 0.148 0.0 3
+
+# Ring bond detected for missing torsion
+# Transferring from ['Alkane -H2C-', 'Alkane -CH2-', 'Alkane -CH2-', 'Alkane -CH2-']
+# [423, 405, 406, 425] = [[23], [5], [6], [27, 28]]
+torsion 423 405 406 425 0 0.0 1 0 180.0 2 0.108 0.0 3
+
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
+# [412, 413, 414, 409] = [[12], [13], [14], [9]]
+torsion 412 413 414 409 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
+
+# [412, 411, 410, 409] = [[12], [11], [10], [9]]
+torsion 412 411 410 409 -0.670 0.0 1 6.287333333333333 180.0 2 0.000 0.0 3
+
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
+# [413, 414, 409, 410] = [[13], [14], [9], [10]]
+torsion 413 414 409 410 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
+
+# [413, 412, 411, 410] = [[13], [12], [11], [10]]
+torsion 413 412 411 410 -0.670 0.0 1 6.287333333333333 180.0 2 0.000 0.0 3
+
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
+# [414, 409, 410, 411] = [[14], [9], [10], [11]]
+torsion 414 409 410 411 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
+
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
+# [414, 413, 412, 411] = [[14], [13], [12], [11]]
+torsion 414 413 412 411 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
+
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
+# [420, 421, 422, 416] = [[20], [21], [22], [16]]
+torsion 420 421 422 416 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
+
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
+# [420, 418, 417, 416] = [[20], [18], [17], [16]]
+torsion 420 418 417 416 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
+
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
+# [421, 422, 416, 417] = [[21], [22], [16], [17]]
+torsion 421 422 416 417 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
+
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
+# [421, 420, 418, 417] = [[21], [20], [18], [17]]
+torsion 421 420 418 417 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
+
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
+# [422, 416, 417, 418] = [[22], [16], [17], [18]]
+torsion 422 416 417 418 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
+
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
+# [422, 421, 420, 418] = [[22], [21], [20], [18]]
+torsion 422 421 420 418 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
+
+# [427, 411, 410, 409] = [[30], [11], [10], [9]]
+torsion 427 411 410 409 0.550 0.0 1 6.817333333333333 180.0 2 -0.550 0.0 3
+
+# [428, 412, 411, 410] = [[31], [12], [11], [10]]
+torsion 428 412 411 410 0.550 0.0 1 6.817333333333333 180.0 2 -0.550 0.0 3
+
+# [429, 413, 412, 411] = [[32], [13], [12], [11]]
+torsion 429 413 412 411 0.550 0.0 1 6.817333333333333 180.0 2 -0.550 0.0 3
+
+# [426, 410, 411, 412] = [[29], [10], [11], [12]]
+torsion 426 410 411 412 0.550 0.0 1 11.384 180.0 2 -0.550 0.0 3
+
+# [427, 411, 412, 413] = [[30], [11], [12], [13]]
+torsion 427 411 412 413 0.550 0.0 1 11.384 180.0 2 -0.550 0.0 3
 
 # Ring bond detected for missing torsion
 # Transferring from ['Benzene HC', 'Benzene C', 'Benzene C', 'Benzene C']
-# [414, 419, 421, 430] = [[14], [19], [21], [33]]
-torsion 414 419 421 430 0.55 0.0 1 6.187 180.0 2 -0.55 0.0 3
+# [426, 410, 409, 414] = [[29], [10], [9], [14]]
+torsion 426 410 409 414 0.55 0.0 1 6.187 180.0 2 -0.55 0.0 3
 
-#SOLUTE-SMARTS 432 [#1][#6;D3]
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene HC', 'Benzene C', 'Benzene C', 'Benzene C']
+# [428, 412, 413, 414] = [[31], [12], [13], [14]]
+torsion 428 412 413 414 0.55 0.0 1 6.187 180.0 2 -0.55 0.0 3
 
-SOLUTE 432 2.574 2.758 2.9054
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene HC', 'Benzene C', 'Benzene C', 'Benzene C']
+# [431, 420, 418, 417] = [[34], [20], [18], [17]]
+torsion 431 420 418 417 0.55 0.0 1 6.187 180.0 2 -0.55 0.0 3
 
-#SOLUTE-SMARTS 424 [#1]([CH2]([N]))
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene HC', 'Benzene C', 'Benzene C', 'Benzene C']
+# [432, 421, 420, 418] = [[35], [21], [20], [18]]
+torsion 432 421 420 418 0.55 0.0 1 6.187 180.0 2 -0.55 0.0 3
 
-SOLUTE 424 3.0352 2.686 3.3152
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene HC', 'Benzene C', 'Benzene C', 'Benzene C']
+# [430, 417, 418, 420] = [[33], [17], [18], [20]]
+torsion 430 417 418 420 0.55 0.0 1 6.187 180.0 2 -0.55 0.0 3
 
-#SOLUTE-SMARTS 428 [#1][C;D4][N,c;D3]
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene HC', 'Benzene C', 'Benzene C', 'Benzene C']
+# [430, 417, 416, 422] = [[33], [17], [16], [22]]
+torsion 430 417 416 422 0.55 0.0 1 6.187 180.0 2 -0.55 0.0 3
 
-SOLUTE 428 3.0556 2.996 4.032
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene HC', 'Benzene C', 'Benzene C', 'Benzene C']
+# [431, 420, 421, 422] = [[34], [20], [21], [22]]
+torsion 431 420 421 422 0.55 0.0 1 6.187 180.0 2 -0.55 0.0 3
 
-#SOLUTE-SMARTS 412 cnccccc
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
+# [408, 409, 414, 413] = [[8], [9], [14], [13]]
+torsion 408 409 414 413 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
 
-SOLUTE 412 3.8286 3.893 4.5084
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
+# [408, 409, 410, 411] = [[8], [9], [10], [11]]
+torsion 408 409 410 411 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
 
-#SOLUTE-SMARTS 421 c([cH0])
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
+# [408, 416, 422, 421] = [[8], [16], [22], [21]]
+torsion 408 416 422 421 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
 
-SOLUTE 421 3.8585 3.766 3.8448
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
+# [408, 416, 417, 418] = [[8], [16], [17], [18]]
+torsion 408 416 417 418 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
 
-#SOLUTE-SMARTS 423 c(c(c([cH0])))
+# [427, 411, 410, 426] = [[30], [11], [10], [29]]
+torsion 427 411 410 426 0.000 0.0 1 6.355333333333333 180.0 2 0.000 0.0 3
 
-SOLUTE 423 3.8286 3.893 4.5084
+# [428, 412, 411, 427] = [[31], [12], [11], [30]]
+torsion 428 412 411 427 0.000 0.0 1 6.355333333333333 180.0 2 0.000 0.0 3
 
-#SOLUTE-SMARTS 410 [#6;D3]([*])([*])(=[*])
+# [429, 413, 412, 428] = [[32], [13], [12], [31]]
+torsion 429 413 412 428 0.000 0.0 1 6.355333333333333 180.0 2 0.000 0.0 3
 
-SOLUTE 410 2.9301 4.506 4.2118
+# [432, 421, 420, 431] = [[35], [21], [20], [34]]
+torsion 432 421 420 431 0.000 0.0 1 6.355333333333333 180.0 2 0.000 0.0 3
 
-#SOLUTE-SMARTS 419 [cH0]
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene HC', 'Benzene C', 'Benzene C', 'Benzene C']
+# [408, 409, 410, 426] = [[8], [9], [10], [29]]
+torsion 408 409 410 426 0.55 0.0 1 6.187 180.0 2 -0.55 0.0 3
 
-SOLUTE 419 3.6909 3.766 4.4258
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene HC', 'Benzene C', 'Benzene C', 'Benzene C']
+# [408, 416, 417, 430] = [[8], [16], [17], [33]]
+torsion 408 416 417 430 0.55 0.0 1 6.187 180.0 2 -0.55 0.0 3
 
-#SOLUTE-SMARTS 418 [CH3]
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
+# [405, 423, 402, 401] = [[5], [23], [2], [1]]
+torsion 405 423 402 401 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
 
-SOLUTE 418 3.5062 3.309 4.536
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
+# [402, 423, 405, 406] = [[2], [23], [5], [6]]
+torsion 402 423 405 406 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
 
-#SOLUTE-SMARTS 406 n
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
+# [402, 423, 405, 404] = [[2], [23], [5], [4]]
+torsion 402 423 405 404 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
 
-SOLUTE 406 3.6017 4.034 3.4613
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene C', 'Benzene C', 'Benzene C', 'Benzene C']
+# [405, 423, 402, 403] = [[5], [23], [2], [3]]
+torsion 405 423 402 403 -0.67 0.0 1 6.287 180.0 2 0 0.0 3
 
-#SOLUTE-SMARTS 404 [N]([C]([#1]))
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene HC', 'Benzene C', 'Benzene C', 'Benzene C']
+# [409, 414, 413, 429] = [[9], [14], [13], [32]]
+torsion 409 414 413 429 0.55 0.0 1 6.187 180.0 2 -0.55 0.0 3
 
-SOLUTE 404 2.8836 2.99 3.218
-
-#SOLUTE-SMARTS 403 [#7;D3]
-
-SOLUTE 403 3.4243 3.491 4.2676
+# Ring bond detected for missing torsion
+# Transferring from ['Benzene HC', 'Benzene C', 'Benzene C', 'Benzene C']
+# [416, 422, 421, 432] = [[16], [22], [21], [35]]
+torsion 416 422 421 432 0.55 0.0 1 6.187 180.0 2 -0.55 0.0 3
 
 
 # [401] = [[1]]
-polarize           401          2.5670     0.3900 417
+polarize           401          1.4150     0.3900 424
 # [402] = [[2]]
-polarize           402          2.5670     0.3900 419
+polarize           402          1.6000     0.3900 403 423
 # [403] = [[3]]
-polarize           403          1.7020     0.3900 409 412
+polarize           403          1.7020     0.3900 402 404
 # [404] = [[4]]
-polarize           404          1.7020     0.3900
+polarize           404          1.7020     0.3900 403 405
 # [405] = [[5]]
-polarize           405          1.7020     0.3900 406 409
+polarize           405          1.6000     0.3900 404 423
 # [406] = [[6]]
-polarize           406          1.7020     0.3900 405 412
+polarize           406          1.6200     0.3900 425
 # [407] = [[7]]
-polarize           407          1.6000     0.3900 408 413
+polarize           407          1.7020     0.3900
 # [408] = [[8]]
-polarize           408          1.6000     0.3900 407 415
+polarize           408          1.6200     0.3900
 # [409] = [[9]]
-polarize           409          1.6000     0.3900 403 405
+polarize           409          1.6000     0.3900 410 414
 # [410] = [[10]]
-polarize          410          1.6200     0.3900
+polarize          410          1.6000     0.3900 409 411 426
 # [411] = [[11]]
-polarize          411          1.6200     0.3900 424
+polarize          411          1.6000     0.3900 410 412 427
 # [412] = [[12]]
-polarize          412          1.6000     0.3900 403 406
+polarize          412          1.6000     0.3900 411 413 428
 # [413] = [[13]]
-polarize          413          1.6000     0.3900 407 416 425
+polarize          413          1.6000     0.3900 412 414 429
 # [414] = [[14]]
-polarize          414          1.6000     0.3900 419 420
+polarize          414          1.6000     0.3900 409 413 415
 # [415] = [[15]]
-polarize          415          1.6000     0.3900 408 417 426
+polarize          415          2.5670     0.3900 414
 # [416] = [[16]]
-polarize          416          1.6000     0.3900 413 417 427
+polarize          416          1.6000     0.3900 417 422
 # [417] = [[17]]
-polarize          417          1.6000     0.3900 401 415 416
+polarize          417          1.6000     0.3900 416 418 430
 # [418] = [[18]]
-polarize          418          1.4150     0.3900 428
+polarize          418          1.6000     0.3900 417 419 420
 # [419] = [[19]]
-polarize          419          1.6000     0.3900 402 414 421
+polarize          419          2.5670     0.3900 418
 # [420] = [[20]]
-polarize          420          1.6000     0.3900 414 422 429
+polarize          420          1.6000     0.3900 418 421 431
 # [421] = [[21]]
-polarize          421          1.6000     0.3900 419 423 430
+polarize          421          1.6000     0.3900 420 422 432
 # [422] = [[22]]
-polarize          422          1.6000     0.3900 420 423 431
+polarize          422          1.6000     0.3900 416 421
 # [423] = [[23]]
-polarize          423          1.6000     0.3900 421 422 432
-# [424] = [[25, 24]]
-polarize          424          0.4800     0.3900 411
-# [425] = [[26]]
-polarize          425          0.4320     0.3900 413
-# [426] = [[27]]
-polarize          426          0.4320     0.3900 415
-# [427] = [[28]]
-polarize          427          0.4320     0.3900 416
-# [428] = [[29, 30, 31]]
-polarize          428          0.4800     0.3900 418
+polarize          423          1.7020     0.3900 402 405
+# [424] = [[25, 26, 24]]
+polarize          424          0.4800     0.3900 401
+# [425] = [[27, 28]]
+polarize          425          0.4800     0.3900 406
+# [426] = [[29]]
+polarize          426          0.4320     0.3900 410
+# [427] = [[30]]
+polarize          427          0.4320     0.3900 411
+# [428] = [[31]]
+polarize          428          0.4320     0.3900 412
 # [429] = [[32]]
-polarize          429          0.4320     0.3900 420
+polarize          429          0.4320     0.3900 413
 # [430] = [[33]]
-polarize          430          0.4320     0.3900 421
+polarize          430          0.4320     0.3900 417
 # [431] = [[34]]
-polarize          431          0.4320     0.3900 422
+polarize          431          0.4320     0.3900 420
 # [432] = [[35]]
-polarize          432          0.4320     0.3900 423
+polarize          432          0.4320     0.3900 421
 
 #
 # Multipoles from Electrostatic Potential Fitting
 #
 
 # [401] = [[1]]
-multipole   401  417  415              -0.33469
-                                        0.00063    0.00000   -0.17698
-                                       -0.68804
-                                        0.00000   -0.26752
-                                       -0.01716    0.00000    0.95556
+multipole   401  402  403              -0.14093
+                                       -0.02386    0.00000    0.27260
+                                       -0.25885
+                                        0.00000   -0.15490
+                                        0.02507    0.00000    0.41375
 # [402] = [[2]]
-multipole   402  419  414              -0.35362
-                                       -0.07543    0.00000   -0.28277
-                                       -0.71726
-                                        0.00000   -0.23689
-                                       -0.19997    0.00000    0.95415
+multipole   402  403  423               0.27351
+                                        0.14194    0.00000    0.06999
+                                        0.28508
+                                        0.00000   -0.37258
+                                       -0.23374    0.00000    0.08750
 # [403] = [[3]]
-multipole   403  407  409              -0.07147
-                                        0.05608    0.00000   -0.13069
-                                        0.48309
-                                        0.00000   -0.45517
-                                        0.00938    0.00000   -0.02792
+multipole   403  404  402              -0.38173
+                                        0.14733    0.00000    0.44941
+                                       -0.34505
+                                        0.00000   -0.15619
+                                       -0.31922    0.00000    0.50124
 # [404] = [[4]]
-multipole   404  410  411              -0.37368
-                                        0.49591    0.00000   -0.03700
-                                        0.42826
-                                        0.00000    0.10093
-                                       -0.62501    0.00000   -0.52919
+multipole   404  403  405              -0.35813
+                                        0.07390    0.00000    0.52842
+                                       -0.50507
+                                        0.00000   -0.02842
+                                       -0.21331    0.00000    0.53349
 # [405] = [[5]]
-multipole   405  406  409              -0.35763
-                                        0.07205    0.00000    0.52431
-                                       -0.50522
-                                        0.00000   -0.02845
-                                       -0.22082    0.00000    0.53367
+multipole   405  404  423               0.23758
+                                        0.03421    0.00000    0.04440
+                                        0.35795
+                                        0.00000   -0.36419
+                                        0.09077    0.00000    0.00624
 # [406] = [[6]]
-multipole   406  405  412              -0.38103
-                                        0.14870    0.00000    0.45002
-                                       -0.34854
-                                        0.00000   -0.16130
-                                       -0.31536    0.00000    0.50984
+multipole   406  407  405              -0.03836
+                                        0.33861    0.00000    0.03685
+                                        0.12421
+                                        0.00000   -0.56777
+                                       -0.20190    0.00000    0.44356
 # [407] = [[7]]
-multipole   407  403  408              -0.02266
-                                       -0.17086    0.00000    0.21931
-                                       -0.90258
-                                        0.00000    0.02956
-                                        0.43859    0.00000    0.87302
+multipole   407  408  406              -0.37435
+                                        0.49671    0.00000   -0.02832
+                                        0.42599
+                                        0.00000    0.09687
+                                       -0.62676    0.00000   -0.52286
 # [408] = [[8]]
-multipole   408  415  407              -0.17002
-                                       -0.04491    0.00000   -0.12514
-                                       -1.02740
-                                        0.00000    0.61910
-                                       -0.42190    0.00000    0.40830
+multipole   408  407  409               0.52158
+                                       -0.18656    0.00000    0.19542
+                                       -0.71905
+                                        0.00000    0.35739
+                                       -0.22844    0.00000    0.36166
 # [409] = [[9]]
-multipole   409  405  403               0.23615
-                                        0.03948    0.00000    0.03352
-                                        0.35456
-                                        0.00000   -0.36736
-                                        0.09156    0.00000    0.01280
+multipole   409  414  408              -0.17156
+                                        0.17477    0.00000   -0.20580
+                                        0.11023
+                                        0.00000    0.19870
+                                        0.62259    0.00000   -0.30893
 # [410] = [[10]]
-multipole   410  404  414               0.52020
-                                       -0.17465    0.00000    0.18929
-                                       -0.72523
-                                        0.00000    0.35603
-                                       -0.22310    0.00000    0.36920
+multipole   410  409  411               0.04912
+                                        0.14922    0.00000    0.06362
+                                        0.53372
+                                        0.00000   -0.34931
+                                        0.48886    0.00000   -0.18441
 # [411] = [[11]]
-multipole   411  404  409              -0.03787
-                                        0.33710    0.00000    0.03803
-                                        0.12542
-                                        0.00000   -0.57070
-                                       -0.20406    0.00000    0.44528
+multipole   411  410  412              -0.04016
+                                       -0.10127    0.00000   -0.03972
+                                       -0.04800
+                                        0.00000   -0.10124
+                                       -0.14444    0.00000    0.14924
 # [412] = [[12]]
-multipole   412  406  403               0.27137
-                                        0.15179    0.00000    0.05817
-                                        0.28772
-                                        0.00000   -0.36992
-                                       -0.23251    0.00000    0.08220
+multipole   412  413  411              -0.03771
+                                       -0.06467    0.00000   -0.04390
+                                       -0.09157
+                                        0.00000   -0.10901
+                                       -0.11328    0.00000    0.20058
 # [413] = [[13]]
-multipole   413  407  416              -0.13309
-                                       -0.23127    0.00000   -0.04373
-                                        0.04347
-                                        0.00000    0.06246
-                                       -0.24898    0.00000   -0.10593
+multipole   413  414  412              -0.12956
+                                       -0.21566    0.00000   -0.11252
+                                        0.12212
+                                        0.00000   -0.04970
+                                       -0.32961    0.00000   -0.07242
 # [414] = [[14]]
-multipole   414  419  410              -0.16864
-                                        0.17943    0.00000   -0.19991
-                                        0.10125
-                                        0.00000    0.20700
-                                        0.63842    0.00000   -0.30825
+multipole   414  415  409               0.59621
+                                        0.00521    0.00000   -0.14008
+                                       -0.56018
+                                        0.00000   -1.07305
+                                        0.33580    0.00000    1.63323
 # [415] = [[15]]
-multipole   415  417  408              -0.22526
-                                       -0.36043    0.00000   -0.19716
-                                       -0.12851
-                                        0.00000    0.17878
-                                       -0.22738    0.00000   -0.05027
+multipole   415  414  409              -0.35378
+                                       -0.07569    0.00000   -0.28155
+                                       -0.72139
+                                        0.00000   -0.23752
+                                       -0.20201    0.00000    0.95891
 # [416] = [[16]]
-multipole   416  417  413              -0.14830
-                                       -0.26478    0.00000   -0.10785
-                                        0.08655
-                                        0.00000   -0.07197
-                                       -0.41707    0.00000   -0.01458
+multipole   416  417  422              -0.17042
+                                       -0.06843    0.00000   -0.10645
+                                       -1.02601
+                                        0.00000    0.61955
+                                       -0.43165    0.00000    0.40646
 # [417] = [[17]]
-multipole   417  401  415               0.88569
-                                        0.03729    0.00000   -0.79419
-                                       -1.21764
-                                        0.00000   -1.83105
-                                        0.06959    0.00000    3.04869
+multipole   417  418  416              -0.22530
+                                       -0.37004    0.00000   -0.22005
+                                       -0.13053
+                                        0.00000    0.20065
+                                       -0.22964    0.00000   -0.07012
 # [418] = [[18]]
-multipole   418  412  406              -0.14088
-                                       -0.03148    0.00000    0.28294
-                                       -0.24844
-                                        0.00000   -0.16522
-                                        0.01913    0.00000    0.41366
+multipole   418  419  417               0.78260
+                                        0.07011    0.00000   -0.54592
+                                       -0.95792
+                                        0.00000   -1.56107
+                                        0.03537    0.00000    2.51899
 # [419] = [[19]]
-multipole   419  402  414               0.59680
-                                       -0.00756    0.00000   -0.14704
-                                       -0.56931
-                                        0.00000   -1.08245
-                                        0.33975    0.00000    1.65176
+multipole   419  418  417              -0.33465
+                                       -0.00114    0.00000   -0.19531
+                                       -0.67112
+                                        0.00000   -0.25954
+                                       -0.01646    0.00000    0.93066
 # [420] = [[20]]
-multipole   420  414  422               0.04825
-                                        0.15059    0.00000    0.05874
-                                        0.54533
-                                        0.00000   -0.35214
-                                        0.49882    0.00000   -0.19319
+multipole   420  418  421              -0.14882
+                                       -0.24648    0.00000   -0.17076
+                                        0.08125
+                                        0.00000   -0.07418
+                                       -0.42505    0.00000   -0.00707
 # [421] = [[21]]
-multipole   421  419  423              -0.13009
-                                       -0.21230    0.00000   -0.10847
-                                        0.11866
-                                        0.00000   -0.05104
-                                       -0.32930    0.00000   -0.06762
+multipole   421  422  420               0.08039
+                                        0.26581    0.00000    0.16352
+                                        1.06000
+                                        0.00000   -0.62862
+                                        0.75692    0.00000   -0.43138
 # [422] = [[22]]
-multipole   422  420  423              -0.04048
-                                       -0.10204    0.00000   -0.03793
-                                       -0.05016
-                                        0.00000   -0.10031
-                                       -0.14510    0.00000    0.15047
+multipole   422  423  416              -0.12997
+                                       -0.18527    0.00000    0.51716
+                                       -0.51617
+                                        0.00000    0.42181
+                                        0.41244    0.00000    0.09436
 # [423] = [[23]]
-multipole   423  421  422              -0.03795
-                                       -0.06655    0.00000   -0.04825
-                                       -0.09281
-                                        0.00000   -0.11007
-                                       -0.11561    0.00000    0.20288
-# [424] = [[25, 24]]
-multipole   424  411  404               0.07983
-                                        0.03051    0.00000   -0.09422
-                                        0.06088
-                                        0.00000    0.06338
-                                       -0.01029    0.00000   -0.12426
-# [425] = [[26]]
-multipole   425  413  407               0.04637
-                                        0.01885    0.00000   -0.17423
-                                        0.14661
-                                        0.00000    0.00701
-                                        0.03967    0.00000   -0.15362
-# [426] = [[27]]
-multipole   426  415  417               0.03616
-                                       -0.04611    0.00000   -0.20047
-                                        0.05601
-                                        0.00000   -0.02313
-                                        0.02557    0.00000   -0.03288
-# [427] = [[28]]
-multipole   427  416  417               0.01801
-                                       -0.00986    0.00000   -0.18091
-                                        0.11261
-                                        0.00000    0.00096
-                                        0.03290    0.00000   -0.11357
-# [428] = [[29, 30, 31]]
-multipole   428  418  412               0.08433
-                                        0.00237    0.00000   -0.06343
-                                        0.01432
-                                        0.00000   -0.00019
-                                        0.00039    0.00000   -0.01413
+multipole   423  422  405              -0.07387
+                                        0.07084    0.00000   -0.11906
+                                        0.48159
+                                        0.00000   -0.45086
+                                        0.01107    0.00000   -0.03073
+# [424] = [[25, 26, 24]]
+multipole   424  401  402               0.08412
+                                        0.00471    0.00000   -0.06413
+                                        0.01821
+                                        0.00000   -0.00104
+                                        0.00904    0.00000   -0.01717
+# [425] = [[27, 28]]
+multipole   425  406  407               0.07998
+                                        0.03005    0.00000   -0.09249
+                                        0.05866
+                                        0.00000    0.06117
+                                       -0.01745    0.00000   -0.11983
+# [426] = [[29]]
+multipole   426  410  409               0.01220
+                                       -0.00912    0.00000   -0.13043
+                                        0.05873
+                                        0.00000   -0.01070
+                                       -0.00653    0.00000   -0.04803
+# [427] = [[30]]
+multipole   427  411  410               0.01238
+                                        0.01722    0.00000   -0.17403
+                                        0.08587
+                                        0.00000    0.00777
+                                        0.01274    0.00000   -0.09364
+# [428] = [[31]]
+multipole   428  412  413               0.01421
+                                        0.01160    0.00000   -0.18667
+                                        0.10598
+                                        0.00000    0.01559
+                                       -0.00430    0.00000   -0.12157
 # [429] = [[32]]
-multipole   429  420  414               0.01218
-                                       -0.00558    0.00000   -0.13487
-                                        0.05648
-                                        0.00000   -0.01066
-                                       -0.01328    0.00000   -0.04582
+multipole   429  413  414               0.01716
+                                        0.00684    0.00000   -0.17859
+                                        0.10783
+                                        0.00000   -0.00319
+                                        0.02421    0.00000   -0.10464
 # [430] = [[33]]
-multipole   430  421  419               0.01701
-                                        0.00630    0.00000   -0.18029
-                                        0.10780
-                                        0.00000   -0.00026
-                                        0.02598    0.00000   -0.10754
+multipole   430  417  418               0.03593
+                                       -0.05397    0.00000   -0.19615
+                                        0.04826
+                                        0.00000   -0.02535
+                                        0.01696    0.00000   -0.02291
 # [431] = [[34]]
-multipole   431  422  420               0.01226
-                                        0.01866    0.00000   -0.17452
-                                        0.08593
-                                        0.00000    0.00835
-                                        0.01355    0.00000   -0.09428
+multipole   431  420  418               0.01790
+                                       -0.01747    0.00000   -0.18337
+                                        0.10852
+                                        0.00000    0.00931
+                                        0.01085    0.00000   -0.11783
 # [432] = [[35]]
-multipole   432  423  421               0.01426
-                                        0.01134    0.00000   -0.18700
-                                        0.10713
-                                        0.00000    0.01602
-                                       -0.00558    0.00000   -0.12315
+multipole   432  421  422               0.04621
+                                        0.02214    0.00000   -0.10197
+                                        0.12870
+                                        0.00000    0.01842
+                                        0.01896    0.00000   -0.14712
 
 #
 # Charge Penetration from Electrostatic Potential Fitting
@@ -850,379 +802,388 @@ chgpen           429          0.0000    0.00000
 chgpen           430          0.0000    0.00000
 chgpen           431          0.0000    0.00000
 chgpen           432          0.0000    0.00000
-# [401, 417] = [[1], [17]]
-bond   401   417   190.8023   1.7333
-# [402, 419] = [[2], [19]]
-bond   402   419   190.8023   1.7384
-# [403, 407] = [[3], [7]]
-bond   403   407   351.8167   1.3726
+# [401, 402] = [[1], [2]]
+bond   401   402   358.9834   1.4877
+# [401, 424] = [[1], [25, 26, 24]]
+bond   401   424   345.9789   1.0928
+# [402, 403] = [[2], [3]]
+bond   402   403   408.0666   1.3259
+# [402, 423] = [[2], [23]]
+bond   402   423   337.5328   1.3432
 
-# [403, 409] = [[3], [9]]
-bond   403   409   337.5328   1.3766
-# [403, 412] = [[3], [12]]
-bond   403   412   337.5328   1.3434
+# [403, 404] = [[3], [4]]
+bond   403   404   276.7444   1.3982
 
-# [404, 410] = [[4], [10]]
-bond   404   410   550.2051   1.2911
-# [404, 411] = [[4], [11]]
-bond   404   411   240.6831   1.4706
+# [404, 405] = [[4], [5]]
+bond   404   405   408.0666   1.3277
+
 # [405, 406] = [[5], [6]]
-bond   405   406   276.7444   1.3811
-# [405, 409] = [[5], [9]]
-bond   405   409   408.0666   1.3202
-# [406, 412] = [[6], [12]]
-bond   406   412   408.0666   1.3261
+bond   405   406   361.9645   1.4812
+# [405, 423] = [[5], [23]]
+bond   405   423   337.5328   1.3554
+
+# [406, 407] = [[6], [7]]
+bond   406   407   240.6831   1.4707
+# [406, 425] = [[6], [27, 28]]
+bond   406   425   344.2141   1.0958
 # [407, 408] = [[7], [8]]
-bond   407   408   354.5730   1.3587
+bond   407   408   550.2051   1.2909
+# [408, 409] = [[8], [9]]
+bond   408   409   234.7094   1.4688
 
-# [407, 413] = [[7], [13]]
-bond   407   413   354.5730   1.3989
-# [408, 410] = [[8], [10]]
-bond   408   410   234.7094   1.4292
+# [408, 416] = [[8], [16]]
+bond   408   416   234.7094   1.4280
 
-# [408, 415] = [[8], [15]]
-bond   408   415   379.0943   1.3732
+# [409, 410] = [[9], [10]]
+bond   409   410   379.0943   1.3853
 
-# [409, 411] = [[9], [11]]
-bond   409   411   361.9645   1.4808
-# [410, 414] = [[10], [14]]
-bond   410   414   234.7094   1.4863
-# [411, 424] = [[11], [25, 24]]
-bond   411   424   344.2141   1.0957
-# [412, 418] = [[12], [18]]
-bond   412   418   358.9834   1.4880
-# [413, 416] = [[13], [16]]
-bond   413   416   379.0943   1.3888
-# [413, 425] = [[13], [26]]
-bond   413   425   368.0934   1.0856
-# [414, 419] = [[14], [19]]
-bond   414   419   379.0943   1.3987
-# [414, 420] = [[14], [20]]
-bond   414   420   379.0943   1.4001
-# [415, 417] = [[15], [17]]
-bond   415   417   379.0943   1.3887
-# [415, 426] = [[15], [27]]
-bond   415   426   368.0934   1.0864
+# [409, 414] = [[9], [14]]
+bond   409   414   379.0943   1.3834
+
+# [410, 411] = [[10], [11]]
+bond   410   411   379.0943   1.3814
+
+# [410, 426] = [[10], [29]]
+bond   410   426   368.0934   1.0882
+# [411, 412] = [[11], [12]]
+bond   411   412   379.0943   1.3860
+
+# [411, 427] = [[11], [30]]
+bond   411   427   368.0934   1.0864
+# [412, 413] = [[12], [13]]
+bond   412   413   379.0943   1.3836
+
+# [412, 428] = [[12], [31]]
+bond   412   428   368.0934   1.0866
+# [413, 414] = [[13], [14]]
+bond   413   414   379.0943   1.3818
+
+# [413, 429] = [[13], [32]]
+bond   413   429   368.0934   1.0860
+# [414, 415] = [[14], [15]]
+bond   414   415   190.8023   1.7279
+
 # [416, 417] = [[16], [17]]
-bond   416   417   379.0943   1.3965
-# [416, 427] = [[16], [28]]
-bond   416   427   368.0934   1.0858
-# [418, 428] = [[18], [29, 30, 31]]
-bond   418   428   345.9789   1.0928
-# [419, 421] = [[19], [21]]
-bond   419   421   379.0943   1.3942
-# [420, 422] = [[20], [22]]
-bond   420   422   379.0943   1.3919
-# [420, 429] = [[20], [32]]
-bond   420   429   368.0934   1.0882
-# [421, 423] = [[21], [23]]
-bond   421   423   379.0943   1.3932
-# [421, 430] = [[21], [33]]
-bond   421   430   368.0934   1.0860
+bond   416   417   379.0943   1.3806
+
+# [416, 422] = [[16], [22]]
+bond   416   422   354.5730   1.3658
+
+# [417, 418] = [[17], [18]]
+bond   417   418   379.0943   1.3885
+# [417, 430] = [[17], [33]]
+bond   417   430   368.0934   1.0863
+# [418, 419] = [[18], [19]]
+bond   418   419   190.8023   1.7335
+# [418, 420] = [[18], [20]]
+bond   418   420   379.0943   1.3965
+# [420, 421] = [[20], [21]]
+bond   420   421   379.0943   1.3888
+# [420, 431] = [[20], [34]]
+bond   420   431   368.0934   1.0858
+# [421, 422] = [[21], [22]]
+bond   421   422   354.5730   1.3782
+
+# [421, 432] = [[21], [35]]
+bond   421   432   368.0934   1.0852
 # [422, 423] = [[22], [23]]
-bond   422   423   379.0943   1.3956
-# [422, 431] = [[22], [34]]
-bond   422   431   368.0934   1.0864
-# [423, 432] = [[23], [35]]
-bond   423   432   368.0934   1.0867
-anglep   407   403   409   49.7266   122.435
-anglep   407   403   412   49.7266   130.3738
-anglep   409   403   412   51.3361   107.764
-# [410, 404, 411] = [[10], [4], [11]]
-angle   410   404   411   61.2656   113.034
-# [406, 405, 409] = [[6], [5], [9]]
-angle   406   405   409   69.9704   107.0364
-# [405, 406, 412] = [[5], [6], [12]]
-angle   405   406   412   69.9704   108.2969
-anglep   403   407   408   19.8302   116.330
-anglep   403   407   413   19.8302   121.386
-anglep   408   407   413   90.4327   122.284
-anglep   407   408   410   90.4168   121.888
-anglep   407   408   415   77.0694   118.5565
-anglep   410   408   415   78.6275   118.0297
-anglep   403   409   405   62.0396   109.167
-anglep   403   409   411   56.1418   116.808
-anglep   405   409   411   33.4794   133.738
-anglep   404   410   408   71.8733   125.304
-anglep   404   410   414   71.8733   121.096
-anglep   408   410   414   67.4827   113.599
-# [404, 411, 409] = [[4], [11], [9]]
-angle   404   411   409   59.2150   106.265
-# [404, 411, 424] = [[4], [11], [25, 24]]
-angle   404   411   424   53.5776   109.6849
-# [409, 411, 424] = [[9], [11], [25, 24]]
-angle   409   411   424   48.0790   110.908
-# [424, 411, 424] = [[25, 24], [11], [25, 24]]
-angle   424   411   424   33.0519   110.850
-anglep   403   412   406   62.0396   109.3041
-anglep   403   412   418   56.1418   121.293
-anglep   406   412   418   37.5021   129.979
-anglep   407   413   416   77.0694   119.090
-anglep   407   413   425   32.1659   118.012
-anglep   416   413   425   36.7702   122.863
-anglep   410   414   419   78.6275   122.1711
-anglep   410   414   420   78.6275   119.1237
-anglep   419   414   420   74.6307   118.7050
-anglep   408   415   417   74.6307   119.082
-anglep   408   415   426   36.7702   117.827
-anglep   417   415   426   36.7702   123.090
-anglep   413   416   417   74.6307   119.2653
-anglep   413   416   427   36.7702   120.6188
-anglep   417   416   427   36.7702   120.1100
-anglep   401   417   415   55.6972   119.5691
-anglep   401   417   416   55.6972   119.4745
-anglep   415   417   416   74.6307   120.9561
-# [412, 418, 428] = [[12], [18], [29, 30, 31]]
-angle   412   418   428   57.1505   110.4842
-# [428, 418, 428] = [[29, 30, 31], [18], [29, 30, 31]]
-angle   428   418   428   36.4069   107.215
-anglep   402   419   414   55.6972   120.3002
-anglep   402   419   421   55.6972   118.8151
-anglep   414   419   421   74.6307   120.8730
-anglep   414   420   422   74.6307   120.8370
-anglep   414   420   429   36.7702   118.7971
-anglep   422   420   429   36.7702   120.3524
-anglep   419   421   423   74.6307   119.6224
-anglep   419   421   430   36.7702   119.4838
-anglep   423   421   430   36.7702   120.8937
-anglep   420   422   423   74.6307   119.6731
-anglep   420   422   431   36.7702   120.0411
-anglep   423   422   431   36.7702   120.2856
-anglep   421   423   422   74.6307   120.2693
-anglep   421   423   432   36.7702   119.4522
-anglep   422   423   432   36.7702   120.2783
-# [407, 403, 409] = [[7], [3], [9]]
-strbnd   407   403   409   26.9454   26.9454
-# [407, 403, 412] = [[7], [3], [12]]
-strbnd   407   403   412   26.9454   26.9454
-# [409, 403, 412] = [[9], [3], [12]]
-strbnd   409   403   412   27.7174   27.7174
-# [410, 404, 411] = [[10], [4], [11]]
-strbnd   410   404   411   12.6551   12.6551
-# [406, 405, 409] = [[6], [5], [9]]
-strbnd   406   405   409   31.5423   31.5423
-# [405, 406, 412] = [[5], [6], [12]]
-strbnd   405   406   412   31.5423   31.5423
-# [403, 407, 408] = [[3], [7], [8]]
-strbnd   403   407   408   10.4050   10.4050
-# [403, 407, 413] = [[3], [7], [13]]
-strbnd   403   407   413   10.4050   10.4050
-# [408, 407, 413] = [[8], [7], [13]]
-strbnd   408   407   413   9.5583   9.5583
-# [407, 408, 410] = [[7], [8], [10]]
-strbnd   407   408   410   20.4528   20.4528
-# [407, 408, 415] = [[7], [8], [15]]
-strbnd   407   408   415   20.4528   20.4528
-# [410, 408, 415] = [[10], [8], [15]]
-strbnd   410   408   415   20.4528   20.4528
-# [403, 409, 405] = [[3], [9], [5]]
-strbnd   403   409   405   7.7918   7.7918
-# [403, 409, 411] = [[3], [9], [11]]
-strbnd   403   409   411   -18.0721   -18.0721
-# [405, 409, 411] = [[5], [9], [11]]
-strbnd   405   409   411   -18.0721   -18.0721
-# [404, 410, 408] = [[4], [10], [8]]
-strbnd   404   410   408   9.9108   9.9108
-# [404, 410, 414] = [[4], [10], [14]]
-strbnd   404   410   414   9.9108   9.9108
-# [408, 410, 414] = [[8], [10], [14]]
-strbnd   408   410   414   7.6289   7.6289
-# [404, 411, 409] = [[4], [11], [9]]
-strbnd   404   411   409   27.9302   27.9302
-# [404, 411, 424] = [[4], [11], [25, 24]]
-strbnd   404   411   424   9.4041   9.4041
-# [409, 411, 424] = [[9], [11], [25, 24]]
-strbnd   409   411   424   27.9302   27.9302
-# [424, 411, 424] = [[25, 24], [11], [25, 24]]
-strbnd   424   411   424   9.4041   9.4041
-# [403, 412, 406] = [[3], [12], [6]]
-strbnd   403   412   406   7.7918   7.7918
-# [403, 412, 418] = [[3], [12], [18]]
-strbnd   403   412   418   -18.0721   -18.0721
-# [406, 412, 418] = [[6], [12], [18]]
-strbnd   406   412   418   -18.0721   -18.0721
-# [407, 413, 416] = [[7], [13], [16]]
-strbnd   407   413   416   20.4528   20.4528
-# [407, 413, 425] = [[7], [13], [26]]
-strbnd   407   413   425   20.4528   20.4528
-# [416, 413, 425] = [[16], [13], [26]]
-strbnd   416   413   425   20.4528   20.4528
-# [410, 414, 419] = [[10], [14], [19]]
-strbnd   410   414   419   20.4528   20.4528
-# [410, 414, 420] = [[10], [14], [20]]
-strbnd   410   414   420   20.4528   20.4528
-# [419, 414, 420] = [[19], [14], [20]]
-strbnd   419   414   420   20.4528   20.4528
-# [408, 415, 417] = [[8], [15], [17]]
-strbnd   408   415   417   20.4528   20.4528
-# [408, 415, 426] = [[8], [15], [27]]
-strbnd   408   415   426   20.4528   20.4528
-# [417, 415, 426] = [[17], [15], [27]]
-strbnd   417   415   426   20.4528   20.4528
-# [413, 416, 417] = [[13], [16], [17]]
-strbnd   413   416   417   20.4528   20.4528
-# [413, 416, 427] = [[13], [16], [28]]
-strbnd   413   416   427   20.4528   20.4528
-# [417, 416, 427] = [[17], [16], [28]]
-strbnd   417   416   427   20.4528   20.4528
-# [401, 417, 415] = [[1], [17], [15]]
-strbnd   401   417   415   20.4528   20.4528
-# [401, 417, 416] = [[1], [17], [16]]
-strbnd   401   417   416   20.4528   20.4528
-# [415, 417, 416] = [[15], [17], [16]]
-strbnd   415   417   416   20.4528   20.4528
-# [412, 418, 428] = [[12], [18], [29, 30, 31]]
-strbnd   412   418   428   20.4528   20.4528
-# [428, 418, 428] = [[29, 30, 31], [18], [29, 30, 31]]
-strbnd   428   418   428   5.7126   5.7126
-# [402, 419, 414] = [[2], [19], [14]]
-strbnd   402   419   414   20.4528   20.4528
-# [402, 419, 421] = [[2], [19], [21]]
-strbnd   402   419   421   20.4528   20.4528
-# [414, 419, 421] = [[14], [19], [21]]
-strbnd   414   419   421   20.4528   20.4528
-# [414, 420, 422] = [[14], [20], [22]]
-strbnd   414   420   422   20.4528   20.4528
-# [414, 420, 429] = [[14], [20], [32]]
-strbnd   414   420   429   20.4528   20.4528
-# [422, 420, 429] = [[22], [20], [32]]
-strbnd   422   420   429   20.4528   20.4528
-# [419, 421, 423] = [[19], [21], [23]]
-strbnd   419   421   423   20.4528   20.4528
-# [419, 421, 430] = [[19], [21], [33]]
-strbnd   419   421   430   20.4528   20.4528
-# [423, 421, 430] = [[23], [21], [33]]
-strbnd   423   421   430   20.4528   20.4528
-# [420, 422, 423] = [[20], [22], [23]]
-strbnd   420   422   423   20.4528   20.4528
-# [420, 422, 431] = [[20], [22], [34]]
-strbnd   420   422   431   20.4528   20.4528
-# [423, 422, 431] = [[23], [22], [34]]
-strbnd   423   422   431   20.4528   20.4528
-# [421, 423, 422] = [[21], [23], [22]]
-strbnd   421   423   422   20.4528   20.4528
-# [421, 423, 432] = [[21], [23], [35]]
-strbnd   421   423   432   20.4528   20.4528
-# [422, 423, 432] = [[22], [23], [35]]
-strbnd   422   423   432   20.4528   20.4528
-# [407, 403] = [[7], [3]]
-opbend   407   403   409   412   65.9271
-# [409, 403] = [[9], [3]]
-opbend   409   403   407   412   14.0000
-# [412, 403] = [[12], [3]]
-opbend   412   403   407   409   14.0000
-# [403, 407] = [[3], [7]]
-opbend   403   407   408   413   65.9271
-# [408, 407] = [[8], [7]]
-opbend   408   407   403   413   47.0937
-# [413, 407] = [[13], [7]]
-opbend   413   407   403   408   47.0937
+bond   422   423   351.8167   1.3721
+
+# [402, 401, 424] = [[2], [1], [25, 26, 24]]
+angle   402   401   424   57.1505   109.766
+# [424, 401, 424] = [[25, 26, 24], [1], [25, 26, 24]]
+angle   424   401   424   36.4069   109.386
+anglep   401   402   403   45.5005   129.714
+anglep   401   402   423   52.9563   121.517
+anglep   403   402   423   62.0396   108.715
+# [402, 403, 404] = [[2], [3], [4]]
+angle   402   403   404   69.9704   107.603
+# [403, 404, 405] = [[3], [4], [5]]
+angle   403   404   405   69.9704   107.1576
+anglep   404   405   406   33.4794   134.024
+anglep   404   405   423   62.0396   109.034
+anglep   406   405   423   56.0666   116.659
+# [405, 406, 407] = [[5], [6], [7]]
+angle   405   406   407   49.5483   106.092
+# [405, 406, 425] = [[5], [6], [27, 28]]
+angle   405   406   425   48.0790   110.980
+# [407, 406, 425] = [[7], [6], [27, 28]]
+angle   407   406   425   53.5776   108.595
+# [425, 406, 425] = [[27, 28], [6], [27, 28]]
+angle   425   406   425   33.0519   110.957
+# [406, 407, 408] = [[6], [7], [8]]
+angle   406   407   408   61.2656   113.152
+anglep   407   408   409   71.8733   121.004
+anglep   407   408   416   71.8733   125.277
+anglep   409   408   416   67.4827   113.719
+anglep   408   409   410   78.6275   119.1017
+anglep   408   409   414   78.6275   122.1664
+anglep   410   409   414   74.6307   118.7261
+anglep   409   410   411   74.6307   120.8544
+anglep   409   410   426   36.7702   118.7799
+anglep   411   410   426   36.7702   120.3565
+anglep   410   411   412   74.6307   119.6128
+anglep   410   411   427   36.7702   120.0639
+anglep   412   411   427   36.7702   120.3234
+anglep   411   412   413   74.6307   120.3478
+anglep   411   412   428   36.7702   120.2460
+anglep   413   412   428   36.7702   119.4059
+anglep   412   413   414   74.6307   119.5787
+anglep   412   413   429   36.7702   120.9225
+anglep   414   413   429   36.7702   119.4988
+anglep   409   414   413   74.6307   120.8697
+anglep   409   414   415   55.6972   119.263
+anglep   413   414   415   55.6972   119.911
+anglep   408   416   417   78.6275   118.0255
+anglep   408   416   422   79.0541   121.248
+anglep   417   416   422   77.0694   120.250
+anglep   416   417   418   74.6307   118.895
+anglep   416   417   430   36.7702   117.936
+anglep   418   417   430   36.7702   123.165
+anglep   417   418   419   55.6972   118.919
+anglep   417   418   420   74.6307   120.9119
+anglep   419   418   420   55.6972   120.368
+anglep   418   420   421   74.6307   119.1658
+anglep   418   420   431   36.7702   120.1589
+anglep   421   420   431   36.7702   120.6674
+anglep   420   421   422   77.0694   118.982
+anglep   420   421   432   36.7702   122.927
+anglep   422   421   432   32.1659   118.059
+anglep   416   422   421   90.4327   121.649
+anglep   416   422   423   19.8302   116.743
+anglep   421   422   423   19.8302   121.609
+# [402, 423, 405] = [[2], [23], [5]]
+angle   402   423   405   51.3361   107.794
+# [402, 423, 422] = [[2], [23], [22]]
+angle   402   423   422   51.3361   130.3688
+# [405, 423, 422] = [[5], [23], [22]]
+angle   405   423   422   51.3361   122.117
+# [402, 401, 424] = [[2], [1], [25, 26, 24]]
+strbnd   402   401   424   20.4528   20.4528
+# [424, 401, 424] = [[25, 26, 24], [1], [25, 26, 24]]
+strbnd   424   401   424   5.7126   5.7126
+# [401, 402, 403] = [[1], [2], [3]]
+strbnd   401   402   403   -18.0721   -18.0721
+# [401, 402, 423] = [[1], [2], [23]]
+strbnd   401   402   423   -18.0721   -18.0721
+# [403, 402, 423] = [[3], [2], [23]]
+strbnd   403   402   423   7.7918   7.7918
+# [402, 403, 404] = [[2], [3], [4]]
+strbnd   402   403   404   31.5423   31.5423
+# [403, 404, 405] = [[3], [4], [5]]
+strbnd   403   404   405   31.5423   31.5423
+# [404, 405, 406] = [[4], [5], [6]]
+strbnd   404   405   406   -18.0721   -18.0721
+# [404, 405, 423] = [[4], [5], [23]]
+strbnd   404   405   423   7.7918   7.7918
+# [406, 405, 423] = [[6], [5], [23]]
+strbnd   406   405   423   -18.0721   -18.0721
+# [405, 406, 407] = [[5], [6], [7]]
+strbnd   405   406   407   27.9302   27.9302
+# [405, 406, 425] = [[5], [6], [27, 28]]
+strbnd   405   406   425   27.9302   27.9302
+# [407, 406, 425] = [[7], [6], [27, 28]]
+strbnd   407   406   425   9.4041   9.4041
+# [425, 406, 425] = [[27, 28], [6], [27, 28]]
+strbnd   425   406   425   9.4041   9.4041
+# [406, 407, 408] = [[6], [7], [8]]
+strbnd   406   407   408   12.6551   12.6551
+# [407, 408, 409] = [[7], [8], [9]]
+strbnd   407   408   409   9.9108   9.9108
+# [407, 408, 416] = [[7], [8], [16]]
+strbnd   407   408   416   9.9108   9.9108
+# [409, 408, 416] = [[9], [8], [16]]
+strbnd   409   408   416   7.6289   7.6289
+# [408, 409, 410] = [[8], [9], [10]]
+strbnd   408   409   410   20.4528   20.4528
+# [408, 409, 414] = [[8], [9], [14]]
+strbnd   408   409   414   20.4528   20.4528
+# [410, 409, 414] = [[10], [9], [14]]
+strbnd   410   409   414   20.4528   20.4528
+# [409, 410, 411] = [[9], [10], [11]]
+strbnd   409   410   411   20.4528   20.4528
+# [409, 410, 426] = [[9], [10], [29]]
+strbnd   409   410   426   20.4528   20.4528
+# [411, 410, 426] = [[11], [10], [29]]
+strbnd   411   410   426   20.4528   20.4528
+# [410, 411, 412] = [[10], [11], [12]]
+strbnd   410   411   412   20.4528   20.4528
+# [410, 411, 427] = [[10], [11], [30]]
+strbnd   410   411   427   20.4528   20.4528
+# [412, 411, 427] = [[12], [11], [30]]
+strbnd   412   411   427   20.4528   20.4528
+# [411, 412, 413] = [[11], [12], [13]]
+strbnd   411   412   413   20.4528   20.4528
+# [411, 412, 428] = [[11], [12], [31]]
+strbnd   411   412   428   20.4528   20.4528
+# [413, 412, 428] = [[13], [12], [31]]
+strbnd   413   412   428   20.4528   20.4528
+# [412, 413, 414] = [[12], [13], [14]]
+strbnd   412   413   414   20.4528   20.4528
+# [412, 413, 429] = [[12], [13], [32]]
+strbnd   412   413   429   20.4528   20.4528
+# [414, 413, 429] = [[14], [13], [32]]
+strbnd   414   413   429   20.4528   20.4528
+# [409, 414, 413] = [[9], [14], [13]]
+strbnd   409   414   413   20.4528   20.4528
+# [409, 414, 415] = [[9], [14], [15]]
+strbnd   409   414   415   20.4528   20.4528
+# [413, 414, 415] = [[13], [14], [15]]
+strbnd   413   414   415   20.4528   20.4528
+# [408, 416, 417] = [[8], [16], [17]]
+strbnd   408   416   417   20.4528   20.4528
+# [408, 416, 422] = [[8], [16], [22]]
+strbnd   408   416   422   20.4528   20.4528
+# [417, 416, 422] = [[17], [16], [22]]
+strbnd   417   416   422   20.4528   20.4528
+# [416, 417, 418] = [[16], [17], [18]]
+strbnd   416   417   418   20.4528   20.4528
+# [416, 417, 430] = [[16], [17], [33]]
+strbnd   416   417   430   20.4528   20.4528
+# [418, 417, 430] = [[18], [17], [33]]
+strbnd   418   417   430   20.4528   20.4528
+# [417, 418, 419] = [[17], [18], [19]]
+strbnd   417   418   419   20.4528   20.4528
+# [417, 418, 420] = [[17], [18], [20]]
+strbnd   417   418   420   20.4528   20.4528
+# [419, 418, 420] = [[19], [18], [20]]
+strbnd   419   418   420   20.4528   20.4528
+# [418, 420, 421] = [[18], [20], [21]]
+strbnd   418   420   421   20.4528   20.4528
+# [418, 420, 431] = [[18], [20], [34]]
+strbnd   418   420   431   20.4528   20.4528
+# [421, 420, 431] = [[21], [20], [34]]
+strbnd   421   420   431   20.4528   20.4528
+# [420, 421, 422] = [[20], [21], [22]]
+strbnd   420   421   422   20.4528   20.4528
+# [420, 421, 432] = [[20], [21], [35]]
+strbnd   420   421   432   20.4528   20.4528
+# [422, 421, 432] = [[22], [21], [35]]
+strbnd   422   421   432   20.4528   20.4528
+# [416, 422, 421] = [[16], [22], [21]]
+strbnd   416   422   421   9.5583   9.5583
+# [416, 422, 423] = [[16], [22], [23]]
+strbnd   416   422   423   10.4050   10.4050
+# [421, 422, 423] = [[21], [22], [23]]
+strbnd   421   422   423   10.4050   10.4050
+# [402, 423, 405] = [[2], [23], [5]]
+strbnd   402   423   405   27.7174   27.7174
+# [402, 423, 422] = [[2], [23], [22]]
+strbnd   402   423   422   27.7174   27.7174
+# [405, 423, 422] = [[5], [23], [22]]
+strbnd   405   423   422   27.7174   27.7174
+# [401, 402] = [[1], [2]]
+opbend   401   402   403   423   52.3573
+# [403, 402] = [[3], [2]]
+opbend   403   402   401   423   16.6155
+# [423, 402] = [[23], [2]]
+opbend   423   402   401   403   16.0660
+# [404, 405] = [[4], [5]]
+opbend   404   405   406   423   16.6155
+# [406, 405] = [[6], [5]]
+opbend   406   405   404   423   27.3754
+# [423, 405] = [[23], [5]]
+opbend   423   405   404   406   16.0660
 # [407, 408] = [[7], [8]]
-opbend   407   408   410   415   14.0000
-# [410, 408] = [[10], [8]]
-opbend   410   408   407   415   14.9992
-# [415, 408] = [[15], [8]]
-opbend   415   408   407   410   92.0233
-# [403, 409] = [[3], [9]]
-opbend   403   409   405   411   16.0660
-# [405, 409] = [[5], [9]]
-opbend   405   409   403   411   16.6155
-# [411, 409] = [[11], [9]]
-opbend   411   409   403   405   27.3754
-# [404, 410] = [[4], [10]]
-opbend   404   410   408   414   14.0000
-# [408, 410] = [[8], [10]]
-opbend   408   410   404   414   14.0000
-# [414, 410] = [[14], [10]]
-opbend   414   410   404   408   14.0000
-# [403, 412] = [[3], [12]]
-opbend   403   412   406   418   16.0660
-# [406, 412] = [[6], [12]]
-opbend   406   412   403   418   16.6155
-# [418, 412] = [[18], [12]]
-opbend   418   412   403   406   52.3573
-# [407, 413] = [[7], [13]]
-opbend   407   413   416   425   14.0000
-# [416, 413] = [[16], [13]]
-opbend   416   413   407   425   92.0233
-# [425, 413] = [[26], [13]]
-opbend   425   413   407   416   79.0289
-# [410, 414] = [[10], [14]]
-opbend   410   414   419   420   14.9992
-# [419, 414] = [[19], [14]]
-opbend   419   414   410   420   92.0233
-# [420, 414] = [[20], [14]]
-opbend   420   414   410   419   92.0233
-# [408, 415] = [[8], [15]]
-opbend   408   415   417   426   92.0233
-# [417, 415] = [[17], [15]]
-opbend   417   415   408   426   92.0233
-# [426, 415] = [[27], [15]]
-opbend   426   415   408   417   79.0289
-# [413, 416] = [[13], [16]]
-opbend   413   416   417   427   92.0233
+opbend   407   408   409   416   14.0000
+# [409, 408] = [[9], [8]]
+opbend   409   408   407   416   14.0000
+# [416, 408] = [[16], [8]]
+opbend   416   408   407   409   14.0000
+# [408, 409] = [[8], [9]]
+opbend   408   409   410   414   14.9992
+# [410, 409] = [[10], [9]]
+opbend   410   409   408   414   92.0233
+# [414, 409] = [[14], [9]]
+opbend   414   409   408   410   92.0233
+# [409, 410] = [[9], [10]]
+opbend   409   410   411   426   92.0233
+# [411, 410] = [[11], [10]]
+opbend   411   410   409   426   92.0233
+# [426, 410] = [[29], [10]]
+opbend   426   410   409   411   79.0289
+# [410, 411] = [[10], [11]]
+opbend   410   411   412   427   92.0233
+# [412, 411] = [[12], [11]]
+opbend   412   411   410   427   92.0233
+# [427, 411] = [[30], [11]]
+opbend   427   411   410   412   79.0289
+# [411, 412] = [[11], [12]]
+opbend   411   412   413   428   92.0233
+# [413, 412] = [[13], [12]]
+opbend   413   412   411   428   92.0233
+# [428, 412] = [[31], [12]]
+opbend   428   412   411   413   79.0289
+# [412, 413] = [[12], [13]]
+opbend   412   413   414   429   92.0233
+# [414, 413] = [[14], [13]]
+opbend   414   413   412   429   92.0233
+# [429, 413] = [[32], [13]]
+opbend   429   413   412   414   79.0289
+# [409, 414] = [[9], [14]]
+opbend   409   414   413   415   92.0233
+# [413, 414] = [[13], [14]]
+opbend   413   414   409   415   92.0233
+# [415, 414] = [[15], [14]]
+opbend   415   414   409   413   8.3581
+# [408, 416] = [[8], [16]]
+opbend   408   416   417   422   14.9992
 # [417, 416] = [[17], [16]]
-opbend   417   416   413   427   92.0233
-# [427, 416] = [[28], [16]]
-opbend   427   416   413   417   79.0289
-# [401, 417] = [[1], [17]]
-opbend   401   417   415   416   8.3581
-# [415, 417] = [[15], [17]]
-opbend   415   417   401   416   92.0233
+opbend   417   416   408   422   92.0233
+# [422, 416] = [[22], [16]]
+opbend   422   416   408   417   14.0000
 # [416, 417] = [[16], [17]]
-opbend   416   417   401   415   92.0233
-# [402, 419] = [[2], [19]]
-opbend   402   419   414   421   8.3581
-# [414, 419] = [[14], [19]]
-opbend   414   419   402   421   92.0233
-# [421, 419] = [[21], [19]]
-opbend   421   419   402   414   92.0233
-# [414, 420] = [[14], [20]]
-opbend   414   420   422   429   92.0233
-# [422, 420] = [[22], [20]]
-opbend   422   420   414   429   92.0233
-# [429, 420] = [[32], [20]]
-opbend   429   420   414   422   79.0289
-# [419, 421] = [[19], [21]]
-opbend   419   421   423   430   92.0233
-# [423, 421] = [[23], [21]]
-opbend   423   421   419   430   92.0233
-# [430, 421] = [[33], [21]]
-opbend   430   421   419   423   79.0289
-# [420, 422] = [[20], [22]]
-opbend   420   422   423   431   92.0233
+opbend   416   417   418   430   92.0233
+# [418, 417] = [[18], [17]]
+opbend   418   417   416   430   92.0233
+# [430, 417] = [[33], [17]]
+opbend   430   417   416   418   79.0289
+# [417, 418] = [[17], [18]]
+opbend   417   418   419   420   92.0233
+# [419, 418] = [[19], [18]]
+opbend   419   418   417   420   8.3581
+# [420, 418] = [[20], [18]]
+opbend   420   418   417   419   92.0233
+# [418, 420] = [[18], [20]]
+opbend   418   420   421   431   92.0233
+# [421, 420] = [[21], [20]]
+opbend   421   420   418   431   92.0233
+# [431, 420] = [[34], [20]]
+opbend   431   420   418   421   79.0289
+# [420, 421] = [[20], [21]]
+opbend   420   421   422   432   92.0233
+# [422, 421] = [[22], [21]]
+opbend   422   421   420   432   14.0000
+# [432, 421] = [[35], [21]]
+opbend   432   421   420   422   79.0289
+# [416, 422] = [[16], [22]]
+opbend   416   422   421   423   47.0937
+# [421, 422] = [[21], [22]]
+opbend   421   422   416   423   47.0937
 # [423, 422] = [[23], [22]]
-opbend   423   422   420   431   92.0233
-# [431, 422] = [[34], [22]]
-opbend   431   422   420   423   79.0289
-# [421, 423] = [[21], [23]]
-opbend   421   423   422   432   92.0233
-# [422, 423] = [[22], [23]]
-opbend   422   423   421   432   92.0233
-# [432, 423] = [[35], [23]]
-opbend   432   423   421   422   79.0289
+opbend   423   422   416   421   65.9271
 # [401] = [[1]]
-vdw 401 3.7000  0.3250  0.0000
+vdw 401 3.8200  0.1010  0.0000
 # [402] = [[2]]
-vdw 402 3.7000  0.3250  0.0000
+vdw 402 3.8000  0.0910  0.0000
 # [403] = [[3]]
 vdw 403 3.4660  0.1050  0.0000
 # [404] = [[4]]
-vdw 404 3.7100  0.1100  0.0000
+vdw 404 3.4660  0.1050  0.0000
 # [405] = [[5]]
-vdw 405 3.4660  0.1050  0.0000
+vdw 405 3.8000  0.0910  0.0000
 # [406] = [[6]]
-vdw 406 3.4660  0.1050  0.0000
+vdw 406 3.8200  0.1010  0.0000
 # [407] = [[7]]
-vdw 407 3.8000  0.0910  0.0000
+vdw 407 3.7100  0.1100  0.0000
 # [408] = [[8]]
-vdw 408 3.8000  0.0910  0.0000
+vdw 408 3.8200  0.1010  0.0000
 # [409] = [[9]]
 vdw 409 3.8000  0.0910  0.0000
 # [410] = [[10]]
-vdw 410 3.8200  0.1010  0.0000
+vdw 410 3.8000  0.0910  0.0000
 # [411] = [[11]]
-vdw 411 3.8200  0.1010  0.0000
+vdw 411 3.8000  0.0910  0.0000
 # [412] = [[12]]
 vdw 412 3.8000  0.0910  0.0000
 # [413] = [[13]]
@@ -1230,15 +1191,15 @@ vdw 413 3.8000  0.0910  0.0000
 # [414] = [[14]]
 vdw 414 3.8000  0.0910  0.0000
 # [415] = [[15]]
-vdw 415 3.8000  0.0910  0.0000
+vdw 415 3.7000  0.3250  0.0000
 # [416] = [[16]]
 vdw 416 3.8000  0.0910  0.0000
 # [417] = [[17]]
 vdw 417 3.8000  0.0910  0.0000
 # [418] = [[18]]
-vdw 418 3.8200  0.1010  0.0000
+vdw 418 3.8000  0.0910  0.0000
 # [419] = [[19]]
-vdw 419 3.8000  0.0910  0.0000
+vdw 419 3.7000  0.3250  0.0000
 # [420] = [[20]]
 vdw 420 3.8000  0.0910  0.0000
 # [421] = [[21]]
@@ -1246,17 +1207,17 @@ vdw 421 3.8000  0.0910  0.0000
 # [422] = [[22]]
 vdw 422 3.8000  0.0910  0.0000
 # [423] = [[23]]
-vdw 423 3.8000  0.0910  0.0000
-# [424] = [[25, 24]]
+vdw 423 3.4660  0.1050  0.0000
+# [424] = [[25, 26, 24]]
 vdw 424 2.9600  0.0240  0.9200
-# [425] = [[26]]
-vdw 425 2.9800  0.0260  0.9200
-# [426] = [[27]]
+# [425] = [[27, 28]]
+vdw 425 2.9600  0.0240  0.9200
+# [426] = [[29]]
 vdw 426 2.9800  0.0260  0.9200
-# [427] = [[28]]
+# [427] = [[30]]
 vdw 427 2.9800  0.0260  0.9200
-# [428] = [[29, 30, 31]]
-vdw 428 2.9600  0.0240  0.9200
+# [428] = [[31]]
+vdw 428 2.9800  0.0260  0.9200
 # [429] = [[32]]
 vdw 429 2.9800  0.0260  0.9200
 # [430] = [[33]]
@@ -1265,3 +1226,67 @@ vdw 430 2.9800  0.0260  0.9200
 vdw 431 2.9800  0.0260  0.9200
 # [432] = [[35]]
 vdw 432 2.9800  0.0260  0.9200
+# AMOEBA GK parameter matched from [#1][C;D4][N,c;D3]
+solute 424 3.0556   2.996   4.032   0.1350
+# AMOEBA GK parameter matched from [#1]([CH2]([N]))
+solute 425 3.0352   2.686   3.3152   0.1350
+# AMOEBA GK parameter matched from [#1](c)
+solute 426 3.002   2.635   3.3763   0.1350
+# AMOEBA GK parameter matched from [#1](c)
+solute 427 3.002   2.635   3.3763   0.1350
+# AMOEBA GK parameter matched from [#1](c)
+solute 428 3.002   2.635   3.3763   0.1350
+# AMOEBA GK parameter matched from [#1](c)
+solute 429 3.002   2.635   3.3763   0.1350
+# AMOEBA GK parameter matched from [#1](c)
+solute 430 3.002   2.635   3.3763   0.1350
+# AMOEBA GK parameter matched from [#1](c)
+solute 431 3.002   2.635   3.3763   0.1350
+# AMOEBA GK parameter matched from [#1](c)
+solute 432 3.002   2.635   3.3763   0.1350
+# AMOEBA GK parameter matched from [CH3]
+solute 401 3.5062   3.309   4.536   0.1350
+# AMOEBA GK parameter matched from cnccccc
+solute 402 3.8286   3.893   4.5084   0.1350
+# AMOEBA GK parameter matched from cnccccc
+solute 405 3.8286   3.893   4.5084   0.1350
+# AMOEBA GK parameter matched from [#6]
+solute 406 3.3025   2.854   4.9016   0.1350
+# AMOEBA GK parameter matched from [#6;D3]([*])([*])(=[*])
+solute 408 2.9301   4.506   4.2118   0.1350
+# AMOEBA GK parameter matched from c([cH0])
+solute 409 3.8585   3.766   3.8448   0.1350
+# AMOEBA GK parameter matched from c(c([cH0]))
+solute 410 3.8286   3.893   4.5084   0.1350
+# AMOEBA GK parameter matched from c(c(c([cH0])))
+solute 411 3.8286   3.893   4.5084   0.1350
+# AMOEBA GK parameter matched from c(c(c([cH0])))
+solute 412 3.8286   3.893   4.5084   0.1350
+# AMOEBA GK parameter matched from c(c([cH0]))
+solute 413 3.8286   3.893   4.5084   0.1350
+# AMOEBA GK parameter matched from [cH0]
+solute 414 3.6909   3.766   4.4258   0.1350
+# AMOEBA GK parameter matched from c(c([cH0]))
+solute 416 3.8286   3.893   4.5084   0.1350
+# AMOEBA GK parameter matched from c(c([cH0]))
+solute 417 3.8286   3.893   4.5084   0.1350
+# AMOEBA GK parameter matched from c(c(c([cH0])))
+solute 418 3.8286   3.893   4.5084   0.1350
+# AMOEBA GK parameter matched from c(c(c([cH0])))
+solute 420 3.8286   3.893   4.5084   0.1350
+# AMOEBA GK parameter matched from c(c([cH0]))
+solute 421 3.8286   3.893   4.5084   0.1350
+# AMOEBA GK parameter matched from c(n)
+solute 422 3.8585   3.766   3.8448   0.1350
+# AMOEBA GK parameter matched from n
+solute 403 3.6017   4.034   3.4613   0.1350
+# AMOEBA GK parameter matched from n
+solute 404 3.6017   4.034   3.4613   0.1350
+# AMOEBA GK parameter matched from N(~C(c))
+solute 407 3.71   3.498   3.7307   0.1350
+# AMOEBA GK parameter matched from n
+solute 423 3.6017   4.034   3.4613   0.1350
+# AMOEBA GK parameter matched from [#17]
+solute 415 4.120   4.120   4.120   0.1350
+# AMOEBA GK parameter matched from [#17]
+solute 419 4.120   4.120   4.120   0.1350
