@@ -4,7 +4,7 @@
 #$ -cwd                      # Start job in submission directory
 #$ -N Name_LAM           # Job Name
 #$ -j y                      # Combine stderr and stdout
-#$ -q MS,UI-GPU,all.q               # Queue
+#$ -q MS,UI-GPU,CCOM-GPU               # Queue
 #$ -l ngpus=1
 #$ -l gpu_p100=false
 #$ -pe smp 10              # Request 12 tasks/node, 12 total
@@ -13,6 +13,7 @@
 #$ -S /bin/bash              # Shell to use
 
 module purge
-source /Dedicated/schnieders/andthiel/miniconda.sh
+source /Dedicated/schnieders/jmiller99/software/dedicatedMamba.sh
+conda activate binding_free_energy
 hostname
-/Dedicated/schnieders/andthiel/miniconda3/bin/python <Production.py> --pdb_file <pdb_file>  --forcefield_file <forcefield_file> hp-bcd.xml --nonbonded_method "PME" --num_steps 15000000 --step_size 2 --nonbonded_cutoff 1.0 --vdw_lambda <vdw_lambda_value> --elec_lambda <elec_lambda_value> --restraint_lambda <restraint_lambda_value> --alchemical_atoms <alchemical_atoms> --restraint_atoms_1 <restraint_atoms_1> --restraint_atoms_2 <restraint_atoms_2> --restraint_constant 15 --restraint_lower_distance 0.0 --restraint_upper_distance 10.0 --use_restraints true
+python <Production.py> --pdb_file <pdb_file>  --forcefield_file <forcefield_file> hp-bcd.xml --nonbonded_method "PME" --num_steps 15000000 --step_size 2 --nonbonded_cutoff 1.0 --vdw_lambda <vdw_lambda_value> --elec_lambda <elec_lambda_value> --restraint_lambda <restraint_lambda_value> --alchemical_atoms <alchemical_atoms> --restraint_atoms_1 <restraint_atoms_1> --restraint_atoms_2 <restraint_atoms_2> --restraint_constant 15 --restraint_lower_distance 0.0 --restraint_upper_distance 10.0 --use_restraints true

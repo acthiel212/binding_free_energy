@@ -4,7 +4,7 @@
 #$ -cwd                      # Start job in submission directory
 #$ -N Name_Equil           # Job Name
 #$ -j y                      # Combine stderr and stdout
-#$ -q MS,COE-GPU,UI-GPU               # Queue
+#$ -q MS,UI-GPU,CCOM-GPU               # Queue
 #$ -l ngpus=1
 #$ -l gpu_p100=false
 #$ -pe smp 10              # Request 12 tasks/node, 12 total
@@ -13,8 +13,9 @@
 #$ -S /bin/bash              # Shell to use
 
 module purge
-source /Dedicated/schnieders/andthiel/miniconda.sh
+source /Dedicated/schnieders/jmiller99/software/dedicatedMamba.sh
+conda activate binding_free_energy
 hostname
-/Dedicated/schnieders/andthiel/miniconda3/bin/python <Equil.py> --pdb_file <pdb_file>  --forcefield_file <forcefield_file>  hp-bcd.xml --nonbonded_method "PME" --num_steps 15000000 --step_size 2 --nonbonded_cutoff 1.0
+python <Equil.py> --pdb_file <pdb_file>  --forcefield_file <forcefield_file>  hp-bcd.xml --nonbonded_method "PME" --num_steps 15000000 --step_size 2 --nonbonded_cutoff 1.0
 
 mv output.pdb <pdb_file>
