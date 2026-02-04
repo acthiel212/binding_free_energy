@@ -15,6 +15,6 @@
 module purge
 source /Dedicated/schnieders/andthiel/miniconda.sh
 hostname
-/Dedicated/schnieders/andthiel/miniconda3/bin/python <Equil.py> --pdb_file <pdb_file>  --forcefield_file <forcefield_file> hp-bcd.xml --nonbonded_method "PME" --num_steps 15000000 --step_size 2 --nonbonded_cutoff 1.0 --restraint_atoms_1 <restraint_atoms_1> --restraint_atoms_2 <restraint_atoms_2> --restraint_constant 15 --restraint_lower_distance 0.0 --restraint_upper_distance 10.0 --use_restraints true
+/Dedicated/schnieders/andthiel/miniconda3/bin/python <Equil.py> --pdb_file <pdb_file>  --forcefield_file <forcefield_file> hp-bcd.xml --nonbonded_method "PME" --num_steps 15000000 --step_size 2 --nonbonded_cutoff 1.0 --restraint_type <restraint_type> --restraint_atoms_1 <restraint_atoms_1> --restraint_atoms_2 <restraint_atoms_2> --restraint_constant 15 --restraint_lower_distance 0.0 --restraint_upper_distance 10.0 --use_restraints true
 
 mv output.pdb <pdb_file>

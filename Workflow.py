@@ -46,6 +46,7 @@ ANALYSIS_GUEST_DIR = ""
 ANALYSIS_HOST_GUEST_DIR = ""
 NAME = ""
 ALCHEMICAL_ATOMS = ""
+RESTRAINT_TYPE = ""
 RESTRAINT_ATOMS_1 = ""
 RESTRAINT_ATOMS_2 = ""
 START_AT = ""
@@ -55,7 +56,7 @@ SUB_TYPE = ""
 
 def parse_arguments():
     """Parse command-line arguments and initialize global workflow directories."""
-    global NAME, ALCHEMICAL_ATOMS, RESTRAINT_ATOMS_1, RESTRAINT_ATOMS_2, START_AT, RUN_EQ, SETUP_ONLY, SUB_TYPE,\
+    global NAME, ALCHEMICAL_ATOMS, RESTRAINT_TYPE, RESTRAINT_ATOMS_1, RESTRAINT_ATOMS_2, START_AT, RUN_EQ, SETUP_ONLY, SUB_TYPE,\
         TEMPLATE_GUEST_DIR, TEMPLATE_HOST_GUEST_DIR, WORKING_GUEST_DIR, WORKING_HOST_GUEST_DIR, \
         ANALYSIS_GUEST_DIR, ANALYSIS_HOST_GUEST_DIR
 
@@ -70,8 +71,9 @@ def parse_arguments():
                         help="Whether to run equilibration. Defaults to true.")
     parser.add_argument("--alchemical_atoms", type=str, default="", help="Comma-separated list of alchemical atoms (required). "
                                                                             "If not set, automatically determines set from guest atoms.")
-    parser.add_argument("--restraint_atoms1", type=str, default="", help="Comma-separated list of restraint atoms 1 (optional). If not set, automatically choose restraints.")
-    parser.add_argument("--restraint_atoms2", type=str, default="", help="Comma-separated list of restraint atoms 2 (optional). If not set, automatically choose restraints.")
+    parser.add_argument("--restraint_type",type=str,choices=["COM","BORESCH"],default="COM",help="Select the type of restraint to use. Center of Mass (COM) is the default.")
+    parser.add_argument("--restraint_atoms1", type=str, default="", help="Comma-separated list of restraint atoms 1 (optional for COM). If not set, automatically choose restraints. Must be specified for BORESCH restraint type.")
+    parser.add_argument("--restraint_atoms2", type=str, default="", help="Comma-separated list of restraint atoms 2 (optional for COM). If not set, automatically choose restraints. Must be specified for BORESCH restraint type.")
     parser.add_argument("--submission_system",type=str,default="SGE",help="Submission system to submit jobs to. Modifying this only affects the search for job files that that selected submission system would expect. Only SGE and SLURM are currently supported.")
     # Parse the arguments
     args = parser.parse_args()
@@ -91,6 +93,7 @@ def parse_arguments():
         args.alchemical_atoms = f"1-{first_column}"
 
     ALCHEMICAL_ATOMS = args.alchemical_atoms
+    RESTRAINT_TYPE = args.restraint_type
     RESTRAINT_ATOMS_1 = args.restraint_atoms1
     RESTRAINT_ATOMS_2 = args.restraint_atoms2
     # Template directories
@@ -165,8 +168,12 @@ def setup_directories(target_dir, structure_file, forcefield_file, alchemical_at
     elif workflow_type == "Host_Guest":
         template_dir = TEMPLATE_HOST_GUEST_DIR
         if restraint_atoms_1 == "":
+            if RESTRAINT_TYPE == "BORESCH":
+                raise ValueError("BORESCH restraint type requires restraint atoms 1 to be specified.")
             restraint_atoms_1 = "1-217"
         if restraint_atoms_2 == "":
+            if RESTRAINT_TYPE == "BORESCH":
+                raise ValueError("BORESCH restraint type requires restraint atoms 2 to be specified.")
             current_directory = os.getcwd()
             os.chdir(TEMPLATE_HOST_GUEST_DIR)
             restraint_atoms_2 = calculate_restraint_subsection(f"{TEMPLATE_HOST_GUEST_DIR}/{structure_file}", 5.0)
@@ -325,7 +332,7 @@ def submit_thermo(target_dir, job_prefix, equil_job_id):
 
     vdw_lambdas = VDW_LAMBDAS
     #print(f"Setting up lambda directories{target_dir}", file=sys.stderr)
-    if job_prefix == "OMM_Guest_LAM":
+    if job_prefix == "OMM_Guest_LAM" or RESTRAINT_TYPE == "COM":
         vdw_lambdas = VDW_LAMBDAS[:-10]
     for i, vdw_lambda in enumerate(vdw_lambdas):
         lambda_dir = os.path.join(target_dir, str(i))
@@ -341,6 +348,7 @@ def submit_thermo(target_dir, job_prefix, equil_job_id):
         job_content = job_content.replace("<elec_lambda_value>", str(ELEC_LAMBDAS[i]))
         if job_prefix != "OMM_Guest_LAM":
             job_content = job_content.replace("<restraint_lambda_value>", str(RESTRAINT_LAMBDAS[i]))
+            job_content = job_content.replace('<restraint_type>', str(RESTRAINT_TYPE))
         job_content = job_content.replace("<Production.py>", str(os.path.join(BINDING_FREE_ENERGY_DIR, "Production.py")))
         job_content = job_content.replace("_LAM", f"_LAM{i}")
 
@@ -409,6 +417,8 @@ def submit_bar(target_dir, analysis_type, thermo_job_ids):
     os.makedirs(f"{target_dir}/analysis", exist_ok=True)
     #print(f"Setting up BAR jobs for {target_dir} with thermo job IDs: {thermo_job_ids} and analysis type: {analysis_type}")
     #print(f"Number of lambdas: {num_lambdas}")
+    if analysis_type == "guest":
+        num_lambdas = num_lambdas - 10
 
     for i in range(num_lambdas - 1):
         lambda_dir_i = os.path.join(target_dir, str(i))
@@ -452,6 +462,7 @@ def submit_bar(target_dir, analysis_type, thermo_job_ids):
         if analysis_type != "guest":
             job_content = job_content.replace('<restraint_lambda_value_i>', str(restraint_lambda))
             job_content = job_content.replace('<restraint_lambda_value_ip1>', str(restraint_lambda_ip1))
+            job_content = job_content.replace('<restraint_type>', RESTRAINT_TYPE)
         job_content = job_content.replace("<BAR.py>", str(os.path.join(BINDING_FREE_ENERGY_DIR, "BAR.py")))
         job_content = job_content.replace('$LAMBDA_I', str(i))
         job_content = job_content.replace('$LAMBDA_NEXT', str(i + 1))
