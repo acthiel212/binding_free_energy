@@ -409,7 +409,8 @@ def submit_bar(target_dir, analysis_type, thermo_job_ids):
     os.makedirs(f"{target_dir}/analysis", exist_ok=True)
     #print(f"Setting up BAR jobs for {target_dir} with thermo job IDs: {thermo_job_ids} and analysis type: {analysis_type}")
     #print(f"Number of lambdas: {num_lambdas}")
-
+    if analysis_type == "guest":
+        num_lambdas = num_lambdas - 10
     for i in range(num_lambdas - 1):
         lambda_dir_i = os.path.join(target_dir, str(i))
         lambda_dir_next = os.path.join(target_dir, str(i + 1))
