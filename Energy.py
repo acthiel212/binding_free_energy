@@ -31,8 +31,8 @@ system = forcefield.createSystem(pdb.topology, nonbondedMethod=nonbonded_method,
                                  nonbondedCutoff=args.nonbonded_cutoff*nanometer, constraints=None)
 # Create the restraint force
 if args.use_restraints:
-    restraint = Harmonic_Restraint.create_restraint(args.restraint_atoms_1, args.restraint_atoms_2, args.restraint_constant,
-                                                    args.restraint_lower_distance, args.restraint_upper_distance)
+    restraint = Harmonic_Restraint.create_Boresch_restraint(args.restraint_atoms_1, args.restraint_atoms_2, args.restraint_constant,
+                                                            args.restraint_lower_distance, args.restraint_upper_distance)
     system.addForce(restraint)
     print("Adding Restraint with parameters: ", restraint.getBondParameters(0))
     restraint.setUsesPeriodicBoundaryConditions(True)
