@@ -83,10 +83,35 @@ def create_COM_restraint(restraint_atoms_1, restraint_atoms_2, restraint_constan
 
     return restraint
 
-def calculate_restraint_subsection(host_guest_file_path, cutoff):
+def calculate_restraint_subsection(host_guest_file_path, cutoff, boresch=False, host_name=None, guest_name=None, 
+                                   H1=None, H2=None, H3=None, min_adii=None, max_adis=None, l1_range=None):
     with open('RestrainGuest.log', "w") as outfile:
-        subprocess.run([f"{path_to_file}/../ffx-1.0.0/bin/ffxc", "test.FindRestraints", "--distanceCutoff",f"{cutoff}",
-                        f"{host_guest_file_path}"], stdout=outfile, stderr=subprocess.STDOUT, text=True)
+        if boresch:
+            # Build Boresch command
+            command = [f"{path_to_file}/../ffx-1.0.0/bin/ffxc", "test.FindRestraints", "--boresch"]
+            if host_name:
+                command.extend(["--hostName", host_name])
+            if guest_name:
+                command.extend(["--guestName", guest_name])
+            if H1 is not None:
+                command.extend(["--H1", str(H1)])
+            if H2 is not None:
+                command.extend(["--H2", str(H2)])
+            if H3 is not None:
+                command.extend(["--H3", str(H3)])
+            if min_adii is not None:
+                command.extend(["--minAdii", str(min_adii)])
+            if max_adis is not None:
+                command.extend(["--maxAdis", str(max_adis)])
+            if l1_range is not None:
+                command.extend(["--l1Range", str(l1_range)])
+            command.append(host_guest_file_path)
+        else:
+            # Original distance cutoff command
+            command = [f"{path_to_file}/../ffx-1.0.0/bin/ffxc", "test.FindRestraints", "--distanceCutoff", str(cutoff), 
+                       host_guest_file_path]
+        
+        subprocess.run(command, stdout=outfile, stderr=subprocess.STDOUT, text=True)
 
     with open('RestrainGuest.log', 'r') as infile:
         for line in infile:
