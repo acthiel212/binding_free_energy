@@ -121,46 +121,55 @@ def calculate_restraint_subsection(host_guest_file_path, cutoff, boresch=False, 
 
     # Parse the log output
     if boresch:
-        # Parse Boresch anchor indices from log
-        h1_idx = None
-        h2_idx = None
-        h3_idx = None
+        # Parse Boresch guest anchor indices from log
+        # Host anchors are provided by the user, so use them directly
+        h1_idx = H1
+        h2_idx = H2
+        h3_idx = H3
         g1_idx = None
         g2_idx = None
         g3_idx = None
         
         with open('RestrainGuest.log', 'r') as infile:
             content = infile.read()
+        
+        print(f"Debug: FFX log output:\n{content}\n")  # Debug output
+        
+        # Extract guest anchors only (host anchors are provided by user)
+        g1_match = re.search(r'G1:.*?index\s+(\d+)', content, re.DOTALL)
+        if not g1_match:
+            g1_match = re.search(r'G1[^0-9]*\(.*?index\s+(\d+)', content, re.DOTALL)
+        if not g1_match:
+            g1_match = re.search(r'G1[^)]*index\s+(\d+)', content)
             
-            # Extract host anchors
-            h1_match = re.search(r'H1:.*?index\s+(\d+)', content)
-            h2_match = re.search(r'H2:.*?index\s+(\d+)', content)
-            h3_match = re.search(r'H3:.*?index\s+(\d+)', content)
+        g2_match = re.search(r'G2:.*?index\s+(\d+)', content, re.DOTALL)
+        if not g2_match:
+            g2_match = re.search(r'G2[^0-9]*\(.*?index\s+(\d+)', content, re.DOTALL)
+        if not g2_match:
+            g2_match = re.search(r'G2[^)]*index\s+(\d+)', content)
             
-            # Extract guest anchors
-            g1_match = re.search(r'G1:.*?index\s+(\d+)', content)
-            g2_match = re.search(r'G2:.*?index\s+(\d+)', content)
-            g3_match = re.search(r'G3:.*?index\s+(\d+)', content)
-            
-            if h1_match:
-                h1_idx = int(h1_match.group(1))
-            if h2_match:
-                h2_idx = int(h2_match.group(1))
-            if h3_match:
-                h3_idx = int(h3_match.group(1))
-            if g1_match:
-                g1_idx = int(g1_match.group(1))
-            if g2_match:
-                g2_idx = int(g2_match.group(1))
-            if g3_match:
-                g3_idx = int(g3_match.group(1))
+        g3_match = re.search(r'G3:.*?index\s+(\d+)', content, re.DOTALL)
+        if not g3_match:
+            g3_match = re.search(r'G3[^0-9]*\(.*?index\s+(\d+)', content, re.DOTALL)
+        if not g3_match:
+            g3_match = re.search(r'G3[^)]*index\s+(\d+)', content)
+        
+        if g1_match:
+            g1_idx = int(g1_match.group(1))
+        if g2_match:
+            g2_idx = int(g2_match.group(1))
+        if g3_match:
+            g3_idx = int(g3_match.group(1))
+        
+        print(f"Debug: User-provided host anchors - H1={h1_idx}, H2={h2_idx}, H3={h3_idx}")
+        print(f"Debug: Parsed guest anchors - G1={g1_idx}, G2={g2_idx}, G3={g3_idx}")  # Debug output
         
         # Format as "h1,h2,h3,g1,g2,g3"
         if all(idx is not None for idx in [h1_idx, h2_idx, h3_idx, g1_idx, g2_idx, g3_idx]):
             indices = f"{h1_idx},{h2_idx},{h3_idx},{g1_idx},{g2_idx},{g3_idx}"
-            print(f"Boresch anchors selected: H1={h1_idx}, H2={h2_idx}, H3={h3_idx}, G1={g1_idx}, G2={g2_idx}, G3={g3_idx}")
+            print(f"Boresch anchors: Host(H1={h1_idx}, H2={h2_idx}, H3={h3_idx}), Guest(G1={g1_idx}, G2={g2_idx}, G3={g3_idx})")
         else:
-            raise ValueError("Failed to parse Boresch anchor indices from FFX output")
+            raise ValueError(f"Failed to parse Boresch guest anchor indices from FFX output. Found: G1={g1_idx}, G2={g2_idx}, G3={g3_idx}")
     else:
         # Parse COM restraint indices
         with open('RestrainGuest.log', 'r') as infile:
