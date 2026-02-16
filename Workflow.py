@@ -49,6 +49,15 @@ ALCHEMICAL_ATOMS = ""
 RESTRAINT_TYPE = ""
 RESTRAINT_ATOMS_1 = ""
 RESTRAINT_ATOMS_2 = ""
+BORESCH_H1 = None
+BORESCH_H2 = None
+BORESCH_H3 = None
+BORESCH_HOST_NAME = "BCD"
+BORESCH_GUEST_NAME = "LIG"
+BORESCH_MIN_ADII = 1.5
+BORESCH_MAX_ADIS = 5.0
+BORESCH_L1_RANGE = None
+FFX_PATH = ""
 START_AT = ""
 RUN_EQ = True
 SETUP_ONLY = False
@@ -58,7 +67,8 @@ def parse_arguments():
     """Parse command-line arguments and initialize global workflow directories."""
     global NAME, ALCHEMICAL_ATOMS, RESTRAINT_TYPE, RESTRAINT_ATOMS_1, RESTRAINT_ATOMS_2, START_AT, RUN_EQ, SETUP_ONLY, SUB_TYPE,\
         TEMPLATE_GUEST_DIR, TEMPLATE_HOST_GUEST_DIR, WORKING_GUEST_DIR, WORKING_HOST_GUEST_DIR, \
-        ANALYSIS_GUEST_DIR, ANALYSIS_HOST_GUEST_DIR
+        ANALYSIS_GUEST_DIR, ANALYSIS_HOST_GUEST_DIR, BORESCH_H1, BORESCH_H2, BORESCH_H3, \
+        BORESCH_HOST_NAME, BORESCH_GUEST_NAME, BORESCH_MIN_ADII, BORESCH_MAX_ADIS, BORESCH_L1_RANGE, FFX_PATH
 
     parser = argparse.ArgumentParser(description="Script options for the workflow.")
 
@@ -74,6 +84,15 @@ def parse_arguments():
     parser.add_argument("--restraint_type",type=str,choices=["COM","BORESCH"],default="COM",help="Select the type of restraint to use. Center of Mass (COM) is the default.")
     parser.add_argument("--restraint_atoms1", type=str, default="", help="Comma-separated list of restraint atoms 1 (optional for COM). If not set, automatically choose restraints. Must be specified for BORESCH restraint type.")
     parser.add_argument("--restraint_atoms2", type=str, default="", help="Comma-separated list of restraint atoms 2 (optional for COM). If not set, automatically choose restraints. Must be specified for BORESCH restraint type.")
+    parser.add_argument("--boresch_h1", type=int, default=None, help="First host atom index for Boresch restraint.")
+    parser.add_argument("--boresch_h2", type=int, default=None, help="Second host atom index for Boresch restraint.")
+    parser.add_argument("--boresch_h3", type=int, default=None, help="Third host atom index for Boresch restraint.")
+    parser.add_argument("--boresch_host_name", type=str, default="BCD", help="Host residue name for Boresch restraint. Defaults to BCD.")
+    parser.add_argument("--boresch_guest_name", type=str, default="LIG", help="Guest residue name for Boresch restraint. Defaults to LIG.")
+    parser.add_argument("--boresch_min_adii", type=float, default=1.5, help="Minimum radii sum for Boresch restraint. Defaults to 1.5.")
+    parser.add_argument("--boresch_max_adis", type=float, default=5.0, help="Maximum radii sum for Boresch restraint. Defaults to 5.0.")
+    parser.add_argument("--boresch_l1_range", type=float, default=None, help="L1 range for Boresch restraint.")
+    parser.add_argument("--ffx_path", type=str, default="", help="Custom path to FFX executable. If not provided, uses default path ffx-1.0.0/bin/ffxc.")
     parser.add_argument("--submission_system",type=str,default="SGE",help="Submission system to submit jobs to. Modifying this only affects the search for job files that that selected submission system would expect. Only SGE and SLURM are currently supported.")
     # Parse the arguments
     args = parser.parse_args()
@@ -96,6 +115,15 @@ def parse_arguments():
     RESTRAINT_TYPE = args.restraint_type
     RESTRAINT_ATOMS_1 = args.restraint_atoms1
     RESTRAINT_ATOMS_2 = args.restraint_atoms2
+    BORESCH_H1 = args.boresch_h1
+    BORESCH_H2 = args.boresch_h2
+    BORESCH_H3 = args.boresch_h3
+    BORESCH_HOST_NAME = args.boresch_host_name
+    BORESCH_GUEST_NAME = args.boresch_guest_name
+    BORESCH_MIN_ADII = args.boresch_min_adii
+    BORESCH_MAX_ADIS = args.boresch_max_adis
+    BORESCH_L1_RANGE = args.boresch_l1_range
+    FFX_PATH = args.ffx_path
     # Template directories
     TEMPLATE_GUEST_DIR = os.path.join(SCRIPT_DIR, "workflow", f"{NAME}", "Template", "Guest")
     TEMPLATE_HOST_GUEST_DIR = os.path.join(SCRIPT_DIR, "workflow", f"{NAME}", "Template", "Host_Guest")
@@ -176,7 +204,20 @@ def setup_directories(target_dir, structure_file, forcefield_file, alchemical_at
                 raise ValueError("BORESCH restraint type requires restraint atoms 2 to be specified.")
             current_directory = os.getcwd()
             os.chdir(TEMPLATE_HOST_GUEST_DIR)
-            restraint_atoms_2 = calculate_restraint_subsection(f"{TEMPLATE_HOST_GUEST_DIR}/{structure_file}", 5.0)
+            restraint_atoms_2 = calculate_restraint_subsection(
+                f"{TEMPLATE_HOST_GUEST_DIR}/{structure_file}", 
+                5.0,
+                boresch=(RESTRAINT_TYPE == "BORESCH"),
+                host_name=BORESCH_HOST_NAME,
+                guest_name=BORESCH_GUEST_NAME,
+                H1=BORESCH_H1,
+                H2=BORESCH_H2,
+                H3=BORESCH_H3,
+                min_adii=BORESCH_MIN_ADII,
+                max_adis=BORESCH_MAX_ADIS,
+                l1_range=BORESCH_L1_RANGE,
+                ffx_path=FFX_PATH
+            )
             os.chdir(current_directory)
     else:
         raise ValueError("Invalid workflow type. Must be 'Guest' or 'Host_Guest'.")

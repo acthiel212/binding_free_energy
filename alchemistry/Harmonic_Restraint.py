@@ -84,11 +84,17 @@ def create_COM_restraint(restraint_atoms_1, restraint_atoms_2, restraint_constan
     return restraint
 
 def calculate_restraint_subsection(host_guest_file_path, cutoff, boresch=False, host_name=None, guest_name=None, 
-                                   H1=None, H2=None, H3=None, min_adii=None, max_adis=None, l1_range=None):
+                                   H1=None, H2=None, H3=None, min_adii=None, max_adis=None, l1_range=None, ffx_path=""):
+    # Use custom FFX path if provided, otherwise use default
+    if ffx_path:
+        ffx_executable = ffx_path
+    else:
+        ffx_executable = f"{path_to_file}/../ffx-1.0.0/bin/ffxc"
+    
     with open('RestrainGuest.log', "w") as outfile:
         if boresch:
             # Build Boresch command
-            command = [f"{path_to_file}/../ffx-1.0.0/bin/ffxc", "test.FindRestraints", "--boresch"]
+            command = [ffx_executable, "test.FindRestraints", "--boresch"]
             if host_name:
                 command.extend(["--hostName", host_name])
             if guest_name:
@@ -108,7 +114,7 @@ def calculate_restraint_subsection(host_guest_file_path, cutoff, boresch=False, 
             command.append(host_guest_file_path)
         else:
             # Original distance cutoff command
-            command = [f"{path_to_file}/../ffx-1.0.0/bin/ffxc", "test.FindRestraints", "--distanceCutoff", str(cutoff), 
+            command = [ffx_executable, "test.FindRestraints", "--distanceCutoff", str(cutoff), 
                        host_guest_file_path]
         
         subprocess.run(command, stdout=outfile, stderr=subprocess.STDOUT, text=True)
