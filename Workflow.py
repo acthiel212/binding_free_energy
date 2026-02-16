@@ -195,19 +195,19 @@ def setup_directories(target_dir, structure_file, forcefield_file, alchemical_at
         template_dir = TEMPLATE_GUEST_DIR
     elif workflow_type == "Host_Guest":
         template_dir = TEMPLATE_HOST_GUEST_DIR
-        if restraint_atoms_1 == "":
-            if RESTRAINT_TYPE == "BORESCH":
-                raise ValueError("BORESCH restraint type requires restraint atoms 1 to be specified.")
-            restraint_atoms_1 = "1-217"
-        if restraint_atoms_2 == "":
-            if RESTRAINT_TYPE == "BORESCH":
-                raise ValueError("BORESCH restraint type requires restraint atoms 2 to be specified.")
+        
+        # Handle BORESCH restraint type
+        if RESTRAINT_TYPE == "BORESCH":
+            # For Boresch, user must specify the three host atoms (H1, H2, H3)
+            if BORESCH_H1 is None or BORESCH_H2 is None or BORESCH_H3 is None:
+                raise ValueError("BORESCH restraint type requires --boresch_h1, --boresch_h2, and --boresch_h3 to be specified.")
+            # Call FFX to find the Boresch anchors and parse the output
             current_directory = os.getcwd()
             os.chdir(TEMPLATE_HOST_GUEST_DIR)
-            restraint_atoms_2 = calculate_restraint_subsection(
+            restraint_atoms_1 = calculate_restraint_subsection(
                 f"{TEMPLATE_HOST_GUEST_DIR}/{structure_file}", 
                 5.0,
-                boresch=(RESTRAINT_TYPE == "BORESCH"),
+                boresch=True,
                 host_name=BORESCH_HOST_NAME,
                 guest_name=BORESCH_GUEST_NAME,
                 H1=BORESCH_H1,
@@ -218,7 +218,23 @@ def setup_directories(target_dir, structure_file, forcefield_file, alchemical_at
                 l1_range=BORESCH_L1_RANGE,
                 ffx_path=FFX_PATH
             )
+            # For Boresch, restraint_atoms_2 is not used (set to empty)
+            restraint_atoms_2 = ""
             os.chdir(current_directory)
+        # Handle COM restraint type
+        else:
+            if restraint_atoms_1 == "":
+                restraint_atoms_1 = "1-217"
+            if restraint_atoms_2 == "":
+                current_directory = os.getcwd()
+                os.chdir(TEMPLATE_HOST_GUEST_DIR)
+                restraint_atoms_2 = calculate_restraint_subsection(
+                    f"{TEMPLATE_HOST_GUEST_DIR}/{structure_file}", 
+                    5.0,
+                    boresch=False,
+                    ffx_path=FFX_PATH
+                )
+                os.chdir(current_directory)
     else:
         raise ValueError("Invalid workflow type. Must be 'Guest' or 'Host_Guest'.")
 

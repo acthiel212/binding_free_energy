@@ -119,13 +119,57 @@ def calculate_restraint_subsection(host_guest_file_path, cutoff, boresch=False, 
         
         subprocess.run(command, stdout=outfile, stderr=subprocess.STDOUT, text=True)
 
-    with open('RestrainGuest.log', 'r') as infile:
-        for line in infile:
-            if re.search('Restrain list indices:', line):
-                #Grab just the list indices
-                indexString = line.split(':')[1]
-                # Remove brackets and whitespace
-                indices = indexString.replace('[', '').replace(']', '').replace(' ','').strip('\n')
-    print(f"Atom indices of guest within specified cutoff of {cutoff} Angstroms that will be restrained: {indices}")
+    # Parse the log output
+    if boresch:
+        # Parse Boresch anchor indices from log
+        h1_idx = None
+        h2_idx = None
+        h3_idx = None
+        g1_idx = None
+        g2_idx = None
+        g3_idx = None
+        
+        with open('RestrainGuest.log', 'r') as infile:
+            content = infile.read()
+            
+            # Extract host anchors
+            h1_match = re.search(r'H1:.*?index\s+(\d+)', content)
+            h2_match = re.search(r'H2:.*?index\s+(\d+)', content)
+            h3_match = re.search(r'H3:.*?index\s+(\d+)', content)
+            
+            # Extract guest anchors
+            g1_match = re.search(r'G1:.*?index\s+(\d+)', content)
+            g2_match = re.search(r'G2:.*?index\s+(\d+)', content)
+            g3_match = re.search(r'G3:.*?index\s+(\d+)', content)
+            
+            if h1_match:
+                h1_idx = int(h1_match.group(1))
+            if h2_match:
+                h2_idx = int(h2_match.group(1))
+            if h3_match:
+                h3_idx = int(h3_match.group(1))
+            if g1_match:
+                g1_idx = int(g1_match.group(1))
+            if g2_match:
+                g2_idx = int(g2_match.group(1))
+            if g3_match:
+                g3_idx = int(g3_match.group(1))
+        
+        # Format as "h1,h2,h3,g1,g2,g3"
+        if all(idx is not None for idx in [h1_idx, h2_idx, h3_idx, g1_idx, g2_idx, g3_idx]):
+            indices = f"{h1_idx},{h2_idx},{h3_idx},{g1_idx},{g2_idx},{g3_idx}"
+            print(f"Boresch anchors selected: H1={h1_idx}, H2={h2_idx}, H3={h3_idx}, G1={g1_idx}, G2={g2_idx}, G3={g3_idx}")
+        else:
+            raise ValueError("Failed to parse Boresch anchor indices from FFX output")
+    else:
+        # Parse COM restraint indices
+        with open('RestrainGuest.log', 'r') as infile:
+            for line in infile:
+                if re.search('Restrain list indices:', line):
+                    #Grab just the list indices
+                    indexString = line.split(':')[1]
+                    # Remove brackets and whitespace
+                    indices = indexString.replace('[', '').replace(']', '').replace(' ','').strip('\n')
+        print(f"Atom indices of guest within specified cutoff of {cutoff} Angstroms that will be restrained: {indices}")
 
     return indices
