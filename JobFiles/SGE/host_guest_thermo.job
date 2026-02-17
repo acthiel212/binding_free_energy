@@ -14,5 +14,6 @@
 
 module purge
 source /Dedicated/schnieders/andthiel/miniconda.sh
+conda activate binding_free_energy
 hostname
-/Dedicated/schnieders/andthiel/miniconda3/bin/python <Production.py> --pdb_file <pdb_file>  --forcefield_file <forcefield_file> hp-bcd.xml --nonbonded_method "PME" --num_steps 15000000 --step_size 2 --nonbonded_cutoff 1.0 --vdw_lambda <vdw_lambda_value> --elec_lambda <elec_lambda_value> --restraint_lambda <restraint_lambda_value> --alchemical_atoms <alchemical_atoms> --restraint_type <restraint_type> --restraint_atoms_1 <restraint_atoms_1> --restraint_atoms_2 <restraint_atoms_2> --restraint_constant 15 --restraint_lower_distance 0.0 --restraint_upper_distance 10.0 --use_restraints true
+python <Production.py> --pdb_file <pdb_file>  --forcefield_file <forcefield_file> hp-bcd.xml --nonbonded_method "PME" --num_steps 15000000 --step_size 2 --nonbonded_cutoff 1.0 --vdw_lambda <vdw_lambda_value> --elec_lambda <elec_lambda_value> --restraint_lambda <restraint_lambda_value> --alchemical_atoms <alchemical_atoms> --restraint_type <restraint_type> --restraint_atoms_1 <restraint_atoms_1> --restraint_atoms_2 <restraint_atoms_2> --restraint_constant 15 --restraint_lower_distance 0.0 --restraint_upper_distance 10.0 --use_restraints true

@@ -3,10 +3,12 @@ channels:
   - defaults
 dependencies:
   - python=3.9
-  - openmm-setup
-  - pymbar[version='<4']
-  - mdtraj
-  - openjdk=21
+  - cuda-version=12.2
+  - conda-forge::openmm==8.1.2
+  - conda-forge::pymbar[version'>3']
+  - conda-forge::pdbfixer
+  - conda-forge::mdtraj
+  - conda-forge::openjdk=21
   - conda-forge::openbabel
   - pip:
     - intspan==1.6.1

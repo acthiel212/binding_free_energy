@@ -87,8 +87,7 @@ integrator = MTSLangevinIntegrator(300*kelvin, 1/picosecond, args.step_size*femt
 
 # Select platform
 properties = {'CUDA_Precision': 'mixed'}
-platform = Platform.getPlatformByName('OpenCL')
-simulation = Simulation(pdb.topology, system, integrator, platform)
+simulation = Simulation(pdb.topology, system, integrator, None)
 
 # If checkpoint exists, load and restart
 checkpoint_filename = Restart_Utils.get_checkpoint_filename(args.checkpoint_prefix)
@@ -114,7 +113,7 @@ else:
 
 # Run equilibration MD steps
 print(f"Starting equilibration for {args.num_steps-simulation.currentStep} steps...")
-simulation.reporters.append(StateDataReporter(stdout, 1000, step=True, kineticEnergy=True, potentialEnergy=True, totalEnergy=True, temperature=True, speed=True, separator=', '))
+simulation.reporters.append(StateDataReporter(stdout, 100, step=True, kineticEnergy=True, potentialEnergy=True, totalEnergy=True, temperature=True, speed=True, separator=', '))
 simulation.reporters.append(CheckpointReporter(checkpoint_filename, args.checkpoint_freq, writeState=True))
 simulation.step(args.num_steps-simulation.currentStep)
 os.makedirs(os.path.dirname(args.checkpoint_prefix), exist_ok=True) if os.path.dirname(args.checkpoint_prefix) else None

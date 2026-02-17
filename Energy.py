@@ -31,13 +31,31 @@ system = forcefield.createSystem(pdb.topology, nonbondedMethod=nonbonded_method,
                                  nonbondedCutoff=args.nonbonded_cutoff*nanometer, constraints=None)
 # Create the restraint force
 if args.use_restraints:
-    restraint = Harmonic_Restraint.create_Boresch_restraint(args.restraint_atoms_1, args.restraint_atoms_2, args.restraint_constant,
-                                                            args.restraint_lower_distance, args.restraint_upper_distance)
-    system.addForce(restraint)
-    print("Adding Restraint with parameters: ", restraint.getBondParameters(0))
-    restraint.setUsesPeriodicBoundaryConditions(True)
-    print("Using PBC Conditions on Restraint? ", restraint.usesPeriodicBoundaryConditions())
+    if args.restraint_type == "BORESCH":
+        harmonicforce, angleforce, torsionforce = Harmonic_Restraint.create_Boresch_restraint(args.restraint_atoms_1, args.restraint_atoms_2, args.restraint_constant,
+                                                                                              args.restraint_lower_distance, args.restraint_upper_distance)
 
+        system.addForce(harmonicforce)
+        system.addForce(angleforce)
+        system.addForce(torsionforce)
+        print("Adding Bond Restraint with parameters: ", harmonicforce.getBondParameters(0))
+        print("Adding Angle Restraint with parameters: ", angleforce.getAngleParameters(0))
+        print("Adding Angle Restraint with parameters: ", angleforce.getAngleParameters(1))
+        print("Adding Torsion Restraint with parameters: ", torsionforce.getTorsionParameters(0))
+        print("Adding Torsion Restraint with parameters: ", torsionforce.getTorsionParameters(1))
+        print("Adding Torsion Restraint with parameters: ", torsionforce.getTorsionParameters(2))
+        harmonicforce.setUsesPeriodicBoundaryConditions(True)
+        angleforce.setUsesPeriodicBoundaryConditions(True)
+        torsionforce.setUsesPeriodicBoundaryConditions(True)
+        print("Using PBC Conditions on Restraint? ", harmonicforce.usesPeriodicBoundaryConditions())
+    else:
+        restraint = Harmonic_Restraint.create_COM_restraint(args.restraint_atoms_1, args.restraint_atoms_2,
+                                                            args.restraint_constant,
+                                                            args.restraint_lower_distance, args.restraint_upper_distance)
+        system.addForce(restraint)
+        print("Adding Restraint with parameters: ", restraint.getBondParameters(0))
+        restraint.setUsesPeriodicBoundaryConditions(True)
+        print("Using PBC Conditions on Restraint? ", restraint.usesPeriodicBoundaryConditions())
 
 # Setup simulation context
 numForces = system.getNumForces()

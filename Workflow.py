@@ -170,7 +170,7 @@ def setup_directories(target_dir, structure_file, forcefield_file, alchemical_at
         if restraint_atoms_1 == "":
             if RESTRAINT_TYPE == "BORESCH":
                 raise ValueError("BORESCH restraint type requires restraint atoms 1 to be specified.")
-            restraint_atoms_1 = "1-217"
+            restraint_atoms_1 = "11,16,17,20,23,26,31,32,39,40,51,63,64,70,71,82,94,95,101,102,113,125,126,132,133,144,156,157,163,164,175,187,188,191,198" 
         if restraint_atoms_2 == "":
             if RESTRAINT_TYPE == "BORESCH":
                 raise ValueError("BORESCH restraint type requires restraint atoms 2 to be specified.")
@@ -259,6 +259,7 @@ def setup_directories(target_dir, structure_file, forcefield_file, alchemical_at
             replacements.update({
                 "<restraint_atoms_1>": restraint_atoms_1,
                 "<restraint_atoms_2>": restraint_atoms_2,
+                "<restraint_type>": RESTRAINT_TYPE
             })
 
         replace_in_file(job_path, replacements)
@@ -348,7 +349,6 @@ def submit_thermo(target_dir, job_prefix, equil_job_id):
         job_content = job_content.replace("<elec_lambda_value>", str(ELEC_LAMBDAS[i]))
         if job_prefix != "OMM_Guest_LAM":
             job_content = job_content.replace("<restraint_lambda_value>", str(RESTRAINT_LAMBDAS[i]))
-            job_content = job_content.replace('<restraint_type>', str(RESTRAINT_TYPE))
         job_content = job_content.replace("<Production.py>", str(os.path.join(BINDING_FREE_ENERGY_DIR, "Production.py")))
         job_content = job_content.replace("_LAM", f"_LAM{i}")
 
@@ -462,7 +462,6 @@ def submit_bar(target_dir, analysis_type, thermo_job_ids):
         if analysis_type != "guest":
             job_content = job_content.replace('<restraint_lambda_value_i>', str(restraint_lambda))
             job_content = job_content.replace('<restraint_lambda_value_ip1>', str(restraint_lambda_ip1))
-            job_content = job_content.replace('<restraint_type>', RESTRAINT_TYPE)
         job_content = job_content.replace("<BAR.py>", str(os.path.join(BINDING_FREE_ENERGY_DIR, "BAR.py")))
         job_content = job_content.replace('$LAMBDA_I', str(i))
         job_content = job_content.replace('$LAMBDA_NEXT', str(i + 1))
@@ -633,3 +632,4 @@ if START_AT:
 else:
     print("Starting full workflow.")
     execute_workflow("setup_directories")
+
