@@ -34,7 +34,6 @@ if args.use_restraints:
     if args.restraint_type == "BORESCH":
         harmonicforce, angleforce, torsionforce = Harmonic_Restraint.create_Boresch_restraint(args.restraint_atoms_1, args.restraint_atoms_2, args.restraint_constant,
                                                                                               args.restraint_lower_distance, args.restraint_upper_distance)
-
         system.addForce(harmonicforce)
         system.addForce(angleforce)
         system.addForce(torsionforce)
@@ -56,7 +55,6 @@ if args.use_restraints:
         print("Adding Restraint with parameters: ", restraint.getBondParameters(0))
         restraint.setUsesPeriodicBoundaryConditions(True)
         print("Using PBC Conditions on Restraint? ", restraint.usesPeriodicBoundaryConditions())
-
 
 # Setup simulation context
 numForces = system.getNumForces()

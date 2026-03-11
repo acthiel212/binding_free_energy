@@ -27,7 +27,7 @@ def add_dynamics_parser(parser):
 
 def add_restraint_parser(parser):
     parser.add_argument('--use_restraints', required=False, type=bool, help='Whether to use restraint', default=False)
-    parser.add_argument("--restraint_type",type=str,choices=["COM","BORESCH"],default="COM",help="Select the type of restraint to use. Center of Mass (COM) is the default.")
+    parser.add_argument('--restraint_type', required=False, type=str,choices=["COM","BORESCH"],default="COM",help="Select the type of restraint to use. Center of Mass (COM) is the default.")
     parser.add_argument('--restraint_atoms_1', required=False, type=str,
                         help='Range of atoms in restraint group 1 (e.g., "0,2")', default="")
     parser.add_argument('--restraint_atoms_2', required=False, type=str,
