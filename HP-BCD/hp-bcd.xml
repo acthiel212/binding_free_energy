@@ -807,6 +807,6 @@
         <Polarize pgrp1="349" polarizability="0.000496" thole="0.390000" type="350"/>
     </AmoebaMultipoleForce>
     <AmoebaUreyBradleyForce cubic="0.0" quartic="0.0">
-        <UreyBradley class1="350" class2="349" class3="350" d="0.15326000000000000" k="-3179.83999999999970000"/>
+        <UreyBradley class1="350" class2="349" class3="350" d="0.15537000000000000" k="-3179.83999999999970000"/>
     </AmoebaUreyBradleyForce>
 </ForceField>
