@@ -71,6 +71,7 @@ def create_COM_restraint(restraint_atoms_1, restraint_atoms_2, restraint_constan
     convert = openmm.KJPerKcal / (openmm.NmPerAngstrom * openmm.NmPerAngstrom)
     restraintEnergy = "step(distance(g1,g2)-u)*k*(distance(g1,g2)-u)^2+step(l-distance(g1,g2))*k*(distance(g1,g2)-l)^2"
     restraint = openmm.CustomCentroidBondForce(2, restraintEnergy)
+    restraint.addGlobalParameter('lambda_restraints', 1.0)
     restraint.setForceGroup(0)
     restraint.addPerBondParameter("k")
     restraint.addPerBondParameter("l")

@@ -94,6 +94,9 @@ state = simulation.context.getState(getEnergy=True, getPositions=True)
 if args.use_restraints:
     simulation.context.setParameter("lambda_restraints", args.restraint_lambda)
 print(f"AmoebaVdwLambda: {simulation.context.getParameter('AmoebaVdwLambda')}")
+total_charge = 0.0
+for i in range(len(args.alchemical_atoms)):
+    total_charge += multipoleForce.getMultipoleParameters(i)[0]
 print(f"AmoebaElecCharge: {multipoleForce.getMultipoleParameters(0)[0]}")
 print(f"Potential Energy after reinitialization: {state.getPotentialEnergy()}") #{state.getPotentialEnergy().in_units_of(kilocalories_per_mole)}
 

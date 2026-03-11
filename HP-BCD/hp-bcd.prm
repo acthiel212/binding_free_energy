@@ -313,37 +313,37 @@ torsion  28  10   3  25 0 0.0 1 0 180.0 2 0.299 0.0 3
 torsion  26  12  13  27 0 0.0 1 0 180.0 2 0.299 0.0 3
 #torsion DONE
 #polarize DONE
-polarize             1          1.6200     0.3900   2 420
-polarize             2          0.8120     0.3900   1 404
-polarize             3          1.6200     0.3900  10 425
-polarize             4          1.6200     0.3900   2 429
-polarize             5          1.6200     0.3900   7 421
-polarize             6          1.4150     0.3900 422
-polarize             7          0.8120     0.3900   5 423
-polarize             8          0.8120     0.3900  14 430
-polarize             9          0.8120     0.3900 412
-polarize           10          1.6200     0.3900   3 428
-polarize           11          0.8120     0.3900  13 419
-polarize           12          1.6200     0.3900   9 426
-polarize           13          1.6200     0.3900  11 427
-polarize           14          1.6200     0.3900   8 424
+polarize            1          1.6200     0.3900   2 20
+polarize            2          0.8120     0.3900   1 4
+polarize            3          1.6200     0.3900  10 25
+polarize            4          1.6200     0.3900   2 29
+polarize            5          1.6200     0.3900   7 21
+polarize            6          1.4150     0.3900  22
+polarize            7          0.8120     0.3900   5 23
+polarize            8          0.8120     0.3900  14 30
+polarize            9          0.8120     0.3900  12
+polarize           10          1.6200     0.3900   3 28
+polarize           11          0.8120     0.3900  13 19
+polarize           12          1.6200     0.3900   9 26
+polarize           13          1.6200     0.3900  11 27
+polarize           14          1.6200     0.3900   8 24
 # Dead hydrogen
-#polarize           17          0.4570     0.3900 415
-#polarize           18          0.4570     0.3900 416
-#polarize           15          0.8120     0.3900  12 417
+#polarize           17          0.4570     0.3900 15
+#polarize           18          0.4570     0.3900 16
+#polarize           15          0.8120     0.3900  12 17
 polarize           16          0.8120     0.3900
-polarize           19          0.4570     0.3900 411
-polarize           20          0.4800     0.3900 401
-polarize           21          0.4800     0.3900 405
-polarize           22          0.4800     0.3900 406
-polarize           23          0.4570     0.3900 407
-polarize           24          0.4800     0.3900 414
-polarize           25          0.4800     0.3900 403
-polarize           26          0.4800     0.3900 412
-polarize           27          0.4800     0.3900 413
-polarize           28          0.4800     0.3900 410
-polarize           29          0.4800     0.3900 404
-polarize           30          0.4570     0.3900 408
+polarize           19          0.4570     0.3900 11
+polarize           20          0.4800     0.3900 1
+polarize           21          0.4800     0.3900 5
+polarize           22          0.4800     0.3900 6
+polarize           23          0.4570     0.3900 7
+polarize           24          0.4800     0.3900 14
+polarize           25          0.4800     0.3900 3
+polarize           26          0.4800     0.3900 12
+polarize           27          0.4800     0.3900 13
+polarize           28          0.4800     0.3900 10
+polarize           29          0.4800     0.3900 4
+polarize           30          0.4570     0.3900 8
 #polarize DONE
 #multipole DONE
 multipole     1    2    5               0.12185

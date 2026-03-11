@@ -3,7 +3,8 @@ channels:
   - defaults
 dependencies:
   - python=3.9
-  - openmm-setup
+  - cuda-version=12.2
+  - conda-forge::openmm==8.1.2
   - pymbar[version='<4']
   - mdtraj
   - openjdk=21

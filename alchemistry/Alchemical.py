@@ -64,6 +64,8 @@ def setup_alchemical_forces(system):
 
     vdwForce = system.getForce(forceDict.get('AmoebaVdwForce'))
     vdwForce.setForceGroup(1)
+    vdwForce.setUseDispersionCorrection(False)
+    print(f"Use Dispersion Correction? {vdwForce.getUseDispersionCorrection()}")
     multipoleForce = system.getForce(forceDict.get('AmoebaMultipoleForce'))
     multipoleForce.setForceGroup(1)
     return vdwForce, multipoleForce
