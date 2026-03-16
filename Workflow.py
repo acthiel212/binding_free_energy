@@ -53,10 +53,13 @@ START_AT = ""
 RUN_EQ = True
 SETUP_ONLY = False
 SUB_TYPE = ""
+GUEST_ATOM_COUNT = 0
+HOST_ATOM_COUNT = 0
 
 def parse_arguments():
     """Parse command-line arguments and initialize global workflow directories."""
     global NAME, ALCHEMICAL_ATOMS, RESTRAINT_TYPE, RESTRAINT_ATOMS_1, RESTRAINT_ATOMS_2, START_AT, RUN_EQ, SETUP_ONLY, SUB_TYPE,\
+        GUEST_ATOM_COUNT, HOST_ATOM_COUNT, \
         TEMPLATE_GUEST_DIR, TEMPLATE_HOST_GUEST_DIR, WORKING_GUEST_DIR, WORKING_HOST_GUEST_DIR, \
         ANALYSIS_GUEST_DIR, ANALYSIS_HOST_GUEST_DIR
 
@@ -84,13 +87,22 @@ def parse_arguments():
     SETUP_ONLY = args.setup_only.lower() == "true"
     RUN_EQ = args.run_equilibration.lower() == "true"
     SUB_TYPE = args.submission_system.upper()
-    if args.alchemical_atoms == "":
-        guest_dir = os.path.join(BINDING_FREE_ENERGY_DIR, "Guests")
-        with open(f"{guest_dir}/{NAME}.xyz", 'r') as f:
-            first_line = f.readline()
-            first_column = first_line.split()[0]
+    guest_dir = os.path.join(BINDING_FREE_ENERGY_DIR, "Guests")
+    with open(f"{guest_dir}/{NAME}.xyz", 'r') as f:
+        first_line = f.readline()
+        GUEST_ATOM_COUNT = int(first_line.split()[0])
 
-        args.alchemical_atoms = f"1-{first_column}"
+    if args.alchemical_atoms == "":
+        args.alchemical_atoms = f"1-{GUEST_ATOM_COUNT}"
+
+    host_xyz_path = os.path.join(BINDING_FREE_ENERGY_DIR, "HP-BCD", "hp-bcd.xyz")
+    try:
+        with open(host_xyz_path, 'r') as f:
+            first_line = f.readline()
+            HOST_ATOM_COUNT = int(first_line.split()[0])
+    except (FileNotFoundError, ValueError, IndexError):
+        HOST_ATOM_COUNT = 217
+        print("Warning: Unable to parse host atom count from hp-bcd.xyz. Falling back to 217 atoms.")
 
     ALCHEMICAL_ATOMS = args.alchemical_atoms
     RESTRAINT_TYPE = args.restraint_type
@@ -126,6 +138,25 @@ def replace_in_file(file_path, replacements):
         content = content.replace(placeholder, replacement)
     with open(file_path, "w") as f:
         f.write(content)
+
+
+def get_freeze_atom_ranges(workflow_type):
+    """Return 1-based host/guest atom ranges to freeze during pre-equil NPT stage."""
+    if GUEST_ATOM_COUNT <= 0:
+        raise ValueError("Guest atom count must be positive to define freeze ranges.")
+
+    if workflow_type == "Guest":
+        return "", f"1-{GUEST_ATOM_COUNT}"
+
+    if workflow_type == "Host_Guest":
+        if HOST_ATOM_COUNT <= 0:
+            raise ValueError("Host atom count must be positive to define freeze ranges.")
+        host_range = f"1-{HOST_ATOM_COUNT}"
+        guest_start = HOST_ATOM_COUNT + 1
+        guest_end = HOST_ATOM_COUNT + GUEST_ATOM_COUNT
+        return host_range, f"{guest_start}-{guest_end}"
+
+    raise ValueError(f"Invalid workflow type '{workflow_type}' for freeze range selection.")
 
 def run_prepare():
     """Execute Prepare.py to set up guest and host-guest structure files."""
@@ -183,6 +214,8 @@ def setup_directories(target_dir, structure_file, forcefield_file, alchemical_at
 
     if not template_dir:
         raise ValueError(f"Template directory for workflow type '{workflow_type}' is not defined.")
+
+    freeze_atoms_host, freeze_atoms_guest = get_freeze_atom_ranges(workflow_type)
 
     # Ensure the template directory exists
     if not os.path.isdir(template_dir):
@@ -252,7 +285,9 @@ def setup_directories(target_dir, structure_file, forcefield_file, alchemical_at
             "<forcefield_file>": f"{template_dir}/{forcefield_file}",
             "<alchemical_atoms>": alchemical_atoms,
             "Name": NAME,
-            "hp-bcd.xml": f"{template_dir}/hp-bcd.xml"   #parameter file for host
+            "hp-bcd.xml": f"{template_dir}/hp-bcd.xml",   #parameter file for host
+            "<freeze_atoms_host>": freeze_atoms_host,
+            "<freeze_atoms_guest>": freeze_atoms_guest
             }
 
         if workflow_type == "Host_Guest":
@@ -568,8 +603,8 @@ def execute_workflow(start_method):
 
             # Adjust alchemical atom indices for host-guest
             start, end = map(int, ALCHEMICAL_ATOMS.split("-"))
-            alch_start_host_guest = start + 217
-            alch_end_host_guest = end + 217
+            alch_start_host_guest = start + HOST_ATOM_COUNT
+            alch_end_host_guest = end + HOST_ATOM_COUNT
             alchemical_atoms_host_guest = f"{alch_start_host_guest}-{alch_end_host_guest}"
 
             setup_directories(
