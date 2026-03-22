@@ -4,6 +4,7 @@ import sys
 import subprocess
 import re
 import shutil
+import time
 from pathlib import Path
 from shutil import copyfile
 
@@ -55,11 +56,12 @@ SETUP_ONLY = False
 SUB_TYPE = ""
 GUEST_ATOM_COUNT = 0
 HOST_ATOM_COUNT = 0
+SUBMIT_SOLVATE_MIN = False
 
 def parse_arguments():
     """Parse command-line arguments and initialize global workflow directories."""
     global NAME, ALCHEMICAL_ATOMS, RESTRAINT_TYPE, RESTRAINT_ATOMS_1, RESTRAINT_ATOMS_2, START_AT, RUN_EQ, SETUP_ONLY, SUB_TYPE,\
-        GUEST_ATOM_COUNT, HOST_ATOM_COUNT, \
+        GUEST_ATOM_COUNT, HOST_ATOM_COUNT, SUBMIT_SOLVATE_MIN, \
         TEMPLATE_GUEST_DIR, TEMPLATE_HOST_GUEST_DIR, WORKING_GUEST_DIR, WORKING_HOST_GUEST_DIR, \
         ANALYSIS_GUEST_DIR, ANALYSIS_HOST_GUEST_DIR
 
@@ -78,6 +80,8 @@ def parse_arguments():
     parser.add_argument("--restraint_atoms1", type=str, default="", help="Comma-separated list of restraint atoms 1 (optional for COM). If not set, automatically choose restraints. Must be specified for BORESCH restraint type.")
     parser.add_argument("--restraint_atoms2", type=str, default="", help="Comma-separated list of restraint atoms 2 (optional for COM). If not set, automatically choose restraints. Must be specified for BORESCH restraint type.")
     parser.add_argument("--submission_system",type=str,default="SGE",help="Submission system to submit jobs to. Modifying this only affects the search for job files that that selected submission system would expect. Only SGE and SLURM are currently supported.")
+    parser.add_argument("--submit_solvate_jobs", type=str, choices=["true", "false"], default="false",
+                        help="Whether to submit solvate/minimize as cluster jobs during setup instead of running directly. Defaults to false.")
     # Parse the arguments
     args = parser.parse_args()
 
@@ -87,6 +91,7 @@ def parse_arguments():
     SETUP_ONLY = args.setup_only.lower() == "true"
     RUN_EQ = args.run_equilibration.lower() == "true"
     SUB_TYPE = args.submission_system.upper()
+    SUBMIT_SOLVATE_MIN = args.submit_solvate_jobs.lower() == "true"
     guest_dir = os.path.join(BINDING_FREE_ENERGY_DIR, "Guests")
     with open(f"{guest_dir}/{NAME}.xyz", 'r') as f:
         first_line = f.readline()
@@ -178,6 +183,77 @@ def run_prepare():
     subprocess.run(prepare_command, check=True)
     #print("Prepare step completed.")
 
+
+def wait_for_submitted_job(job_id, output_file, poll_seconds=20, timeout_seconds=172800):
+    """Wait until a submitted SGE/SLURM job completes and expected output file is generated."""
+    start_time = time.time()
+
+    while True:
+        elapsed = time.time() - start_time
+        if elapsed > timeout_seconds:
+            raise TimeoutError(f"Timed out waiting for solvate/minimize job {job_id} after {timeout_seconds} seconds.")
+
+        if SUB_TYPE == "SGE":
+            job_active = subprocess.run(["qstat", "-j", str(job_id)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
+        elif SUB_TYPE == "SLURM":
+            queue_state = subprocess.run(["squeue", "-h", "-j", str(job_id)], capture_output=True, text=True)
+            job_active = queue_state.returncode == 0 and queue_state.stdout.strip() != ""
+        else:
+            raise ValueError(f"Unsupported submission system for job polling: {SUB_TYPE}")
+
+        if not job_active:
+            if os.path.exists(output_file):
+                return
+            raise RuntimeError(f"Solvate/minimize job {job_id} completed but expected output file was not found: {output_file}")
+
+        time.sleep(poll_seconds)
+
+
+def run_or_submit_solvate(template_dir, structure_file, workflow_type):
+    """Run solvate/minimize directly or submit it as a scheduler job and wait for completion."""
+    solvate_script = os.path.join(BINDING_FREE_ENERGY_DIR, "Solvate.py")
+    output_file = os.path.join(template_dir, f"{os.path.splitext(structure_file)[0]}_solv_min.pdb")
+
+    command_tokens = [
+        "python", solvate_script,
+        "--pdb_file", structure_file,
+        "--forcefield_file", f"{NAME}.xml", "hp-bcd.xml",
+        "--nonbonded_method", "PME"
+    ]
+
+    if not SUBMIT_SOLVATE_MIN:
+        subprocess.run(command_tokens, check=True)
+        return
+
+    if SUB_TYPE == "SGE":
+        job_name = f"{NAME[:10]}_{workflow_type[:2]}_Solv"
+        submit_command = [
+            "qsub", "-terse", "-cwd", "-V",
+            "-N", job_name,
+            "-j", "y",
+            "-o", f"solvate_{workflow_type.lower()}.log",
+            "-b", "y"
+        ] + command_tokens
+        submitted = subprocess.run(submit_command, capture_output=True, text=True, check=True)
+        job_id = submitted.stdout.strip().split('.')[0]
+    elif SUB_TYPE == "SLURM":
+        job_name = f"{NAME[:10]}_{workflow_type[:2]}_Solv"
+        wrapped_command = " ".join(command_tokens)
+        submit_command = [
+            "sbatch", "--parsable",
+            "--job-name", job_name,
+            "--output", f"solvate_{workflow_type.lower()}.%j.log",
+            "--wrap", wrapped_command
+        ]
+        submitted = subprocess.run(submit_command, capture_output=True, text=True, check=True)
+        job_id = submitted.stdout.strip().split(';')[0]
+    else:
+        raise ValueError(f"Unsupported submission system '{SUB_TYPE}' for --submit_solvate_jobs true")
+
+    print(f"Submitted solvate/minimize job {job_id} for {workflow_type}. Waiting for completion...")
+    wait_for_submitted_job(job_id, output_file)
+    print(f"Solvate/minimize job {job_id} for {workflow_type} completed.")
+
 def setup_directories(target_dir, structure_file, forcefield_file, alchemical_atoms,
                       restraint_atoms_1, restraint_atoms_2, workflow_type):
     """
@@ -226,14 +302,10 @@ def setup_directories(target_dir, structure_file, forcefield_file, alchemical_at
     # ----------------------------
     #print("Running Solvate.py...")
     os.chdir(template_dir)
-    solvate_command = [
-        "python", os.path.join(BINDING_FREE_ENERGY_DIR, "Solvate.py"),
-        "--pdb_file", structure_file,
-        "--forcefield_file", f"{NAME}.xml", "hp-bcd.xml",
-        "--nonbonded_method", "PME"
-    ]
-    subprocess.run(solvate_command, check=True)
-    os.chdir(CWD)
+    try:
+        run_or_submit_solvate(template_dir, structure_file, workflow_type)
+    finally:
+        os.chdir(CWD)
 
     #print("Solvate step completed.")
 
