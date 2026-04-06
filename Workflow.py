@@ -55,7 +55,8 @@ SETUP_ONLY = False
 SUB_TYPE = ""
 
 def parse_arguments():
-    """Parse command-line arguments and initialize global workflow directories."""
+    """
+    Parses command-line arguments for configuring"""
     global NAME, ALCHEMICAL_ATOMS, RESTRAINT_TYPE, RESTRAINT_ATOMS_1, RESTRAINT_ATOMS_2, START_AT, RUN_EQ, SETUP_ONLY, SUB_TYPE,\
         TEMPLATE_GUEST_DIR, TEMPLATE_HOST_GUEST_DIR, WORKING_GUEST_DIR, WORKING_HOST_GUEST_DIR, \
         ANALYSIS_GUEST_DIR, ANALYSIS_HOST_GUEST_DIR
@@ -72,8 +73,8 @@ def parse_arguments():
     parser.add_argument("--alchemical_atoms", type=str, default="", help="Comma-separated list of alchemical atoms (required). "
                                                                             "If not set, automatically determines set from guest atoms.")
     parser.add_argument("--restraint_type",type=str,choices=["COM","BORESCH"],default="COM",help="Select the type of restraint to use. Center of Mass (COM) is the default.")
-    parser.add_argument("--restraint_atoms1", type=str, default="", help="Comma-separated list of restraint atoms 1 (optional for COM). If not set, automatically choose restraints. Must be specified for BORESCH restraint type.")
-    parser.add_argument("--restraint_atoms2", type=str, default="", help="Comma-separated list of restraint atoms 2 (optional for COM). If not set, automatically choose restraints. Must be specified for BORESCH restraint type.")
+    parser.add_argument("--restraint_atoms1", type=str, default="", help="Comma-separated list of restraint atoms 1 (optional for COM). If not set, automatically choose restraints. Must be specified for BORESCH restraint type and corresponds to host atoms.")
+    parser.add_argument("--restraint_atoms2", type=str, default="", help="Comma-separated list of restraint atoms 2 (optional for COM). If not set, automatically choose restraints. Must be specified for BORESCH restraint type and corresponds to guest atoms.")
     parser.add_argument("--submission_system",type=str,default="SGE",help="Submission system to submit jobs to. Modifying this only affects the search for job files that that selected submission system would expect. Only SGE and SLURM are currently supported.")
     # Parse the arguments
     args = parser.parse_args()
@@ -315,10 +316,6 @@ def submit_equil(target_dir, job_prefix):
         return equil_job_id
 
 
-thermo_job_ids_guest = []
-thermo_job_ids_host_guest = []
-
-
 def submit_thermo(target_dir, job_prefix, equil_job_id):
     """
     Function to create lambda directories and submit thermo jobs.
@@ -326,10 +323,10 @@ def submit_thermo(target_dir, job_prefix, equil_job_id):
     :param job_prefix: Prefix for the job name.
     :param equil_job_id: Job ID to hold on if specified.
     """
-    global thermo_job_ids_guest, thermo_job_ids_host_guest
 
     # Assuming VDW_LAMBDAS and ELEC_LAMBDAS are defined globally
     num_lambdas = len(VDW_LAMBDAS)
+    thermo_job_ids = []
 
     vdw_lambdas = VDW_LAMBDAS
     #print(f"Setting up lambda directories{target_dir}", file=sys.stderr)
@@ -384,12 +381,9 @@ def submit_thermo(target_dir, job_prefix, equil_job_id):
             os.chdir(target_dir)
 
             # Store thermo job ID in the appropriate list
-            if job_prefix == "OMM_Guest_LAM":
-                thermo_job_ids_guest.append(thermo_job_id)
-            else:
-                thermo_job_ids_host_guest.append(thermo_job_id)
-
+            thermo_job_ids.append(thermo_job_id)
             print(thermo_job_id, file=sys.stderr)
+    return thermo_job_ids
 
 
 def safe_symlink(target, link_name):

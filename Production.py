@@ -36,8 +36,7 @@ system = forcefield.createSystem(pdb.topology, nonbondedMethod=nonbonded_method,
 # Create the restraint force
 if args.use_restraints:
     if args.restraint_type == "BORESCH":
-        harmonicforce, angleforce, torsionforce = Harmonic_Restraint.create_Boresch_restraint(args.restraint_atoms_1, args.restraint_atoms_2, args.restraint_constant,
-                                                                                              args.restraint_lower_distance, args.restraint_upper_distance)
+        harmonicforce, angleforce, torsionforce = Harmonic_Restraint.create_Boresch_restraint(args.restraint_atoms_1, args.restraint_atoms_2)
 
         system.addForce(harmonicforce)
         system.addForce(angleforce)
