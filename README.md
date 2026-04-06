@@ -21,7 +21,7 @@ This project currently assumes the host is hydroxypropyl beta cyclodextrin (HP-B
 
 - The repository includes host files in `HP-BCD/` and the workflow explicitly loads `hp-bcd.pdb` and `hp-bcd.xml`.
 - Defaults and templates are tailored to HP-BCD, for example:
-  - `Workflow.py` uses `hp-bcd.xml` during solvation/setup and sets Host restraint Group 1 to `1-217` by default.
+  - `Workflow.py` uses `hp-bcd.xml` during solvation/setup and sets Host restraint Group 1 to a curated HP-BCD index list by default (see Workflow Automatic Selections and Defaults).
   - `Prepare.py` copies `hp-bcd.pdb`, `hp-bcd.xml`, and related files into template directories.
   - Docked complex examples and paths use HP-BCD naming conventions.
 
@@ -37,8 +37,8 @@ If you plan to generalize beyond HP-BCD, consider adding configuration options f
 ### System Requirements
 - Linux/Unix environment (tested on cluster systems)
 - Python 3.x
-- GPU with OpenCL or CUDA support (OpenMM platform)
-  - Default scripts use the OpenCL platform; CUDA can be used if available
+- GPU with CUDA or OpenCL support (OpenMM platform)
+  - Production, BAR, and Energy scripts request the CUDA platform by default; Equil and Solvate let OpenMM choose the default platform unless you override it
   - CPU platform may work for small tests but is not recommended for production
 
 ### Software Dependencies
@@ -49,7 +49,7 @@ This project uses a pinned conda environment defined in `environment.yml` (with 
 1. **OpenMM** (with OpenMM-Setup)  
    Molecular dynamics simulation engine
 
-2. **pymbar** (version < 4)  
+2. **pymbar** (version >= 4)  
    Free energy calculations and BAR analysis
    https://pymbar.readthedocs.io/en/stable/
 
@@ -104,7 +104,7 @@ conda activate binding_free_energy
 
 Notes:
 - To update an existing environment to match the file: `conda env update -f environment.yml --prune`
-- OpenMM platforms: the environment includes OpenCL libraries (`ocl-icd`) and a CUDA toolkit. Select your platform at runtime (OpenCL by default in these scripts; CUDA if available and compatible with your drivers).
+- OpenMM platforms: the environment provides a CUDA toolkit. Select your platform at runtime. Production, BAR, and Energy scripts explicitly request CUDA by default; Equil and Solvate let OpenMM choose the default platform. To force a platform globally, set `OPENMM_DEFAULT_PLATFORM` (e.g., `CUDA` or `OpenCL`).
 - Java requirement for FFX: Force Field X tools require Java 21. If Java 21 is not available on your system, install it (e.g., `conda install -c conda-forge openjdk=21`) or use a system-wide JDK 21.
 
 ---
@@ -148,6 +148,7 @@ python Workflow.py --guest_name <name> [options]
 - `--start_at <method>`: Start workflow at specific step (options: `setup_directories`, `submit_equil`, `submit_thermo`, `submit_bar`, `collect_energy`)
 - `--run_equilibration <true|false>`: Whether to run equilibration (default: `true`)
 - `--alchemical_atoms <list>`: Comma-separated atom indices for alchemical transformation (auto-detected from guest if not specified)
+- `--restraint_type <COM|BORESCH>`: Restraint model to use (default: `COM`)
 - `--restraint_atoms1 <list>`: Comma-separated indices for restraint group 1
 - `--restraint_atoms2 <list>`: Comma-separated indices for restraint group 2
 - `--submission_system <SGE|SLURM>`: Job scheduler to target for job scripts and submission (default: `SGE`)
@@ -161,7 +162,8 @@ python Workflow.py --guest_name <name> [options]
 #### Automatic Selections and Defaults
 - If `--alchemical_atoms` is not provided, the workflow auto-detects the alchemical atom range from the first line of `Guests/<NAME>.xyz` and sets it to `1-<N>`.
 - For the Host_Guest leg, if restraint atoms are not provided:
-  - Group 1 defaults to `1-217` (host indices)
+  - Group 1 defaults to a host index list tailored to HP-BCD:
+    `11,16,17,20,23,26,31,32,39,40,51,63,64,70,71,82,94,95,101,102,113,125,126,132,133,144,156,157,163,164,175,187,188,191,198`
   - Group 2 is auto-selected using the built-in `calculate_restraint_subsection` function with a 5.0 Å cutoff around the guest. The indices are reported to the console.
 
 #### Usage
@@ -265,6 +267,7 @@ python Equil.py --pdb_file <pdb> --forcefield_file <xml> [options]
 - `--num_steps`: Number of simulation steps
 - `--step_size`: Integration time step in fs
 - `--use_restraints`: Enable harmonic restraints
+- `--restraint_type`: Restraint model to use (`COM` or `BORESCH`, default: `COM`)
 - `--restraint_atoms_1`, `--restraint_atoms_2`: Atom indices for restraints
 - `--restraint_constant`: Force constant for restraints (kcal/mol/Å²)
 - `--restraint_lower_distance`, `--restraint_upper_distance`: Flat-bottom restraint distances (Å)
@@ -307,6 +310,7 @@ python BAR.py --traj_i <dcd> --traj_ip1 <dcd> --pdb_file <pdb> --forcefield_file
 - `--step_size`: Frame sampling interval (default: 1)
 - `--nonbonded_method`: Nonbonded method
 - `--nonbonded_cutoff`: Cutoff distance
+- `--restraint_lambda_i`, `--restraint_lambda_ip1`: Restraint scaling parameters for states i and i+1 (default: 1.0)
 
 **Output**: Prints forward/reverse FEP and BAR free energy differences with uncertainties.
 
@@ -318,14 +322,16 @@ python BAR.py --traj_i <dcd> --traj_ip1 <dcd> --pdb_file <pdb> --forcefield_file
 python Energy.py --pdb_file <pdb> --forcefield_file <xml> --vdw_lambda <value> --elec_lambda <value> --alchemical_atoms <list> [options]
 ```
 
+Supports the same optional restraint flags as `Equil.py` (e.g., `--use_restraints`, `--restraint_type`, `--restraint_atoms_1`, `--restraint_atoms_2`, etc.). By default, this script requests the CUDA platform.
+
 ### Utility Scripts
 
-#### `freefix.py`
+#### `alchemistry/Freefix.py`
 **Purpose**: Calculate analytical corrections for harmonic restraint contributions to binding free energy.
 
 **Usage**:
 ```bash
-python Freefix.py <ri> <fi> <ro> <fo> <temp>
+python alchemistry/Freefix.py <ri> <fi> <ro> <fo> <temp>
 ```
 
 **Arguments**:
@@ -344,7 +350,7 @@ python Freefix.py <ri> <fi> <ro> <fo> <temp>
 ### Common Issues
 
 1. **OpenMM Platform Issues (OpenCL/CUDA)**
-   - Default scripts use OpenCL. Verify platforms:
+   - Production, BAR, and Energy request CUDA by default. Verify available platforms:
      - `python - <<'PY'\nimport openmm\nprint([openmm.Platform.getPlatform(i).getName() for i in range(openmm.Platform.getNumPlatforms())])\nPY`
    - To force CUDA (if installed): set `OPENMM_DEFAULT_PLATFORM=CUDA` or modify the script to use CUDA.
    - If CUDA not found, ensure CUDA toolkit and OpenMM CUDA package are correctly installed.
@@ -407,4 +413,4 @@ This workflow uses the following software packages:
 
 ---
 
-**Last Updated**: 2025-10-29
+**Last Updated**: 2026-04-06 13:02
