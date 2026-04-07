@@ -7,7 +7,11 @@ import re
 path_to_file = os.path.dirname(os.path.abspath(__file__))
 
 def create_Boresch_restraint(host_atoms, guest_atoms):
-
+    host_atoms = list(intspan(host_atoms))
+    guest_atoms = list(intspan(guest_atoms))
+    # OpenMM atom index starts at zero while FFX starts at 1.
+    host_atoms = [i - 1 for i in host_atoms]
+    guest_atoms = [i - 1 for i in guest_atoms]
     # Set bond restraint properties 
     bond_energy_function = "lambda_restraints*(K/2)*(r-r0)^2;"
     harmonicforce=CustomBondForce(bond_energy_function)
