@@ -130,8 +130,8 @@ if args.use_restraints:
         print("Adding Restraint with parameters: ", restraint.getBondParameters(0))
         restraint.setUsesPeriodicBoundaryConditions(True)
         print("Using PBC Conditions on Restraint? ", restraint.usesPeriodicBoundaryConditions())
-    # Set force group to own group for testing if restraints are triggered.
-    restraint.setForceGroup(3)
+        # Set force group to own group for testing if restraints are triggered.
+        restraint.setForceGroup(3)
 
 # Setup simulation context
 numForces = system.getNumForces()
