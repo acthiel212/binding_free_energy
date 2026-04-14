@@ -11,7 +11,7 @@ from utils import Parser_Utils
 
 
 def compute_work(traj_file1, traj_file2, context, pdb_file, vdw_lambda_1, vdw_lambda_2, elec_lambda_1, elec_lambda_2,
-                 vdwForce, multipoleForce, alchemical_atoms, default_elec_params):
+                 restraint_lambda_1, restraint_lambda_2, vdwForce, multipoleForce, alchemical_atoms, default_elec_params):
     """Compute forward and reverse work values for BAR analysis between two lambda states."""
     traji = load_dcd(traj_file1, pdb_file)
     trajip1 = load_dcd(traj_file2, pdb_file)
@@ -27,8 +27,11 @@ def compute_work(traj_file1, traj_file2, context, pdb_file, vdw_lambda_1, vdw_la
     energy11, energy12, energy22, energy21 = [], [], [], []
 
     # Forward work: lambda i -> lambda i+1
-    Alchemical.update_lambda_values(context, vdw_lambda_1, elec_lambda_1, vdwForce, multipoleForce, alchemical_atoms,
-                                    default_elec_params)
+    Alchemical.update_lambda_values(context, vdw_lambda_1, elec_lambda_1, vdwForce, multipoleForce,
+                                    alchemical_atoms, default_elec_params)
+    if args.use_restraints:
+        context.setParameter("lambda_restraints", restraint_lambda_1)
+
     energy11 = []
     for frame in frames_to_process_i:
         context.setPositions(traji.openmm_positions(frame))
@@ -39,8 +42,11 @@ def compute_work(traj_file1, traj_file2, context, pdb_file, vdw_lambda_1, vdw_la
         if (state.getPotentialEnergy().value_in_unit(kilojoules_per_mole) >= 0.00001):
             print(f"WARNING! Restraints triggered with energy of {state.getPotentialEnergy().in_units_of(kilojoules_per_mole)} at at frame {frame} at lambda ({vdw_lambda_1}, {elec_lambda_1})")
 
-    Alchemical.update_lambda_values(context, vdw_lambda_2, elec_lambda_2, vdwForce, multipoleForce, alchemical_atoms,
-                                    default_elec_params)
+    Alchemical.update_lambda_values(context, vdw_lambda_2, elec_lambda_2, vdwForce, multipoleForce,
+                                    alchemical_atoms,default_elec_params)
+    if args.use_restraints:
+        context.setParameter("lambda_restraints", restraint_lambda_2)
+
     energy12 = []
     for frame in frames_to_process_i:
         context.setPositions(traji.openmm_positions(frame))
@@ -51,8 +57,11 @@ def compute_work(traj_file1, traj_file2, context, pdb_file, vdw_lambda_1, vdw_la
     forward_work = np.array(energy12) - np.array(energy11)
 
     # Reverse work: lambda i+1 -> lambda i
-    Alchemical.update_lambda_values(context, vdw_lambda_2, elec_lambda_2, vdwForce, multipoleForce, alchemical_atoms,
-                                    default_elec_params)
+    Alchemical.update_lambda_values(context, vdw_lambda_2, elec_lambda_2, vdwForce, multipoleForce,
+                                    alchemical_atoms,default_elec_params)
+    if args.use_restraints:
+        context.setParameter("lambda_restraints", restraint_lambda_2)
+
     energy22 = []
     for frame in frames_to_process_ip1:
         context.setPositions(trajip1.openmm_positions(frame))
@@ -63,8 +72,10 @@ def compute_work(traj_file1, traj_file2, context, pdb_file, vdw_lambda_1, vdw_la
         if (state.getPotentialEnergy().value_in_unit(kilojoules_per_mole) >= 0.00001):
             print(f"WARNING! Restraints triggered with energy of {state.getPotentialEnergy().in_units_of(kilojoules_per_mole)} at at frame {frame} at lambda ({vdw_lambda_2}, {elec_lambda_2})")
         
-    Alchemical.update_lambda_values(context, vdw_lambda_1, elec_lambda_1, vdwForce, multipoleForce, alchemical_atoms,
-                                    default_elec_params)
+    Alchemical.update_lambda_values(context, vdw_lambda_1, elec_lambda_1, vdwForce, multipoleForce,
+                                    alchemical_atoms, default_elec_params)
+    if args.use_restraints:
+        context.setParameter("lambda_restraints", restraint_lambda_1)
     energy21 = []
     for frame in frames_to_process_ip1:
         context.setPositions(trajip1.openmm_positions(frame))
@@ -146,10 +157,13 @@ default_elec_params = Alchemical.save_default_elec_params(multipoleForce, args.a
 
 print(f"Evaluating Free Energy using BAR between (vdw, elec): ({args.vdw_lambda_i}, {args.elec_lambda_i}) "
       f"and ({args.vdw_lambda_ip1}, {args.elec_lambda_ip1})")
+if args.use_restraints:
+    print(f"Evaluating between restraint states: ({args.restraint_lambda_i}, {args.restraint_lambda_ip1})")
 # Forward and reverse work calculation
 forward_work, reverse_work = compute_work(args.traj_i, args.traj_ip1, context, args.pdb_file, args.vdw_lambda_i,
-                                          args.vdw_lambda_ip1, args.elec_lambda_i, args.elec_lambda_ip1, vdwForce,
-                                          multipoleForce, args.alchemical_atoms, default_elec_params)
+                                          args.vdw_lambda_ip1, args.elec_lambda_i, args.elec_lambda_ip1,
+                                          args.restraint_lambda_i, args.restraint_lambda_ip1, vdwForce, multipoleForce,
+                                          args.alchemical_atoms, default_elec_params)
 
 uncorrelated_forward_work_indices = subsample_correlated_data(forward_work)
 uncorrelated_reverse_work_indices = subsample_correlated_data(reverse_work)

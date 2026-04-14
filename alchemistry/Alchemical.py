@@ -71,8 +71,8 @@ def setup_alchemical_forces(system):
     return vdwForce, multipoleForce
 
 
-def update_lambda_values(context, vdw_lambda, elec_lambda, vdwForce, multipoleForce, alchemical_atoms,
-                         default_elec_params):
+def update_lambda_values(context, vdw_lambda, elec_lambda, vdwForce, multipoleForce,
+                         alchemical_atoms, default_elec_params):
     """Update lambda values and force parameters using saved default electrostatic parameters."""
     # Parse alchemical_atoms input
     alchemical_atoms = list(intspan(alchemical_atoms))
