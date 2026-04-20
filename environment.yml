@@ -8,7 +8,7 @@ dependencies:
   - conda-forge::pymbar[version'>3']
   - conda-forge::pdbfixer
   - conda-forge::mdtraj
-  - conda-forge::openjdk=21
+  - conda-forge::openjdk=25
   - conda-forge::openbabel
   - pip:
     - intspan==1.6.1
