@@ -1,0 +1,149 @@
+WARNING: Using incubator modules: jdk.incubator.vector
+ _________________________________________________________________________
+
+        FORCE FIELD X - Polyglot Software for Molecular Biophysics 
+
+        Version 1.0.0-6994  April 2026 
+        Git Revision  2f9a17422a8f02782eef78db41e184a3e46a46ff 
+ 
+        Please cite the following reference when using Force Field X:
+
+        RA Gogal, AJ Nessler, AC Thiel, HV Bernabe, RA Corrigan Grove,
+        LM Cousineau, JM Litman, JM Miller, G Qi, MJ Speranza,
+        MR Tollefson, TD Fenn, JJ Michaelson, O Okada, JP Piquemal,
+        JW Ponder, J Shen, RJH Smith, W Yang, P Ren and MJ Schnieders,
+        2024, Journal of Chemical Physics, 161 (1).
+
+        Copyright (c)  Michael J. Schnieders  2001-2026
+        All Rights Reserved
+
+        Force Field X is distributed under the GPL v. 3 license
+        with linking exception and is hosted by the Schnieders Lab
+        at The University of Iowa.
+
+        User Manual:   https://ffx.biochem.uiowa.edu/manual.html
+        Publications:  https://ffx.biochem.uiowa.edu/publications.html
+        License:       https://ffx.biochem.uiowa.edu/licenses.html
+
+ _________________________________________________________________________
+
+ Fri May 08 15:34:42 CDT 2026
+ Process ID 80951 on argon-itf-ca45-02.hpc.
+
+ Command line arguments:
+ [test.FindRestraints, --distanceCutoff, 5.0, /Dedicated/schnieders/andthiel/Pfizer/binding_free_energy/workflow/Alprazolam/Template/Host_Guest/hp-bcd_Alprazolam.pdb]
+
+ Starting up the command line interface.
+
+ Executing internal command: ffx.algorithms.commands.test.FindRestraints
+
+ Parsing: Internal force field (amoeba-bio-2018).
+ Parsing: Structure properties from (/Dedicated/schnieders/andthiel/Pfizer/binding_free_energy/workflow/Alprazolam/Template/Host_Guest/hp-bcd_Alprazolam.key).
+ Parsing: JVM system properties (i.e. command line -Dkey=value pairs).
+
+ Attempting to read force field patch from Alprazolam.prm.
+May 08, 2026 3:34:43 PM ffx.potential.parameters.ForceField addForceFieldType
+WARNING:  A force field entry of type TORSION already exists with the key: 410 409 410 411
+ The (discarded) old entry: torsion   410   409   410   411  -0.670   0.000 1   7.429 180.000 2
+ The new entry            : torsion   410   409   410   411  -0.670   0.000 1   6.287 180.000 2
+
+May 08, 2026 3:34:43 PM ffx.potential.parameters.ForceField addForceFieldType
+WARNING:  A force field entry of type TORSION already exists with the key: 423 410 411 424
+ The (discarded) old entry: torsion   423   410   411   424   6.355 180.000 2
+ The new entry            : torsion   423   410   411   424   7.497 180.000 2
+
+
+ Renumbering Patch: TRUE
+ Attempting to read force field patch from hp-bcd.prm.
+
+ Renumbering Patch: TRUE
+ Reading hp-bcd_Alprazolam.pdb
+ Attempting to patch BCD
+ Patch for BCD succeeded.
+ Attempting to patch LIG
+ Patch for LIG succeeded.
+ Constructing Force Field AMOEBA-BIO-2018
+
+ SMP threads:                               108
+ The system will be treated as aperiodic (max separation =   19.9 A).
+
+ Bonded Terms
+  Bonds:                                    262
+  Angles:                                   483
+  Stretch-Bends:                            483
+  Out-of-Plane Bends:                        45
+  Torsions:                                 720
+
+ Non-Bonded Terms
+
+  Van der Waals
+   Cut-Off:                                NONE
+   Long-Range Correction:                 FALSE
+
+ Electrostatics
+   Polarization:                         MUTUAL
+    SCF Convergence Criteria:         1.000e-06
+    SCF Predictor:                         NONE
+    SCF Algorithm:                           CG
+    CG Preconditioner Cut-Off:            4.500
+    CG Preconditioner Ewald Coeff.:       0.000
+    CG Preconditioner Scale:              2.000
+    CG Preconditioner Mode:     FLETCHER_REEVES
+    Electrostatics Cut-Off:                NONE
+
+
+  Overall system charge:                  0.000
+
+ Opened hp-bcd_Alprazolam.pdb in 0.45 sec.
+
+ System Resources
+  Total CPU time:          20.29 (sec)
+  System load average:     41.30
+  Open file handles:         146 of 442368 allowed
+  System memory:          862446 MB free out of 863568 MB
+  System swap space:        2053 MB free out of   2053 MB
+  JVM memory:               4051 MB free out of   4096 MB
+ Molecule name: BCD-1 A
+ Center of mass of host molecule: [15.919180260478559, 1.6859341635383134, 1.5015378609928827]
+ Atom:      11-C4 BCD 1 (  17.65,   0.47,  -3.13) A
+ Atom:      16-C5 BCD 1 (  17.60,  -1.08,  -3.15) A
+ Atom:      17-C6 BCD 1 (  15.99,   0.61,  -4.92) A
+ Atom:      20-C7 BCD 1 (  16.20,  -1.57,  -3.60) A
+ Atom:      23-C8 BCD 1 (  15.82,  -0.93,  -4.95) A
+ Atom:      26-O5 BCD 1 (  16.19,  -3.00,  -3.75) A
+ Atom:      31-O38 BCD 1 (  19.90,  -1.60,  -0.77) A
+ Atom:      32-C57 BCD 1 (  18.64,  -3.70,  -1.01) A
+ Atom:      39-H97 BCD 1 (  19.56,  -4.29,  -0.94) A
+ Atom:      40-O39 BCD 1 (  17.67,  -4.42,  -1.78) A
+ Atom:      51-H100 BCD 1 (  17.38,  -5.12,  -1.16) A
+ Atom:      63-H99 BCD 1 (  19.87,  -0.12,   2.28) A
+ Atom:      64-H93 BCD 1 (  20.01,  -3.23,   1.37) A
+ Atom:      70-H21 BCD 1 (  10.43,   1.81,  -4.67) A
+ Atom:      71-C60 BCD 1 (  22.61,  -0.31,   2.17) A
+ Atom:      82-H25 BCD 1 (  18.67,   2.91,  -7.80) A
+ Atom:      94-H84 BCD 1 (  20.18,  -3.20,   3.40) A
+ Atom:      95-O31 BCD 1 (  19.43,  -1.56,   4.46) A
+ Atom:     101-H83 BCD 1 (  18.93,  -3.95,   5.43) A
+ Atom:     102-O34 BCD 1 (  18.09,  -4.95,   3.82) A
+ Atom:     113-H85 BCD 1 (  17.39,  -5.36,   4.39) A
+ Atom:     125-H80 BCD 1 (  19.32,   1.04,   5.13) A
+ Atom:     126-H77 BCD 1 (  17.73,  -1.92,   6.60) A
+ Atom:     132-H37 BCD 1 (   8.20,   4.19,   0.08) A
+ Atom:     133-C51 BCD 1 (  19.58,   1.00,   7.83) A
+ Atom:     144-H41 BCD 1 (  16.22,   9.47,   0.71) A
+ Atom:     156-H68 BCD 1 (  16.05,  -1.64,   7.74) A
+ Atom:     157-O25 BCD 1 (  15.54,   0.36,   7.45) A
+ Atom:     163-H67 BCD 1 (  13.60,  -1.38,   8.03) A
+ Atom:     164-O28 BCD 1 (  13.87,  -2.83,   6.57) A
+ Atom:     175-H69 BCD 1 (  12.91,  -2.86,   6.34) A
+ Atom:     187-H64 BCD 1 (  14.73,   3.49,   6.47) A
+ Atom:     188-H61 BCD 1 (  12.86,   1.04,   7.49) A
+ Atom:     191-H52 BCD 1 (  11.86,   2.80,   7.05) A
+ Atom:     198-C36 BCD 1 (  13.40,   9.45,   5.78) A
+ Center of mass of subsection host atoms: [17.266049953185863, -1.0324320860711238, 1.0638749728310846]
+ Distance between COMs: 3.06514629990532
+ Molecule name: LIG-2 A
+ Number of atoms to restrain: 7
+ Restrain list indices: [232, 233, 234, 235, 236, 237, 238]
+
+ Script wall clock time:  0.847 (sec)
